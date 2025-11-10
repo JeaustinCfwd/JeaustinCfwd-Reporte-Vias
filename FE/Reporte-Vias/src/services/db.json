@@ -1,0 +1,76 @@
+{
+  "reportes": [
+    {
+      "id": "1759244221322",
+      "title": "Otro",
+      "description": "prueba ",
+      "lat": 9.8903185,
+      "lng": -84.0755289,
+      "state": "atendido",
+      "category": "otro",
+      "timestamp": "2025-09-30T14:57:01.322Z"
+    },
+    {
+      "id": "1759339125819",
+      "title": "Semaforo danado",
+      "description": "prueba ",
+      "lat": 9.8887505,
+      "lng": -84.0814715,
+      "state": "en_revision",
+      "category": "semaforo_danado",
+      "timestamp": "2025-10-01T17:18:45.819Z"
+    },
+    {
+      "id": "1759460059291",
+      "title": "Bache",
+      "description": "hueco en la calle",
+      "lat": 9.8726634,
+      "lng": -84.0612881,
+      "state": "nuevo",
+      "category": "bache",
+      "timestamp": "2025-10-03T02:54:19.291Z"
+    }
+  ],
+  "users": [
+    {
+      "name": "Jeaustin",
+      "email": "jeaustincalu03@gmail.com",
+      "password": "1234aaenckjndc",
+      "photo": "",
+      "id": "d3f4"
+    },
+    {
+      "name": "lucas",
+      "email": "example123@gmail.com",
+      "password": "1234ab",
+      "photo": "",
+      "id": "e41c"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "f7cf",
+      "userId": "e41c",
+      "userName": "lucas",
+      "rating": 4,
+      "comment": "muy bueno el sitio",
+      "timestamp": "2025-09-30T21:22:40.547Z"
+    },
+    {
+      "id": "d01b",
+      "userId": "d3f4",
+      "userName": "Jeaustin",
+      "rating": 4,
+      "comment": "probando si sirve",
+      "timestamp": "2025-09-30T21:46:52.114Z"
+    },
+    {
+      "id": "9d79",
+      "userId": "d3f4",
+      "userName": "Jeaustin",
+      "rating": 2,
+      "comment": "prueba de estrellas",
+      "timestamp": "2025-10-01T03:57:52.950Z"
+    }
+  ]
+}

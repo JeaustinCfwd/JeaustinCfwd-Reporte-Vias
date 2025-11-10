@@ -1,0 +1,179 @@
+/* Contenedor principal del encabezado */
+.encabezado-sitio {
+  position: fixed;      /* Fijo en la parte superior */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1001;        /* Muy por encima del fondo del inicio de sesión */
+  background-color: rgba(0, 0, 0, 0.85); /* Fondo oscuro semitransparente */
+  color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  height: 60px; /* Altura fija */
+  line-height: 40px; /* Ajustar altura de línea para alineación vertical */
+}
+
+/* Contenedor interno para alinear logo y navegación */
+.contenedor-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo / identidad */
+.logo-sitio h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Navegación escritorio */
+.navegacion-desktop .nav-lista {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  align-items: center; /* Agregado para alinear elementos de navegación verticalmente */
+}
+
+.enlace-nav {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+}
+
+.enlace-nav:hover {
+  color: #00bcd4;
+}
+
+.enlace-nav.activo {
+  border-bottom: 2px solid #00bcd4;
+}
+
+/* Estilo especial para el botón de Iniciar Sesión */
+.enlace-nav.boton-login {
+  background-color: #FFFFFF;
+  border: 0;
+  border-radius: .5rem;
+  box-sizing: border-box;
+  color: #111827;
+  font-family: "Inter var", ui-sans-serif, system-ui, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  padding: 6px 16px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  margin: 0;
+}
+
+.enlace-nav.boton-login:hover {
+  background-color: rgb(249, 250, 251);
+}
+
+.enlace-nav.boton-login:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.enlace-nav.boton-login:focus-visible {
+  box-shadow: none;
+}
+
+.enlace-nav.boton-login.activo {
+  border-bottom: none;
+}
+
+/* Botón menú móvil */
+.boton-menu-movil {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Menú móvil */
+.menu-movil {
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 20px;
+}
+
+.enlace-movil {
+  display: block;
+  padding: 10px 0;
+  color: #fff;
+  text-decoration: none;
+}
+
+.enlace-movil:hover {
+  color: #00bcd4;
+}
+
+/* Iconos en enlaces */
+.icono-enlace {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+/* Separador móvil */
+.separador-movil {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 10px 0;
+}
+
+.boton-login-movil {
+  background-color: #00bcd4 !important;
+  color: #fff !important;
+  padding: 12px 20px !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.boton-login-movil:hover {
+  background-color: #0097a7 !important;
+}
+
+/* Botones móviles con ancho completo */
+.mobile-full-width {
+  width: 100%;
+  text-align: left;
+}
+
+/* Clase para compensar el encabezado fijo */
+.main-content {
+  padding-top: 60px; /* Altura del encabezado */
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .navegacion-desktop {
+    display: none;
+  }
+  .boton-menu-movil {
+    display: block;
+  }
+}

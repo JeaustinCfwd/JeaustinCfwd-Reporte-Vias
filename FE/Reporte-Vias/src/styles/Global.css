@@ -1,0 +1,12 @@
+.report-create-page {
+  padding-top: 60px; /* para compensar la altura del encabezado fijo */
+}
+
+main {
+  padding-top: 80px !important; /* se aumentó el padding para compensar la altura del encabezado fijo */
+  box-sizing: border-box;
+}
+
+.page-content-offset {
+  padding-top: 60px;
+}
