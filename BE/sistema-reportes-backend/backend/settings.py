@@ -36,34 +36,65 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CORS
+# CORS - Permitir peticiones desde el frontend
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
+    "http://localhost:3000",  # React
+    "http://localhost:5173",  # Vite/Vue
 ]
 
-# Django REST Framework
+CORS_ALLOW_CREDENTIALS = True
+
+# Django REST Framework - CONFIGURACIÓN PRINCIPAL
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    # Autenticación: Solo JWT
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    )
+    ],
+    
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    
+    # Formato de respuestas
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
 }
 
-# JWT Config
 SIMPLE_JWT = {
+    # Duración del token de acceso (1 hora)
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    
+    # Duración del token de refresco (7 días)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    # Rotar refresh tokens (más seguro)
     'ROTATE_REFRESH_TOKENS': True,
+    
+    'BLACKLIST_AFTER_ROTATION': True,
+    
+    # Algoritmo de encriptación
+    'ALGORITHM': 'HS256',
+    
+    # Clave para firmar tokens
+    'SIGNING_KEY': SECRET_KEY,
+    
+    # Nombre del header de autorización
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    
+    # Claims del token
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
 # URLs y WSGI
 ROOT_URLCONF = 'backend.urls'
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -78,6 +109,7 @@ TEMPLATES = [
         },
     },
 ]
+
 AUTH_USER_MODEL = 'api.Usuario'
 
 # Base de datos
@@ -101,13 +133,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internacionalización
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'es-cr'  # Español de Costa Rica
+TIME_ZONE = 'America/Costa_Rica'  # Zona horaria de Costa Rica
 USE_I18N = True
 USE_TZ = True
 
 # Archivos estáticos y multimedia
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

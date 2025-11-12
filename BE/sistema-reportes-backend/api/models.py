@@ -30,7 +30,11 @@ class Rol(models.Model):
 
 # 3. Modelo Usuario
 class Usuario(AbstractUser):
-    rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
+    ROL_OPCIONES = (
+     ("admin", "Administrador"),
+     ("usuario", "Usuario"),
+    )
+    rol = models.CharField(max_length=50, choices=ROL_OPCIONES, default="usuario")
 
     class Meta:
         db_table = 'usuario'
