@@ -12,16 +12,27 @@ class RolSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    rol_nombre = serializers.CharField(source='rol.nombre', read_only=True)
     
     class Meta:
         model = Usuario
-        fields = ['id', 'username', 'email', 'password', 'rol', 'fecha_registro', 'foto_perfil']
-        read_only_fields = ['fecha_registro']
-    
-    def create(self, validated_data):
-        user = Usuario.objects.create_user(**validated_data)
-        return user
+        fields = [
+            'id', 
+            'username', 
+            'email', 
+            'first_name', 
+            'last_name', 
+            'rol',
+            'rol_nombre',
+            'is_active',
+            'is_staff',
+            'date_joined',
+            'last_login'
+        ]
+        read_only_fields = ['id', 'date_joined', 'last_login']
+        extra_kwargs = {
+            'password': {'write_only': True}  # Nunca mostrar password
+        }
 
 class ImagenReporteSerializer(serializers.ModelSerializer):
     class Meta:

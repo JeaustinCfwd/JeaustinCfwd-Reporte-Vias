@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from .permissions import IsAdminRole
 
 
 from .models import Usuario, Reporte, Estado, Comentario, Rol, ImagenReporte
@@ -107,3 +108,8 @@ class ListUsersView(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [IsAdminUser]
+    
+class RolViewSet(viewsets.ModelViewSet):
+      queryset = Rol.objects.all()
+      serializer_class = RolSerializer
+      permission_classes = [IsAdminRole]
