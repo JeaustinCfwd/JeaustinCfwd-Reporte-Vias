@@ -2,23 +2,21 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from .permissions import IsAdminRole
-
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from .permissions import IsAdminRole, IsOwnerOrAdminCanApprove
 
 from .models import Usuario, Reporte, Estado, Comentario, Rol, ImagenReporte
 from .serializers import (
- UsuarioSerializer,
- ReporteSerializer,
- EstadoSerializer,
- ComentarioSerializer,
- RolSerializer,
- ImagenReporteSerializer
+    UsuarioSerializer,
+    ReporteSerializer,
+    EstadoSerializer,
+    ComentarioSerializer,
+    RolSerializer,
+    ImagenReporteSerializer
 )
 
 class CreateAdminUser(APIView):
     permission_classes = [AllowAny]
-    
     def post(self, request):
         username = request.data.get("username")
         first_name = request.data.get("first_name")
@@ -26,10 +24,10 @@ class CreateAdminUser(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         rol = request.data.get("rol")
-        
+
         if not all([username, email, password, rol]):
-            return Response({"error":"Faltan campos requeridos"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({"error": "Faltan campos requeridos"}, status=400)
+
         usuario = Usuario.objects.create_superuser(
             username=username,
             first_name=first_name,
@@ -38,13 +36,11 @@ class CreateAdminUser(APIView):
             password=password,
             rol=rol
         )
-        usuario.save() 
         return Response({"message": "Administrador creado"}, status=201)
 
 
 class CreateUser(APIView):
     permission_classes = [AllowAny]
-    
     def post(self, request):
         username = request.data.get("username")
         first_name = request.data.get("first_name")
@@ -52,10 +48,10 @@ class CreateUser(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         rol = request.data.get("rol")
-        
+
         if not all([username, email, password, rol]):
-            return Response({"error":"Faltan campos requeridos"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({"error": "Faltan campos requeridos"}, status=400)
+
         usuario = Usuario.objects.create_user(
             username=username,
             first_name=first_name,
@@ -64,17 +60,17 @@ class CreateUser(APIView):
             password=password,
             rol=rol
         )
-        usuario.save() 
         return Response({"message": "Usuario creado"}, status=201)
 
 
+# ===== REPORTES =====
 class ReporteViewSet(viewsets.ModelViewSet):
     queryset = Reporte.objects.all().order_by('-fecha_creacion')
     serializer_class = ReporteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrAdminCanApprove]
 
     def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
+        serializer.save(usuario=self.request.user, aprobado=False)  # requiere aprobación del admin
 
 
 class EstadoViewSet(viewsets.ModelViewSet):
@@ -101,15 +97,10 @@ class ImagenReporteViewSet(viewsets.ModelViewSet):
 class RolViewSet(viewsets.ModelViewSet):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminRole]
 
 
 class ListUsersView(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [IsAdminUser]
-    
-class RolViewSet(viewsets.ModelViewSet):
-      queryset = Rol.objects.all()
-      serializer_class = RolSerializer
-      permission_classes = [IsAdminRole]

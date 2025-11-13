@@ -55,6 +55,7 @@ class Reporte(models.Model):
     categoria = models.CharField(max_length=50)  # Baches, Señalización, etc.
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+    aprobado = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'reporte'
