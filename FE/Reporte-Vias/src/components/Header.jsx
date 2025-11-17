@@ -7,7 +7,7 @@ import ShinyText from './ShinyText';
 const enlaces = [
   { id: 'inicio', nombre: 'Inicio', ruta: '/' },
   { id: 'reportar', nombre: 'Reportar', ruta: '/reportCreate', icono: <MapPin size={16} />, protected: true },
-  { id: 'mapa', nombre: 'Mapa', ruta: '/mapview', protected: true },
+  { id: 'mapa', nombre: 'Mapa', ruta: '/dashboard', protected: true },
   { id: 'dashboard', nombre: 'Dashboard', ruta: '/dashboard', protected: true },
 ];
 

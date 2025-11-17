@@ -11,7 +11,6 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import ReportCreate from '../pages/ReportCreate';
-import MapView from '../pages/MapView';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
 import ReportDetail from '../pages/ReportDetail';
@@ -30,12 +29,11 @@ const router = createBrowserRouter(
           <Footer />
         </div>
       ),
-      children: [
+ children: [
         { index: true, element: <Home /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: 'reportCreate', element: <PrivateRoute><ReportCreate /></PrivateRoute> },
-        { path: 'mapview', element: <PrivateRoute><MapView /></PrivateRoute> },
         { path: 'dashboard', element: <PrivateRoute><Dashboard /></PrivateRoute> },
         { path: 'report/:id', element: <PrivateRoute><ReportDetail /></PrivateRoute> },
         { path: 'profile', element: <PrivateRoute><Profile /></PrivateRoute> },

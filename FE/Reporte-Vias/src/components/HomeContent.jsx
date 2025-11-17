@@ -118,9 +118,9 @@ function HomeContent() {
         </p>
         
         <div className="grupo-botones">
-          <Link to="/reportCreate" className="boton-inicio">Reportar un problema</Link>
-          <Link to="/mapview" className="boton-inicio boton-secundario">Ver Mapa</Link>
-        </div>
+  <Link to="/reportCreate" className="boton-inicio">Reportar un problema</Link>
+  <Link to="/dashboard" className="boton-inicio boton-secundario">Mapa Interactivo</Link>
+</div>
       </div>
 
       <div className="seccion-carousel">

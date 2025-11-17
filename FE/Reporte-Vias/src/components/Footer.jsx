@@ -16,14 +16,14 @@ function Footer() {
           </div>
 
           {/* Servicios */}
-          <div className="footer-column">
-            <h3 className="footer-heading">SERVICIOS</h3>
-            <ul className="footer-links">
-              <li><a href="/reportCreate">Crear Reporte</a></li>
-              <li><a href="/mapview">Ver Mapa</a></li>
-              <li><a href="/dashboard">Dashboard</a></li>
-            </ul>
-          </div>
+         <div className="footer-column">
+  <h3 className="footer-heading">SERVICIOS</h3>
+  <ul className="footer-links">
+    <li><a href="/reportCreate">Crear Reporte</a></li>
+    <li><a href="/dashboard">Mapa Interactivo</a></li> {/* <-- Actualizado */}
+    <li><a href="/dashboard">Dashboard</a></li>
+  </ul>
+</div>
 
           {/* Recursos */}
           <div className="footer-column">

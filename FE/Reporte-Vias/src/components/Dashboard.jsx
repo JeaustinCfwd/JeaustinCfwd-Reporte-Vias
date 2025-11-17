@@ -82,16 +82,21 @@ const Dashboard = () => {
   const [filterDateTo, setFilterDateTo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch de reportes
+
 useEffect(() => {
   setLoading(true);
   const fetchReports = async () => {
     try {
-      // Obtén el token si usas autenticación
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:8000/api/reportes/', {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });
+      if (res.status === 401) {
+        setError('No autorizado. Por favor inicia sesión.');
+        // Redirige al login si no está autorizado
+        navigate('/login');
+        return;
+      }
       if (!res.ok) throw new Error(`Error fetching reports: ${res.status}`);
       const data = await res.json();
 
@@ -107,10 +112,9 @@ useEffect(() => {
   };
   fetchReports();
 
-  // Auto-refresh cada 30 segundos
   const interval = setInterval(fetchReports, 30000);
   return () => clearInterval(interval);
-}, []);
+}, [navigate]);
 
 
   // Reportes filtrados
@@ -589,40 +593,42 @@ useEffect(() => {
             </div>
             
             <div className="map-container-wrapper">
-              <MapContainer
-                center={[9.9281, -84.0907]}
-                zoom={10}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                {filteredReports.map(report => (
-                  report.lat && report.lng && (
-                    <Marker
-                      key={report.id}
-                      position={[report.lat, report.lng]}
-                      icon={stateIcons[report.state] || stateIcons.nuevo}
-                    >
-                      <Popup>
-                        <div className="map-popup">
-                          <h4>{report.title}</h4>
-                          <p><strong>Estado:</strong> {report.state?.replace(/_/g, ' ')}</p>
-                          <p><strong>Categoría:</strong> {report.category?.replace(/_/g, ' ')}</p>
-                          <p>{report.description}</p>
-                          <p><small>{report.timestamp ? new Date(report.timestamp).toLocaleString('es-ES') : ''}</small></p>
-                          <button 
-                            onClick={() => navigate(`/report/${report.id}`)}
-                            className="popup-view-btn"
-                          >
-                            Ver detalles →
-                          </button>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  )
-                ))}
-              </MapContainer>
+
+<MapContainer
+  center={[9.7489, -83.7534]} // Centro de Costa Rica
+  zoom={7}
+  minZoom={6}
+  maxZoom={18}
+  maxBounds={[[8.0, -86.0], [11.5, -82.5]]} // Límites de Costa Rica
+  maxBoundsViscosity={1.0}
+  style={{ height: '500px', width: '100%' }}
+  className="leaflet-map"
+>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  />
+  {filteredReports
+    .filter(report =>
+      report.lat >= 8.0 && report.lat <= 11.5 &&
+      report.lng >= -86.0 && report.lng <= -82.5
+    )
+    .map(report => (
+      <Marker
+        key={report.id}
+        position={[report.lat, report.lng]}
+        icon={stateIcons[report.state] || stateIcons.nuevo}
+      >
+        <Popup>
+          <strong>{report.title}</strong><br />
+          {report.description}<br />
+          Estado: {report.state?.replace(/_/g, ' ')}<br />
+          Categoría: {report.category?.replace(/_/g, ' ')}
+        </Popup>
+      </Marker>
+    ))}
+</MapContainer>
+
             </div>
           </div>
         )}
