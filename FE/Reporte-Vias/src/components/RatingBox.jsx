@@ -21,9 +21,12 @@ const RatingBox = () => {
     const fetchReviews = async () => {
       try {
         const fetchedReviews = await getReviews();
-        setReviews(fetchedReviews);
+        // Si Django devuelve los reviews en una propiedad, por ejemplo { results: [...] }
+        // setReviews(fetchedReviews.results || []);
+        setReviews(Array.isArray(fetchedReviews) ? fetchedReviews : []);
       } catch (error) {
         console.error('Error fetching reviews:', error);
+        setReviews([]); // Evita undefined
       } finally {
         setLoading(false);
       }
@@ -67,19 +70,14 @@ const RatingBox = () => {
       return;
     }
 
-    // Confirmar antes de eliminar
     if (!window.confirm('¿Estás seguro de que quieres eliminar esta reseña?')) {
       return;
     }
 
     try {
-      // Eliminar del backend
       await deleteReview(id);
-      
-      // Actualizar estado local solo si la eliminación fue exitosa
       const filteredReviews = reviews.filter(r => r.id !== id);
       setReviews(filteredReviews);
-      
       alert('Reseña eliminada exitosamente');
     } catch (error) {
       console.error('Error eliminando reseña:', error);
@@ -87,13 +85,16 @@ const RatingBox = () => {
     }
   };
 
-  const ratings = reviews.reduce((acc, r) => {
+  // Asegura que reviews siempre sea un arreglo
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+
+  const ratings = safeReviews.reduce((acc, r) => {
     acc[r.rating] = (acc[r.rating] || 0) + 1;
     return acc;
   }, {});
 
-  const total = reviews.length;
-  const average = total > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
+  const total = safeReviews.length;
+  const average = total > 0 ? safeReviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
 
   if (loading) return <div>Cargando reseñas...</div>;
 
@@ -131,9 +132,9 @@ const RatingBox = () => {
       <RatingSummary ratings={ratings} total={total} />
       <div className="comments-section">
         <h3>Comentarios</h3>
-        {reviews.length === 0 && <p>No hay comentarios aún.</p>}
-        {reviews.map((review) => (
-          <div key={review.id.toString()} className="comment">
+        {safeReviews.length === 0 && <p>No hay comentarios aún.</p>}
+        {safeReviews.map((review) => (
+          <div key={review.id?.toString()} className="comment">
             <div className="comment-header">
               <span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
               <strong>{review.userName}</strong>

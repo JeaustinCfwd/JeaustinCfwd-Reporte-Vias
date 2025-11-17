@@ -70,23 +70,26 @@ function HomeContent() {
   const [totalReportes, setTotalReportes] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchEstadisticas = async () => {
       try {
-        const res = await fetch('http://localhost:3001/reportes');
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8000/api/reportes/', {
+          method: 'GET',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
         if (res.ok) {
-          const reportes = await res.json();
+          const data = await res.json();
+          // Django REST Framework devuelve los datos en 'results' si usa paginación
+          const reportes = data.results || data;
           const atendidos = reportes.filter(r => r.state === 'atendido').length;
           setReportesResueltos(atendidos);
           setTotalReportes(reportes.length);
         }
       } catch (error) {
         console.error('Error cargando estadísticas:', error);
-        // Fallback a localStorage si falla la API
-        const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
-        const atendidos = storedReports.filter(r => r.state === 'atendido').length;
-        setReportesResueltos(atendidos);
-        setTotalReportes(storedReports.length);
+        setReportesResueltos(0);
+        setTotalReportes(0);
       } finally {
         setLoading(false);
       }

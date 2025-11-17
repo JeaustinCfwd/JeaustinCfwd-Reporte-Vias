@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/MapView.css';
 
+// ... existing code ...
 const MapView = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,11 +11,16 @@ const MapView = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const res = await fetch('http://localhost:3001/reportes');
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8000/api/reportes/', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
         if (!res.ok) throw new Error('Error al cargar reportes');
         const data = await res.json();
+        // Django REST Framework devuelve los datos en 'results' si usa paginación
+        const reportes = data.results || data;
         // Filtrar solo reportes con coordenadas válidas
-        const validReports = data.filter(r => r.lat && r.lng);
+        const validReports = reportes.filter(r => r.lat && r.lng);
         setReports(validReports);
       } catch (error) {
         console.error('Error fetching reports:', error);
@@ -27,7 +33,7 @@ const MapView = () => {
     };
     fetchReports();
   }, []);
-
+// ... existing code ...
   const center = [9.7489, -83.7534]; // Centro de Costa Rica
   
   // Límites geográficos de Costa Rica

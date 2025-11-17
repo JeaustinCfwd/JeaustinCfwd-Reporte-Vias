@@ -83,28 +83,35 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch de reportes
-  useEffect(() => {
-    setLoading(true);
-    const fetchReports = async () => {
-      try {
-        const res = await fetch('http://localhost:3001/reportes');
-        if (!res.ok) throw new Error(`Error fetching reports: ${res.status}`);
-        const data = await res.json();
-        setReports(data);
-      } catch (err) {
-        setError(err.message);
-        const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
-        setReports(storedReports);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchReports();
-    
-    // Auto-refresh cada 30 segundos
-    const interval = setInterval(fetchReports, 30000);
-    return () => clearInterval(interval);
-  }, []);
+useEffect(() => {
+  setLoading(true);
+  const fetchReports = async () => {
+    try {
+      // Obtén el token si usas autenticación
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:8000/api/reportes/', {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error(`Error fetching reports: ${res.status}`);
+      const data = await res.json();
+
+      const reportsData = Array.isArray(data) ? data : (data.results || []);
+      setReports(reportsData);
+    } catch (err) {
+      setError(err.message);
+      const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
+      setReports(storedReports);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchReports();
+
+  // Auto-refresh cada 30 segundos
+  const interval = setInterval(fetchReports, 30000);
+  return () => clearInterval(interval);
+}, []);
+
 
   // Reportes filtrados
   const filteredReports = useMemo(() => {
@@ -223,9 +230,13 @@ const Dashboard = () => {
   // Funciones de gestión
   const handleDeleteReport = useCallback(async (id) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este reporte?')) return;
-    
+
     try {
-      const res = await fetch(`http://localhost:3001/reportes/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8000/api/reportes/${id}/`, {
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
       if (!res.ok) throw new Error(`Error deleting report: ${res.status}`);
       setReports(reports.filter(report => String(report.id) !== String(id)));
       success('Reporte eliminado exitosamente');
@@ -237,15 +248,19 @@ const Dashboard = () => {
 
   const handleUpdateState = useCallback(async (id, newState) => {
     try {
-      const res = await fetch(`http://localhost:3001/reportes/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8000/api/reportes/${id}/`, {
+        method: 'PATCH', // Django REST Framework soporta PATCH para actualizaciones parciales
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ state: newState })
       });
       if (!res.ok) throw new Error(`Error updating report: ${res.status}`);
-      
+
       const updatedReport = await res.json();
-      setReports(reports.map(report => 
+      setReports(reports.map(report =>
         String(report.id) === String(id) ? updatedReport : report
       ));
       success('Estado actualizado correctamente');

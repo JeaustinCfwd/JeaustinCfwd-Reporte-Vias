@@ -15,8 +15,8 @@ const LoginForm = () => {
         recordar: false
     });
     const [mostrarClave, setMostrarClave] = useState(false);
-    const [loading, setLoading] = useState(false); // Estado para feedback visual de carga
-    const [error, setError] = useState(null);     // Estado para manejo de errores de UX
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -35,33 +35,32 @@ const LoginForm = () => {
         e.preventDefault();
         setError(null);
 
-        // Validación simple antes de enviar (buena práctica de UX)
-        if (!formData.email.includes('@') || formData.password.length < 6) {
-            setError('Formato de correo inválido o contraseña muy corta.');
-            showError('Formato de correo inválido o contraseña muy corta');
+        // Validación simple antes de enviar (solo correo)
+        if (!formData.email.includes('@')) {
+            setError('Formato de correo inválido.');
+            showError('Formato de correo inválido');
             return;
         }
 
         setLoading(true);
         try {
-            const user = await loginUser(formData.email, formData.password);
-            
-            if (user && user.id) {
-                // Almacenamiento y redirección: idealmente, esto lo gestiona un Contexto Global (AuthContext)
+            // Debes modificar loginUser para que devuelva { user, token }
+            const { user, token } = await loginUser(formData.email, formData.password);
+
+            if (user && user.id && token) {
                 localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('token', token);
                 window.dispatchEvent(new Event('userChange'));
                 success(`¡Bienvenido ${user.name}!`);
                 navigate('/dashboard');
             } else {
                 setError('Credenciales inválidas. Por favor, verifica tu correo y contraseña.');
                 showError('Credenciales inválidas. Verifica tu correo y contraseña');
-                // Limpiar solo la contraseña si falla el intento
                 setFormData(prev => ({ ...prev, password: '' })); 
             }
         } catch {
             setError('Error al iniciar sesión. Inténtalo de nuevo más tarde.'); 
             showError('Error al iniciar sesión. Inténtalo de nuevo más tarde');
-            // Limpiar solo la contraseña si falla el intento
             setFormData(prev => ({ ...prev, password: '' })); 
         } finally {
             setLoading(false);
@@ -78,7 +77,7 @@ const LoginForm = () => {
                 <div className="formulario-usuario">
                     <h1 className="titulo-login">Iniciar sesión</h1>
                     
-                    {error && <div className="mensaje-error-form">{error}</div>} {/* Renderizado de error */}
+                    {error && <div className="mensaje-error-form">{error}</div>}
 
                     <form onSubmit={handleSubmit}>
                         <div className="grupo-entrada">
@@ -111,7 +110,6 @@ const LoginForm = () => {
                                     onChange={handleInputChange}
                                     className="elemento-entrada"
                                     required
-                                    minLength={6} 
                                 />
                                 <button
                                     type="button"
@@ -141,7 +139,7 @@ const LoginForm = () => {
                         </div>
 
                         <button type="submit" className="boton-login" disabled={loading}>
-                            {loading ? 'Cargando...' : 'Iniciar sesión'} {/* Feedback de carga */}
+                            {loading ? 'Cargando...' : 'Iniciar sesión'}
                         </button>
                     </form>
 

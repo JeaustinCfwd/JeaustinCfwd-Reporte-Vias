@@ -168,6 +168,7 @@ const ReportForm = () => {
     }
 
     // Convert images to Base64
+// ... existing code ...
     const photos = [];
     for (const file of selectedFiles) {
       const base64 = await convertToBase64(file);
@@ -177,7 +178,7 @@ const ReportForm = () => {
     setIsSubmitting(true);
 
     const report = {
-      id: String(Date.now()),
+      // id: String(Date.now()), // Django genera el id automáticamente
       title: formData.category.charAt(0).toUpperCase() + formData.category.slice(1).replace(/_/g, ' '),
       description: formData.description,
       lat: formData.location.lat,
@@ -189,13 +190,16 @@ const ReportForm = () => {
     };
 
     try {
-      const res = await fetch('http://localhost:3001/reportes', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:8000/api/reportes/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(report),
       });
+      // ... existing code ...
 
       if (!res.ok) {
         throw new Error(`Error al enviar reporte: ${res.status}`);

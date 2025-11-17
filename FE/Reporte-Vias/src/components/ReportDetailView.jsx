@@ -60,11 +60,14 @@ const ReportDetailView = () => {
 
   const fetchReportDetail = async () => {
     try {
-      const res = await fetch(`http://localhost:3001/reportes/${id}`);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8000/api/reportes/${id}/`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
       if (!res.ok) throw new Error('Reporte no encontrado');
       const data = await res.json();
       setReport(data);
-      
+
       // Generar historial de estados (simulado)
       generateStateHistory(data);
     } catch (err) {
