@@ -20,7 +20,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import '../styles/Dashboard.css';
 
-// Fix para los iconos de Leaflet
+// ==================== CONFIGURACIÓN DE LEAFLET ====================
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -44,7 +44,7 @@ const stateIcons = {
   atendido: createCustomIcon('#48BB78')
 };
 
-// Registro de elementos de Chart.js
+// ==================== CONFIGURACIÓN DE CHART.JS ====================
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -58,6 +58,7 @@ ChartJS.register(
   Filler 
 );
 
+// ==================== CONSTANTES ====================
 const STATE_COLORS = {
   nuevo: { bg: 'rgba(252, 129, 129, 0.8)', border: 'rgba(252, 129, 129, 1)' },
   en_revision: { bg: 'rgba(90, 103, 216, 0.8)', border: 'rgba(90, 103, 216, 1)' },
@@ -66,13 +67,25 @@ const STATE_COLORS = {
 
 const CATEGORY_PALETTE = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
+const CHART_OPTIONS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: 'top' },
+  }
+};
+
+// ==================== COMPONENTE PRINCIPAL ====================
 const Dashboard = () => {
+  // ========== HOOKS ==========
   const navigate = useNavigate();
-  const { success, error: showError, info } = useToast();
+  const { success, error: showError } = useToast();
+
+  // ========== ESTADO ==========
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeView, setActiveView] = useState('overview'); // overview, list, map, stats
+  const [activeView, setActiveView] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
   // Filtros
@@ -82,57 +95,49 @@ const Dashboard = () => {
   const [filterDateTo, setFilterDateTo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-
-useEffect(() => {
-  setLoading(true);
-  const fetchReports = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8000/api/reportes/', {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-      });
-      if (res.status === 401) {
-        setError('No autorizado. Por favor inicia sesión.');
-        // Redirige al login si no está autorizado
-        navigate('/login');
-        return;
+  // ========== EFECTOS ==========
+  useEffect(() => {
+    const fetchReports = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8000/api/reportes/', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+        
+        if (res.status === 401) {
+          setError('No autorizado. Por favor inicia sesión.');
+          navigate('/login');
+          return;
+        }
+        
+        if (!res.ok) throw new Error(`Error fetching reports: ${res.status}`);
+        
+        const data = await res.json();
+        const reportsData = Array.isArray(data) ? data : (data.results || []);
+        setReports(reportsData);
+      } catch (err) {
+        setError(err.message);
+        const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
+        setReports(storedReports);
+      } finally {
+        setLoading(false);
       }
-      if (!res.ok) throw new Error(`Error fetching reports: ${res.status}`);
-      const data = await res.json();
+    };
 
-      const reportsData = Array.isArray(data) ? data : (data.results || []);
-      setReports(reportsData);
-    } catch (err) {
-      setError(err.message);
-      const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
-      setReports(storedReports);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchReports();
+    fetchReports();
+    const interval = setInterval(fetchReports, 30000);
+    return () => clearInterval(interval);
+  }, [navigate]);
 
-  const interval = setInterval(fetchReports, 30000);
-  return () => clearInterval(interval);
-}, [navigate]);
-
-
-  // Reportes filtrados
+  // ========== DATOS COMPUTADOS ==========
   const filteredReports = useMemo(() => {
     return reports.filter(report => {
-      // Filtro por estado
       if (filterState !== 'all' && report.state !== filterState) return false;
-      
-      // Filtro por categoría
       if (filterCategory !== 'all' && report.category !== filterCategory) return false;
-      
-      // Filtro por fecha desde
       if (filterDateFrom && new Date(report.timestamp) < new Date(filterDateFrom)) return false;
-      
-      // Filtro por fecha hasta
       if (filterDateTo && new Date(report.timestamp) > new Date(filterDateTo)) return false;
       
-      // Búsqueda por texto
       if (searchTerm) {
         const search = searchTerm.toLowerCase();
         return (
@@ -145,24 +150,27 @@ useEffect(() => {
     });
   }, [reports, filterState, filterCategory, filterDateFrom, filterDateTo, searchTerm]);
 
-  // Estadísticas
-  const statsByState = useMemo(() => filteredReports.reduce((acc, report) => {
-    acc[report.state] = (acc[report.state] || 0) + 1;
-    return acc;
-  }, {}), [filteredReports]);
+  const statsByState = useMemo(() => {
+    return filteredReports.reduce((acc, report) => {
+      acc[report.state] = (acc[report.state] || 0) + 1;
+      return acc;
+    }, {});
+  }, [filteredReports]);
 
-  const statsByCategory = useMemo(() => filteredReports.reduce((acc, report) => {
-    const cat = (report.category || 'Sin Categoría').replace(/_/g, ' ');
-    acc[cat] = (acc[cat] || 0) + 1;
-    return acc;
-  }, {}), [filteredReports]);
+  const statsByCategory = useMemo(() => {
+    return filteredReports.reduce((acc, report) => {
+      const cat = (report.category || 'Sin Categoría').replace(/_/g, ' ');
+      acc[cat] = (acc[cat] || 0) + 1;
+      return acc;
+    }, {});
+  }, [filteredReports]);
 
   const categories = useMemo(() => {
     const cats = new Set(reports.map(r => r.category));
     return Array.from(cats);
   }, [reports]);
 
-  // Datos para gráficos
+  // ========== DATOS PARA GRÁFICOS ==========
   const stateData = useMemo(() => ({
     labels: ['Nuevos', 'En Revisión', 'Atendidos'],
     datasets: [{
@@ -196,7 +204,6 @@ useEffect(() => {
     }]
   }), [statsByCategory]);
 
-  // Gráfico de tendencia temporal
   const timelineData = useMemo(() => {
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
@@ -223,15 +230,7 @@ useEffect(() => {
     };
   }, [filteredReports]);
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top' },
-    }
-  };
-
-  // Funciones de gestión
+  // ========== FUNCIONES DE GESTIÓN ==========
   const handleDeleteReport = useCallback(async (id) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este reporte?')) return;
 
@@ -241,7 +240,9 @@ useEffect(() => {
         method: 'DELETE',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });
+      
       if (!res.ok) throw new Error(`Error deleting report: ${res.status}`);
+      
       setReports(reports.filter(report => String(report.id) !== String(id)));
       success('Reporte eliminado exitosamente');
     } catch (error) {
@@ -254,13 +255,14 @@ useEffect(() => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8000/api/reportes/${id}/`, {
-        method: 'PATCH', // Django REST Framework soporta PATCH para actualizaciones parciales
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ state: newState })
       });
+      
       if (!res.ok) throw new Error(`Error updating report: ${res.status}`);
 
       const updatedReport = await res.json();
@@ -274,7 +276,6 @@ useEffect(() => {
     }
   }, [reports, success, showError]);
 
-  // Exportar a CSV
   const exportToCSV = useCallback(() => {
     try {
       const headers = ['ID', 'Título', 'Descripción', 'Estado', 'Categoría', 'Latitud', 'Longitud', 'Fecha'];
@@ -318,6 +319,7 @@ useEffect(() => {
     setSearchTerm('');
   };
 
+  // ========== RENDERIZADO CONDICIONAL ==========
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -327,9 +329,10 @@ useEffect(() => {
     );
   }
 
+  // ========== RENDER PRINCIPAL ==========
   return (
     <div className="dashboard-wrapper">
-      {/* Sidebar */}
+      {/* ==================== SIDEBAR ==================== */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
           {sidebarOpen && <h2>Dashboard</h2>}
@@ -374,7 +377,7 @@ useEffect(() => {
         )}
       </aside>
 
-      {/* Main Content */}
+      {/* ==================== CONTENIDO PRINCIPAL ==================== */}
       <main className={`dashboard-main ${sidebarOpen ? '' : 'full-width'}`}>
         {/* Header con filtros */}
         <div className="dashboard-header">
@@ -434,7 +437,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Vista Resumen General */}
+        {/* ==================== VISTA RESUMEN GENERAL ==================== */}
         {activeView === 'overview' && (
           <div className="overview-content">
             {/* Tarjetas de estadísticas */}
@@ -474,13 +477,13 @@ useEffect(() => {
               <div className="chart-container">
                 <h2>Tendencia de Reportes (Últimos 7 días)</h2>
                 <div className="chart-wrapper">
-                  <Line data={timelineData} options={chartOptions} />
+                  <Line data={timelineData} options={CHART_OPTIONS} />
                 </div>
               </div>
               <div className="chart-container">
                 <h2>Distribución por Estado</h2>
                 <div className="chart-wrapper">
-                  <Bar data={stateData} options={chartOptions} />
+                  <Bar data={stateData} options={CHART_OPTIONS} />
                 </div>
               </div>
             </div>
@@ -489,14 +492,14 @@ useEffect(() => {
               <div className="chart-container">
                 <h2>Reportes por Categoría</h2>
                 <div className="chart-wrapper">
-                  <Pie data={categoryData} options={chartOptions} />
+                  <Pie data={categoryData} options={CHART_OPTIONS} />
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Vista Lista de Reportes */}
+        {/* ==================== VISTA LISTA DE REPORTES ==================== */}
         {activeView === 'list' && (
           <div className="list-content">
             <div className="reports-table-container">
@@ -573,7 +576,7 @@ useEffect(() => {
           </div>
         )}
 
-        {/* Vista Mapa */}
+        {/* ==================== VISTA MAPA ==================== */}
         {activeView === 'map' && (
           <div className="map-content">
             <div className="map-legend">
@@ -593,47 +596,45 @@ useEffect(() => {
             </div>
             
             <div className="map-container-wrapper">
-
-<MapContainer
-  center={[9.7489, -83.7534]} // Centro de Costa Rica
-  zoom={7}
-  minZoom={6}
-  maxZoom={18}
-  maxBounds={[[8.0, -86.0], [11.5, -82.5]]} // Límites de Costa Rica
-  maxBoundsViscosity={1.0}
-  style={{ height: '500px', width: '100%' }}
-  className="leaflet-map"
->
-  <TileLayer
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  />
-  {filteredReports
-    .filter(report =>
-      report.lat >= 8.0 && report.lat <= 11.5 &&
-      report.lng >= -86.0 && report.lng <= -82.5
-    )
-    .map(report => (
-      <Marker
-        key={report.id}
-        position={[report.lat, report.lng]}
-        icon={stateIcons[report.state] || stateIcons.nuevo}
-      >
-        <Popup>
-          <strong>{report.title}</strong><br />
-          {report.description}<br />
-          Estado: {report.state?.replace(/_/g, ' ')}<br />
-          Categoría: {report.category?.replace(/_/g, ' ')}
-        </Popup>
-      </Marker>
-    ))}
-</MapContainer>
-
+              <MapContainer
+                center={[9.7489, -83.7534]}
+                zoom={7}
+                minZoom={6}
+                maxZoom={18}
+                maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
+                maxBoundsViscosity={1.0}
+                style={{ height: '500px', width: '100%' }}
+                className="leaflet-map"
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {filteredReports
+                  .filter(report =>
+                    report.lat >= 8.0 && report.lat <= 11.5 &&
+                    report.lng >= -86.0 && report.lng <= -82.5
+                  )
+                  .map(report => (
+                    <Marker
+                      key={report.id}
+                      position={[report.lat, report.lng]}
+                      icon={stateIcons[report.state] || stateIcons.nuevo}
+                    >
+                      <Popup>
+                        <strong>{report.title}</strong><br />
+                        {report.description}<br />
+                        Estado: {report.state?.replace(/_/g, ' ')}<br />
+                        Categoría: {report.category?.replace(/_/g, ' ')}
+                      </Popup>
+                    </Marker>
+                  ))}
+              </MapContainer>
             </div>
           </div>
         )}
 
-        {/* Vista Estadísticas Detalladas */}
+        {/* ==================== VISTA ESTADÍSTICAS DETALLADAS ==================== */}
         {activeView === 'stats' && (
           <div className="stats-content">
             <div className="stats-grid">
@@ -692,13 +693,13 @@ useEffect(() => {
               <div className="chart-container">
                 <h2>Reportes por Estado</h2>
                 <div className="chart-wrapper">
-                  <Bar data={stateData} options={chartOptions} />
+                  <Bar data={stateData} options={CHART_OPTIONS} />
                 </div>
               </div>
               <div className="chart-container">
                 <h2>Reportes por Categoría</h2>
                 <div className="chart-wrapper">
-                  <Pie data={categoryData} options={chartOptions} />
+                  <Pie data={categoryData} options={CHART_OPTIONS} />
                 </div>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import ShinyText from './ShinyText';
 
+// ==================== CONSTANTES ====================
 const enlaces = [
   { id: 'inicio', nombre: 'Inicio', ruta: '/' },
   { id: 'reportar', nombre: 'Reportar', ruta: '/reportCreate', icono: <MapPin size={16} />, protected: true },
@@ -11,7 +12,12 @@ const enlaces = [
   { id: 'dashboard', nombre: 'Dashboard', ruta: '/dashboard', protected: true },
 ];
 
+// ==================== COMPONENTE PRINCIPAL ====================
 const Header = () => {
+  // ========== HOOKS ==========
+  const navigate = useNavigate();
+
+  // ========== ESTADO ==========
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
   const [user, setUser] = useState(() => {
     try {
@@ -21,8 +27,8 @@ const Header = () => {
       return null;
     }
   });
-  const navigate = useNavigate();
 
+  // ========== EFECTOS ==========
   useEffect(() => {
     const handleUserChange = () => {
       try {
@@ -42,27 +48,88 @@ const Header = () => {
     };
   }, []);
 
-  // useCallback para funciones que se pasan a otros componentes (Cierre de Sesión)
+  // ========== FUNCIONES DE MANEJO ==========
   const handleLogout = useCallback(() => {
     localStorage.removeItem('user');
-    // Forzar recarga o actualizar el estado global si existiera un contexto de usuario
     window.location.reload(); 
   }, []);
 
-  // Función de redirección para rutas protegidas
-  const handleProtectedClick = () => {
-    // 4. Mejor UX: Redirigir a login en lugar de usar alert()
-    navigate('/login', { state: { from: window.location.pathname, message: 'Debes iniciar sesión para acceder a esta función.' } });
+  const handleProtectedClick = useCallback(() => {
+    navigate('/login', { 
+      state: { 
+        from: window.location.pathname, 
+        message: 'Debes iniciar sesión para acceder a esta función.' 
+      } 
+    });
     setMenuMovilAbierto(false);
-  };
+  }, [navigate]);
   
-  // 5. Función de toggle simplificada
-  const toggleMenuMovil = () => setMenuMovilAbierto(p => !p);
+  const toggleMenuMovil = useCallback(() => {
+    setMenuMovilAbierto(prev => !prev);
+  }, []);
+
+  const closeMenuMovil = useCallback(() => {
+    setMenuMovilAbierto(false);
+  }, []);
+
+  // ========== COMPONENTES AUXILIARES ==========
+  const renderNavLink = (enlace) => {
+    if (enlace.protected && !user) {
+      return (
+        <button
+          onClick={handleProtectedClick}
+          className="enlace-nav btn-reset"
+        >
+          {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
+          {enlace.nombre}
+        </button>
+      );
+    }
+
+    return (
+      <NavLink
+        to={enlace.ruta}
+        className={({ isActive }) => `enlace-nav ${isActive ? 'activo' : ''}`}
+      >
+        {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
+        {enlace.nombre}
+      </NavLink>
+    );
+  };
+
+  const renderMobileNavLink = (enlace) => {
+    if (enlace.protected && !user) {
+      return (
+        <button
+          key={enlace.id}
+          onClick={handleProtectedClick}
+          className="enlace-movil btn-reset mobile-full-width"
+        >
+          {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
+          {enlace.nombre}
+        </button>
+      );
+    }
+
+    return (
+      <NavLink
+        key={enlace.id}
+        to={enlace.ruta}
+        className="enlace-movil"
+        onClick={closeMenuMovil}
+      >
+        {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
+        {enlace.nombre}
+      </NavLink>
+    );
+  };
+
+  // ========== RENDER PRINCIPAL ==========
   return (
     <header className="encabezado-sitio">
       <div className="contenedor-navbar">
+        {/* Logo */}
         <div className="logo-sitio">
-          {/* 2. Eliminar estilos en línea simples del NavLink del logo */}
           <NavLink to="/" className="logo-link"> 
             <h1 style={{ margin: 0 }}>
               <ShinyText text="ReporteVías CR" speed={3} />
@@ -70,31 +137,17 @@ const Header = () => {
           </NavLink>
         </div>
 
-        {/* Menú de escritorio */}
+        {/* ==================== MENÚ ESCRITORIO ==================== */}
         <nav className="navegacion-desktop">
           <ul className="nav-lista">
+            {/* Enlaces principales */}
             {enlaces.map(enlace => (
               <li key={enlace.id}>
-                {enlace.protected && !user ? (
-                  <button
-                    onClick={handleProtectedClick}
-                    className="enlace-nav btn-reset" // 2. Usar clase utilitaria .btn-reset
-                  >
-                    {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-                    {enlace.nombre}
-                  </button>
-                ) : (
-                  <NavLink
-                    to={enlace.ruta}
-                    className={({ isActive }) => `enlace-nav ${isActive ? 'activo' : ''}`}
-                  >
-                    {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-                    {enlace.nombre}
-                  </NavLink>
-                )}
+                {renderNavLink(enlace)}
               </li>
             ))}
 
+            {/* Enlaces de usuario */}
             {user ? (
               <>
                 <li>
@@ -130,45 +183,33 @@ const Header = () => {
         </nav>
 
         {/* Botón menú móvil */}
-        <button onClick={toggleMenuMovil} className="boton-menu-movil" aria-expanded={menuMovilAbierto} aria-controls="menu-movil-container">
+        <button 
+          onClick={toggleMenuMovil} 
+          className="boton-menu-movil" 
+          aria-expanded={menuMovilAbierto} 
+          aria-controls="menu-movil-container"
+          aria-label={menuMovilAbierto ? "Cerrar menú" : "Abrir menú"}
+        >
           {menuMovilAbierto ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Menú móvil */}
+      {/* ==================== MENÚ MÓVIL ==================== */}
       {menuMovilAbierto && (
         <div className="menu-movil" id="menu-movil-container">
           <nav className="navegacion-movil">
-            {/* Lógica duplicada: idealmente se extrae en un componente */}
-            {enlaces.map(enlace => (
-              enlace.protected && !user ? (
-                <button
-                  key={enlace.id}
-                  onClick={() => { handleProtectedClick(); }} // handleProtectedClick ya cierra el menú
-                  className="enlace-movil btn-reset mobile-full-width"
-                >
-                  {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-                  {enlace.nombre}
-                </button>
-              ) : (
-                <NavLink
-                  key={enlace.id}
-                  to={enlace.ruta}
-                  className="enlace-movil"
-                  onClick={() => setMenuMovilAbierto(false)}
-                >
-                  {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-                  {enlace.nombre}
-                </NavLink>
-              )
-            ))}
+            {/* Enlaces principales */}
+            {enlaces.map(enlace => renderMobileNavLink(enlace))}
+            
             <hr className="separador-movil" />
+            
+            {/* Enlaces de usuario */}
             {user ? (
               <>
                 <NavLink
                   to="/profile"
                   className="enlace-movil"
-                  onClick={() => setMenuMovilAbierto(false)}
+                  onClick={closeMenuMovil}
                 >
                   <User size={16} className="inline mr-2" />
                   Perfil
@@ -185,7 +226,7 @@ const Header = () => {
               <NavLink
                 to="/login"
                 className="enlace-movil boton-login-movil"
-                onClick={() => setMenuMovilAbierto(false)}
+                onClick={closeMenuMovil}
               >
                 Iniciar Sesión
               </NavLink>
