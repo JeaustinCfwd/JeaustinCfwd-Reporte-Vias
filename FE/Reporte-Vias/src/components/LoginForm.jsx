@@ -31,41 +31,34 @@ const LoginForm = () => {
         setMostrarClave(prev => !prev);
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(null);
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-        // Validación simple antes de enviar (solo correo)
-        if (!formData.email.includes('@')) {
-            setError('Formato de correo inválido.');
-            showError('Formato de correo inválido');
-            return;
-        }
+    setLoading(true);
+    try {
+        // Debes modificar loginUser para que devuelva { user, token }
+        const { user, token } = await loginUser(formData.email, formData.password);
 
-        setLoading(true);
-        try {
-            // Debes modificar loginUser para que devuelva { user, token }
-            const { user, token } = await loginUser(formData.email, formData.password);
-
-            if (user && user.id && token) {
-                localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem('token', token);
-                window.dispatchEvent(new Event('userChange'));
-                success(`¡Bienvenido ${user.name}!`);
-                navigate('/dashboard');
-            } else {
-                setError('Credenciales inválidas. Por favor, verifica tu correo y contraseña.');
-                showError('Credenciales inválidas. Verifica tu correo y contraseña');
-                setFormData(prev => ({ ...prev, password: '' })); 
-            }
-        } catch {
-            setError('Error al iniciar sesión. Inténtalo de nuevo más tarde.'); 
-            showError('Error al iniciar sesión. Inténtalo de nuevo más tarde');
+        if (user && user.id && token) {
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('token', token);
+            window.dispatchEvent(new Event('userChange'));
+            success(`¡Bienvenido ${user.name}!`);
+            navigate('/dashboard');
+        } else {
+            setError('Credenciales inválidas. Por favor, verifica tu correo y contraseña.');
+            showError('Credenciales inválidas. Verifica tu correo y contraseña');
             setFormData(prev => ({ ...prev, password: '' })); 
-        } finally {
-            setLoading(false);
         }
-    };
+    } catch {
+        setError('Error al iniciar sesión. Inténtalo de nuevo más tarde.'); 
+        showError('Error al iniciar sesión. Inténtalo de nuevo más tarde');
+        setFormData(prev => ({ ...prev, password: '' })); 
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleNavigateToRegister = () => {
         navigate('/register');
@@ -80,22 +73,22 @@ const LoginForm = () => {
                     {error && <div className="mensaje-error-form">{error}</div>}
 
                     <form onSubmit={handleSubmit}>
-                        <div className="grupo-entrada">
-                            <label htmlFor="email" className="etiqueta-entrada">Correo electrónico</label>
-                            <div className="campo-entrada">
-                                <Mail className="icono-entrada" size={20} />
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    placeholder="Ingresa tu correo"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className="elemento-entrada"
-                                    required
-                                />
-                            </div>
-                        </div>
+<div className="grupo-entrada">
+    <label htmlFor="email" className="etiqueta-entrada">Usuario</label>
+    <div className="campo-entrada">
+        <Mail className="icono-entrada" size={20} />
+        <input
+            type="text" // <-- Puede ser "text" si no quieres validación de email
+            id="email"
+            name="email"
+            placeholder="Ingresa tu usuario"
+            value={formData.email}
+            onChange={handleInputChange}
+            className="elemento-entrada"
+            required
+        />
+    </div>
+</div>
 
                         <div className="grupo-entrada">
                             <label htmlFor="password" className="etiqueta-entrada">Contraseña</label>

@@ -4,6 +4,8 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .permissions import IsAdminRole, IsOwnerOrAdminCanApprove
+from rest_framework.decorators import api_view, permission_classes
+
 
 from .models import Usuario, Reporte, Estado, Comentario, Rol, ImagenReporte
 from .serializers import (
@@ -104,3 +106,10 @@ class ListUsersView(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [IsAdminUser]
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def obtener_usuario_actual(request):
+    """Retorna los datos del usuario autenticado"""
+    serializer = UsuarioSerializer(request.user)
+    return Response(serializer.data)

@@ -327,35 +327,56 @@ const ReportForm = () => {
             </p>
           </div>
 
-          <div className="map-container">
-            <MapContainer
-              center={[formData.location.lat, formData.location.lng]}
-              zoom={8}
-              minZoom={7}
-              maxZoom={18}
-              maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
-              maxBoundsViscosity={1.0}
-              style={{ height: '250px', width: '100%' }}
-              className="leaflet-map"
-            >
-              <ChangeMapView center={[formData.location.lat, formData.location.lng]} zoom={14} />
-              <MapClickHandler onLocationChange={(loc) => setFormData(prev => ({ ...prev, location: loc }))} />
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <Marker
-                position={[formData.location.lat, formData.location.lng]}
-                draggable={true}
-                eventHandlers={{
-                  dragend: (e) => {
-                    const newPos = e.target.getLatLng();
-                    setFormData(prev => ({ ...prev, location: newPos }));
-                  }
-                }}
-              />
-            </MapContainer>
-          </div>
+<div className="map-container">
+  <MapContainer
+    center={[formData.location.lat, formData.location.lng]}
+    zoom={7}
+    minZoom={6}
+    maxZoom={18}
+    maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
+    maxBoundsViscosity={1.0}
+    style={{ height: '600px', width: '100%' }} // <-- AGRANDADO
+    className="leaflet-map"
+  >
+    <ChangeMapView center={[formData.location.lat, formData.location.lng]} zoom={7} />
+    <MapClickHandler
+      onLocationChange={(loc) => {
+        // Validar que esté dentro de Costa Rica
+        if (
+          loc.lat >= 8.0 && loc.lat <= 11.5 &&
+          loc.lng >= -86.0 && loc.lng <= -82.5
+        ) {
+          setFormData(prev => ({ ...prev, location: loc }));
+        } else {
+          // Puedes usar showError o warning
+          warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
+        }
+      }}
+    />
+    <TileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    />
+    <Marker
+      position={[formData.location.lat, formData.location.lng]}
+      draggable={true}
+      eventHandlers={{
+        dragend: (e) => {
+          const newPos = e.target.getLatLng();
+          // Validar que esté dentro de Costa Rica
+          if (
+            newPos.lat >= 8.0 && newPos.lat <= 11.5 &&
+            newPos.lng >= -86.0 && newPos.lng <= -82.5
+          ) {
+            setFormData(prev => ({ ...prev, location: newPos }));
+          } else {
+            warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
+          }
+        }
+      }}
+    />
+  </MapContainer>
+</div>
           
           <div className="location-inputs">
             <input

@@ -9,7 +9,8 @@ from .views import (
     EstadoViewSet, 
     ComentarioViewSet, 
     ImagenReporteViewSet, 
-    RolViewSet
+    RolViewSet,
+    obtener_usuario_actual  # <--- AÑADE ESTO
 )
 
 router = DefaultRouter()
@@ -28,6 +29,9 @@ urlpatterns = [
     # ===== REGISTRO DE USUARIOS =====
     path('crear-admin/', CreateAdminUser.as_view(), name='create-admin'),
     path('crear-user/', CreateUser.as_view(), name='create-user'),
+    
+    # ===== USUARIO ACTUAL =====
+    path('usuarios/me/', obtener_usuario_actual, name='usuario-actual'),  # <--- AÑADE ESTO
     
     # ===== ROUTER (CRUD ENDPOINTS) =====
     path('', include(router.urls)),
