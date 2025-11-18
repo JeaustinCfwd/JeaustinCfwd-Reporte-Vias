@@ -19,6 +19,3 @@ urlpatterns = [
     # 2. Rutas de la API de tu aplicación 'api'
     path('api/', include('api.urls')),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,42 +1,18 @@
-// Login: obtiene el token JWT y luego los datos del usuario
 export async function loginUser(email, password) {
     // 1. Obtener el token
-    const res = await fetch('http://localhost:8000/api/token/', {
+    const res = await fetch('http://localhost:8000/api/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: email, password }),
     });
-    
-    if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error('Error de login:', res.status, errorData);
-        throw new Error(`Login failed: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    const token = data.access;
-
-    // 2. Obtener datos del usuario autenticado
-    const userRes = await fetch('http://localhost:8000/api/usuarios/me/', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    
-    if (!userRes.ok) {
-        console.error('Error obteniendo usuario:', userRes.status);
-        throw new Error('Failed to fetch user data');
-    }
-    
-    const user = await userRes.json();
-
-    return { user, token };
+    const data = await res.json()
+    return data
 }
 
 // Ejemplo de función protegida con token
 export async function obtenerDatosEstadisticos(token) {
     try {
-        const res = await fetch('http://localhost:8000/api/reportes/', {
+        const res = await fetch('http://localhost:8000/api/crear-reporte/', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -58,7 +34,6 @@ export async function obtenerDatosEstadisticos(token) {
     }
 }
 
-// Si tienes otras funciones, agrégalas así:
 export async function updateUser() { /* ... */ }
 export async function registerUser() { /* ... */ }
 export async function deleteUser() { /* ... */ }

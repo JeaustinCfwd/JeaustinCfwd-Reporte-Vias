@@ -74,7 +74,7 @@ function HomeContent() {
     const fetchEstadisticas = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:8000/api/reportes/', {
+        const res = await fetch('http://localhost:8000/api/crear-reporte/', {
           method: 'GET',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         });

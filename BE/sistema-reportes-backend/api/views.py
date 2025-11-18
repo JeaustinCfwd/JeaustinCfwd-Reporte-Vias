@@ -7,6 +7,9 @@ from .permissions import IsAdminRole, IsOwnerOrAdminCanApprove
 from rest_framework.decorators import api_view, permission_classes
 from .models import Usuario, Reporte, Estado, Comentario, Rol, ImagenReporte
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+
 from .serializers import (
     UsuarioSerializer,
     ReporteSerializer,
@@ -62,6 +65,19 @@ class CreateUser(APIView):
             rol=rol
         )
         return Response({"message": "Usuario creado"}, status=201)
+
+class LoginUsuarioView(APIView):
+ def post(self,request):
+  nombre_usuario = request.data.get("username")
+  clave_usuario = request.data.get("password")
+  
+  usuario = authenticate(username=nombre_usuario,password=clave_usuario)
+  
+  if usuario is not None:
+   return Response({"mensaje":"Inicio exitoso"})
+  else:
+   return Response({"mensaje":"Inicio fallido, error 404"})
+   
 
 
 # ===== REPORTES =====

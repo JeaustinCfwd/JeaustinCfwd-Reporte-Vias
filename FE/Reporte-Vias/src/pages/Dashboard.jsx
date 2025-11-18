@@ -1,14 +1,13 @@
 import React from 'react';
-import Dashboard from '../components/Dashboard';
+import DashboardContent from '../components/DashboardContent';
 import '../styles/Dashboard.css';
 
-
-const DashboardPage = () => {
+function Dashboard() {
   return (
-    <div className="page-content-offset">
-      <Dashboard />
+    <div>
+      <DashboardContent />
     </div>
   );
-};
+}
 
-export default DashboardPage;
+export default Dashboard;

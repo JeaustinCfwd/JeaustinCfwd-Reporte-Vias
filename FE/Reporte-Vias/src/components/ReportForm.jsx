@@ -190,7 +190,7 @@ const ReportForm = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8000/api/reportes/', {
+      const res = await fetch('http://localhost:8000/api/crear-reporte/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

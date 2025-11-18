@@ -16,6 +16,7 @@ from .views import (
     ComentarioCreateView,
     ImagenReporteCreateView,
     RolCreateView,
+    LoginUsuarioView,
     ListUsersCreateView
 )
 
@@ -40,7 +41,6 @@ urlpatterns = [
     path('usuarios/me/', obtener_usuario_actual, name='usuario-actual'),
     
     # ===== ROUTER (CRUD ENDPOINTS) =====
-    path('', include(router.urls)),
     
     # ===== CREACION DE REPORTES =====
     path('crear-reporte/', ReporteCreateView.as_view(), name='crear-reporte'),
@@ -49,4 +49,5 @@ urlpatterns = [
     path('crear-imagen/', ImagenReporteCreateView.as_view(), name='crear-imagen'),
     path('crear-rol/', RolCreateView.as_view(), name='rol'),
     path('crear-lista/', ListUsersCreateView.as_view(), name='crear-lista'),
+    path('login/', LoginUsuarioView.as_view(), name='login'),
 ]

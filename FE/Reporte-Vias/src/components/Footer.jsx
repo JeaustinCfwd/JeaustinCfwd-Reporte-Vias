@@ -20,7 +20,7 @@ function Footer() {
   <h3 className="footer-heading">SERVICIOS</h3>
   <ul className="footer-links">
     <li><a href="/reportCreate">Crear Reporte</a></li>
-    <li><a href="/dashboard">Mapa Interactivo</a></li> {/* <-- Actualizado */}
+    <li><a href="/dashboard/">Mapa Interactivo</a></li>
     <li><a href="/dashboard">Dashboard</a></li>
   </ul>
 </div>
