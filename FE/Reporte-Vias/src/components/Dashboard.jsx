@@ -408,12 +408,12 @@ const Dashboard = () => {
               <option value="atendido">Atendidos</option>
             </select>
 
-            <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="filter-select">
+            {/* <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="filter-select">
               <option value="all">Todas las categorías</option>
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat.replace(/_/g, ' ')}</option>
               ))}
-            </select>
+            </select> */}
 
             <input
               type="date"

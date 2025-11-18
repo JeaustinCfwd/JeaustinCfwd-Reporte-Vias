@@ -4,22 +4,28 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     CreateAdminUser, 
     CreateUser, 
-    ListUsersView,
-    ReporteViewSet, 
-    EstadoViewSet, 
-    ComentarioViewSet, 
-    ImagenReporteViewSet, 
-    RolViewSet,
-    obtener_usuario_actual  # <--- AÑADE ESTO
+    # ListUsersView,
+    # ReporteViewSet, 
+    # EstadoViewSet, 
+    # ComentarioViewSet, 
+    # ImagenReporteViewSet,
+    # RolViewSet,
+    ReporteCreateView,
+    obtener_usuario_actual,
+    EstadoCreateView,
+    ComentarioCreateView,
+    ImagenReporteCreateView,
+    RolCreateView,
+    ListUsersCreateView
 )
 
 router = DefaultRouter()
-router.register(r'usuarios', ListUsersView, basename='usuario')
-router.register(r'reportes', ReporteViewSet, basename='reporte')
-router.register(r'estados', EstadoViewSet, basename='estado')
-router.register(r'comentarios', ComentarioViewSet, basename='comentario')
-router.register(r'imagenes-reporte', ImagenReporteViewSet, basename='imagen-reporte')
-router.register(r'roles', RolViewSet, basename='rol')
+# router.register(r'usuarios', ListUsersView, basename='usuario')
+# router.register(r'reportes', ReporteViewSet, basename='reporte')
+# router.register(r'estados', EstadoViewSet, basename='estado')
+# router.register(r'comentarios', ComentarioViewSet, basename='comentario')
+# router.register(r'imagenes-reporte', ImagenReporteViewSet, basename='imagen-reporte')
+# router.register(r'roles', RolViewSet, basename='rol')
 
 urlpatterns = [
     # ===== AUTENTICACIÓN =====
@@ -31,8 +37,16 @@ urlpatterns = [
     path('crear-user/', CreateUser.as_view(), name='create-user'),
     
     # ===== USUARIO ACTUAL =====
-    path('usuarios/me/', obtener_usuario_actual, name='usuario-actual'),  # <--- AÑADE ESTO
+    path('usuarios/me/', obtener_usuario_actual, name='usuario-actual'),
     
     # ===== ROUTER (CRUD ENDPOINTS) =====
     path('', include(router.urls)),
+    
+    # ===== CREACION DE REPORTES =====
+    path('crear-reporte/', ReporteCreateView.as_view(), name='crear-reporte'),
+    path('crear-estado/', EstadoCreateView.as_view(), name='crear-estado'),
+    path('crear-comentario/', ComentarioCreateView.as_view(), name='crear-comentario'),
+    path('crear-imagen/', ImagenReporteCreateView.as_view(), name='crear-imagen'),
+    path('crear-rol/', RolCreateView.as_view(), name='rol'),
+    path('crear-lista/', ListUsersCreateView.as_view(), name='crear-lista'),
 ]

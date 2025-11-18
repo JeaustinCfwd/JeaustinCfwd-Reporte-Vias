@@ -102,7 +102,7 @@ const ReportForm = () => {
         `https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=cr&limit=5`,
         {
           headers: {
-            'User-Agent': 'ReporteViasCR/1.0' // Requerido por Nominatim
+            'User-Agent': 'ReporteViasCR/1.0'
           }
         }
       );
@@ -168,7 +168,6 @@ const ReportForm = () => {
     }
 
     // Convert images to Base64
-// ... existing code ...
     const photos = [];
     for (const file of selectedFiles) {
       const base64 = await convertToBase64(file);
@@ -199,7 +198,7 @@ const ReportForm = () => {
         },
         body: JSON.stringify(report),
       });
-      // ... existing code ...
+
 
       if (!res.ok) {
         throw new Error(`Error al enviar reporte: ${res.status}`);
@@ -335,7 +334,7 @@ const ReportForm = () => {
     maxZoom={18}
     maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
     maxBoundsViscosity={1.0}
-    style={{ height: '600px', width: '100%' }} // <-- AGRANDADO
+    style={{ height: '600px', width: '100%' }}
     className="leaflet-map"
   >
     <ChangeMapView center={[formData.location.lat, formData.location.lng]} zoom={7} />

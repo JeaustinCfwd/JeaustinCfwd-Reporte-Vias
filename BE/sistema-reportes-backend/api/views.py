@@ -5,9 +5,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .permissions import IsAdminRole, IsOwnerOrAdminCanApprove
 from rest_framework.decorators import api_view, permission_classes
-
-
 from .models import Usuario, Reporte, Estado, Comentario, Rol, ImagenReporte
+from rest_framework.generics import ListCreateAPIView
 from .serializers import (
     UsuarioSerializer,
     ReporteSerializer,
@@ -66,22 +65,18 @@ class CreateUser(APIView):
 
 
 # ===== REPORTES =====
-class ReporteViewSet(viewsets.ModelViewSet):
+class ReporteCreateView(ListCreateAPIView):
     queryset = Reporte.objects.all().order_by('-fecha_creacion')
     serializer_class = ReporteSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrAdminCanApprove]
+    # permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user, aprobado=False)  # requiere aprobación del admin
-
-
-class EstadoViewSet(viewsets.ModelViewSet):
+# el list create api view sirve para un get y un post 
+class EstadoCreateView(ListCreateAPIView):
     queryset = Estado.objects.all()
     serializer_class = EstadoSerializer
     permission_classes = [IsAdminUser]
 
-
-class ComentarioViewSet(viewsets.ModelViewSet):
+class ComentarioCreateView(ListCreateAPIView):
     queryset = Comentario.objects.all().order_by('-fecha_creacion')
     serializer_class = ComentarioSerializer
     permission_classes = [IsAuthenticated]
@@ -90,19 +85,19 @@ class ComentarioViewSet(viewsets.ModelViewSet):
         serializer.save(usuario=self.request.user)
 
 
-class ImagenReporteViewSet(viewsets.ModelViewSet):
+class ImagenReporteCreateView(ListCreateAPIView):
     queryset = ImagenReporte.objects.all()
     serializer_class = ImagenReporteSerializer
     permission_classes = [IsAuthenticated]
 
 
-class RolViewSet(viewsets.ModelViewSet):
+class RolCreateView(ListCreateAPIView):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
     permission_classes = [IsAdminRole]
 
 
-class ListUsersView(viewsets.ModelViewSet):
+class ListUsersCreateView(ListCreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [IsAdminUser]
