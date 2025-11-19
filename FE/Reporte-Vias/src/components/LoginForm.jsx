@@ -3,10 +3,11 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import "../styles/Forms.css";
 import { loginUser } from '../services/fetch';
 import { useNavigate } from 'react-router-dom';
-// ==================== COMPONENTE SIN LÓGICA ====================
+
 const LoginForm = () => {
  const [username, setUsername] = useState("")
  const [password, setPassword] = useState("")
+ const [showPassword, setShowPassword] = useState(false)
  const navigate = useNavigate()
 
  async function validarInicio() {
@@ -19,19 +20,19 @@ const LoginForm = () => {
    navigate("/dashboard")
   }
   console.log(peticion);
-
  }
+
+ function handleNavigateToRegister() {
+    navigate('/register');
+  }
 
  return (
   <div className="fondo-login">
    <div className="contenedor-login">
     <div className="formulario-usuario">
-     {/* Header */}
      <h1 className="titulo-login">Iniciar sesión</h1>
 
-     {/* ==================== FORMULARIO SOLO ESTÉTICO ==================== */}
      <form>
-      {/* Campo de Usuario */}
       <div className="grupo-entrada">
        <label htmlFor="email" className="etiqueta-entrada">
         Usuario
@@ -51,7 +52,6 @@ const LoginForm = () => {
        </div>
       </div>
 
-      {/* Campo de Contraseña */}
       <div className="grupo-entrada">
        <label htmlFor="password" className="etiqueta-entrada">
         Contraseña
@@ -61,7 +61,7 @@ const LoginForm = () => {
         <input
          value={password}
          onChange={(e) => setPassword(e.target.value)}
-         type="password"
+         type={showPassword ? "text" : "password"}
          id="password"
          name="password"
          placeholder="Ingresa tu contraseña"
@@ -71,13 +71,13 @@ const LoginForm = () => {
         <button
          type="button"
          className="toggle-clave"
+         onClick={() => setShowPassword(!showPassword)}
         >
-         <Eye size={20} />
+         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
        </div>
       </div>
 
-      {/* Checkbox Recordarme */}
       <div className="grupo-checkbox">
        <div className="envoltorio-checkbox">
         <input
@@ -92,7 +92,6 @@ const LoginForm = () => {
        </div>
       </div>
 
-      {/* Botón */}
       <button
        type="button"
        className="boton-login"
@@ -102,15 +101,14 @@ const LoginForm = () => {
       </button>
      </form>
 
-     {/* Separador */}
      <div className="separador"></div>
 
-     {/* ==================== NAVEGACIÓN INFERIOR ==================== */}
      <div className="navegacion-inferior">
       <span className="texto-inferior">¿No tienes una cuenta?</span>
       <button
        type="button"
        className="enlace-registro btn-reset"
+       onClick={handleNavigateToRegister}
       >
        Regístrate
       </button>
