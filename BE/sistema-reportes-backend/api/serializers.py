@@ -56,3 +56,38 @@ class ComentarioSerializer(serializers.ModelSerializer):
         model = Comentario
         fields = '__all__'
         read_only_fields = ['usuario', 'fecha_creacion', 'es_aprobado']
+        
+# --- INICIO DEL SERIALIZADOR DE REGISTRO ---
+class UserRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password2 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    
+    class Meta:
+        model = Usuario
+        # Campos que React enviará para crear la cuenta
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name', 'rol']
+        extra_kwargs = {
+              'first_name': {'required': True}, # Corregido: eliminado el '+' extra
+              'last_name': {'required': True},
+              'email': {'required': True}
+        }
+    
+    def validate(self, data): # Corregido: Añadidos los dos puntos (:) al final de la línea
+        # 1. Valida que las dos contraseñas coincidan
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError({"password": "Las contraseñas no coinciden."}) # Corregido: añadido punto final por consistencia
+
+        # 2. Valida que el email sea único
+        if Usuario.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError({"email":"Este email ya está registrado."})
+    
+        return data
+      
+    def create(self, validated_data):
+        # Elimina password2 porque no se guarda en la DB
+        validated_data.pop('password2')
+        
+        # Usa create_user para hashear la contraseña correctamente
+        user = Usuario.objects.create_user(**validated_data)
+        
+        return user

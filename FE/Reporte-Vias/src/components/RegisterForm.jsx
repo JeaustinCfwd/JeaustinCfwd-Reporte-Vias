@@ -8,8 +8,12 @@ import "../styles/Forms.css";
 const RegisterForm = () => {
   const navigate = useNavigate();
   const { success, error: showError } = useToast();
+  
+  // *** CAMBIO 1: Renombrar campos para que coincidan con Django ***
   const [formData, setFormData] = useState({
-    nombre: '',
+    username: '', 
+    first_name: '', 
+    last_name: '',
     email: '',
     password: '',
     confirmarPassword: ''
@@ -34,31 +38,36 @@ const RegisterForm = () => {
       showError("Las contraseñas no coinciden");
       return;
     }
+    
+    // *** CAMBIO 2: Construir el objeto de datos que espera Django ***
     const userData = {
-      name: formData.nombre,
+      username: formData.username,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
       email: formData.email,
       password: formData.password,
-      photo: ''
+      rol: 'usuario',
     };
+    
     try {
-      const user = await registerUser(userData);
-      if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
-        success(`¡Cuenta creada exitosamente! Bienvenido ${user.name}`);
-        navigate('/dashboard');
+      const responseData = await registerUser(userData); 
+      
+      if (responseData) {
+        success(`¡Cuenta creada exitosamente! Bienvenido ${responseData.username}`);
+        navigate('/login');
       } else {
         showError('Error al registrar usuario');
       }
     } catch (error) {
       showError('Error al registrar: ' + error.message);
     }
-    // Limpiar formulario
-    setFormData({ nombre: '', email: '', password: '', confirmarPassword: '' });
-  };
 
+  };
+  
   const handleNavigateToLogin = () => {
     navigate('/login');
   };
+  
 
   return (
     <div className="fondo-registro">
@@ -67,16 +76,17 @@ const RegisterForm = () => {
           <h1 className="titulo-login">Crear cuenta</h1>
 
           <form onSubmit={handleSubmit}>
+            {/* Input Username */}
             <div className="grupo-entrada">
-              <label htmlFor="nombre" className="etiqueta-entrada">Nombre completo</label>
+              <label htmlFor="username" className="etiqueta-entrada">Nombre de Usuario</label>
               <div className="campo-entrada">
                 <User className="icono-entrada" size={20} />
                 <input
                   type="text"
-                  id="nombre"
-                  name="nombre"
-                  placeholder="Ingresa tu nombre"
-                  value={formData.nombre}
+                  id="username"
+                  name="username"
+                  placeholder="Ingresa tu nombre de usuario"
+                  value={formData.username}
                   onChange={handleInputChange}
                   className="elemento-entrada"
                   required
@@ -84,6 +94,43 @@ const RegisterForm = () => {
               </div>
             </div>
 
+            {/* Input First Name */}
+            <div className="grupo-entrada">
+              <label htmlFor="first_name" className="etiqueta-entrada">Nombre</label>
+              <div className="campo-entrada">
+                <User className="icono-entrada" size={20} />
+                <input
+                  type="text"
+                  id="first_name"
+                  name="first_name"
+                  placeholder="Ingresa tu nombre"
+                  value={formData.first_name}
+                  onChange={handleInputChange}
+                  className="elemento-entrada"
+                  required
+                />
+              </div>
+            </div>
+            
+            {/* Input Last Name */}
+            <div className="grupo-entrada">
+              <label htmlFor="last_name" className="etiqueta-entrada">Apellido</label>
+              <div className="campo-entrada">
+                <User className="icono-entrada" size={20} />
+                <input
+                  type="text"
+                  id="last_name"
+                  name="last_name"
+                  placeholder="Ingresa tu apellido"
+                  value={formData.last_name}
+                  onChange={handleInputChange}
+                  className="elemento-entrada"
+                  required
+                />
+              </div>
+            </div>
+            
+            
             <div className="grupo-entrada">
               <label htmlFor="email" className="etiqueta-entrada">Correo electrónico</label>
               <div className="campo-entrada">
