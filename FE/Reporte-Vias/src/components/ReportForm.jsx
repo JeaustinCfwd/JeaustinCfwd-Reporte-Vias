@@ -178,14 +178,13 @@ const ReportForm = () => {
 
     const report = {
       // id: String(Date.now()), // Django genera el id automáticamente
-      title: formData.category.charAt(0).toUpperCase() + formData.category.slice(1).replace(/_/g, ' '),
-      description: formData.description,
-      lat: formData.location.lat,
-      lng: formData.location.lng,
-      state: 'nuevo',
-      category: formData.category,
-      photos: photos,
-      timestamp: new Date().toISOString()
+      titulo: formData.category.charAt(0).toUpperCase() + formData.category.slice(1).replace(/_/g, ' '),
+      descripcion: formData.description,
+      latitud: formData.location.lat,
+      longitud: formData.location.lng,
+      estado: 'nuevo',
+      categoria: formData.category,
+
     };
 
     try {

@@ -33,17 +33,17 @@ const ListView = ({
                     className="report-title-link"
                     title="Ver detalles"
                   >
-                    {report.title}
+                    {report.titulo}
                   </button>
                 </td>
-                <td className="description-cell">{report.description}</td>
+                <td className="description-cell">{report.descripcion}</td>
                 <td>
-                  <span className={`status-badge ${report.state}`}>
-                    {report.state?.replace(/_/g, ' ')}
+                  <span className={`status-badge ${report.estado}`}>
+                    {report.estado}
                   </span>
                 </td>
-                <td>{report.category?.replace(/_/g, ' ')}</td>
-                <td>{report.timestamp ? new Date(report.timestamp).toLocaleDateString('es-ES') : '-'}</td>
+                <td>{report.categoria}</td>
+                <td>{report.fecha_creacion ? new Date(report.fecha_creacion).toLocaleDateString('es-ES') : '-'}</td>
                 <td>
                   <div className="action-buttons">
                     <button 

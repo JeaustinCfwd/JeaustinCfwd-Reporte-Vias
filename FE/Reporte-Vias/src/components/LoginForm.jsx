@@ -12,13 +12,16 @@ const LoginForm = () => {
 
  async function validarInicio() {
   const objUsuario = {
-   username: username,
-   password: password
-  }
+   username: username, password}
   const peticion = await loginUser(objUsuario.username, objUsuario.password)
+
+
   if (peticion.mensaje === "Inicio exitoso") {
-   navigate("/dashboard")
-  }
+     if(peticion.token) localStorage.setItem('token', peticion.token);
+     if (peticion.user) localStorage.setItem('user', JSON.stringify(peticion.user));
+    else localStorage.setItem('user', JSON.stringify({username}));
+   navigate("/dashboard");
+   }
   console.log(peticion);
  }
 

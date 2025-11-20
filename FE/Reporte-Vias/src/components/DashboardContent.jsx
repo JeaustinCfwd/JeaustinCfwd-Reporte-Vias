@@ -121,7 +121,7 @@ const DashboardContent = () => {
       if (searchTerm) {
         const search = searchTerm.toLowerCase();
         return (
-          report.title?.toLowerCase().includes(search) ||
+          report.titulo?.toLowerCase().includes(search) ||
           report.description?.toLowerCase().includes(search)
         );
       }
@@ -261,7 +261,7 @@ const DashboardContent = () => {
       const headers = ['ID', 'Título', 'Descripción', 'Estado', 'Categoría', 'Latitud', 'Longitud', 'Fecha'];
       const rows = filteredReports.map(r => [
         r.id,
-        r.title || '',
+        r.titulo || '',
         r.description || '',
         r.state || '',
         r.category || '',
