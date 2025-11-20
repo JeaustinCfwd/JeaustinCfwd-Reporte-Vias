@@ -17,7 +17,8 @@ from .views import (
     ImagenReporteCreateView,
     RolCreateView,
     LoginUsuarioView,
-    ListUsersCreateView
+    ListUsersCreateView,
+    UsuarioPorIdView
 )
 
 router = DefaultRouter()
@@ -50,4 +51,5 @@ urlpatterns = [
     path('crear-rol/', RolCreateView.as_view(), name='rol'),
     path('crear-lista/', ListUsersCreateView.as_view(), name='crear-lista'),
     path('login/', LoginUsuarioView.as_view(), name='login'),
+    path('usuario/<int:id_usuario>/', UsuarioPorIdView.as_view(), name='login'),
 ]

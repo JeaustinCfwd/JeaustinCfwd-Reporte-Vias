@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Lock, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileEdit from './ProfileEdit';
@@ -7,12 +7,21 @@ import ChangePassword from './ChangePassword';
 const ProfileLayout = () => {
   const [activeSection, setActiveSection] = useState('edit');
   const navigate = useNavigate();
+  const [usuario,setUsuario] = useState([])
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/login');
   };
-
+  useEffect(()=>{
+   async function traeUsuario() {
+    const id_usuario = localStorage.getItem('id_usuario');
+    const response = await fetch(`http://127.0.0.1:8000/api/usuario/${id_usuario}/`);
+    const data = await response.json();
+    setUsuario(data[0]);
+   }
+   traeUsuario()
+  },[])
   return (
     <div className="profile-container">
       {/* Sidebar de Navegación */}
@@ -47,6 +56,8 @@ const ProfileLayout = () => {
 
       {/* Contenido Principal */}
       <main className="profile-main">
+       <p>{usuario.username}</p>
+       <p>{usuario.email}</p>
         {activeSection === 'edit' && <ProfileEdit />}
         {activeSection === 'password' && <ChangePassword />}
       </main>

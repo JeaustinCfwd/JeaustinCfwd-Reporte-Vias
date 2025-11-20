@@ -1,4 +1,3 @@
-// services/fetch.js
 const API_URL = 'http://localhost:8000/api/';
 
 // 1. Función de Login
@@ -9,14 +8,13 @@ export async function loginUser(email, password) {
             'Content-Type': 'application/json' 
         },
         body: JSON.stringify({ 
-            username: email, // El backend espera 'username'
+            username: email,
             password: password 
         }),
-        credentials: 'include', // **AGREGADO: Manejo de cookies de sesión**
+        credentials: 'include', // ✅ Usar sesiones
     });
 
     if (!res.ok) {
-        // **AGREGADO: Manejo de errores**
         const errorData = await res.json();
         throw new Error(errorData.mensaje || 'Error de inicio de sesión');
     }
@@ -25,21 +23,18 @@ export async function loginUser(email, password) {
     return data;
 }
 
-// 2. Función de Registro de Usuario (Implementada)
+// 2. Función de Registro de Usuario
 export async function registerUser(userData) {
-    // userData debe tener los campos: username, first_name, last_name, email, password, rol
-    
     const res = await fetch(API_URL + 'crear-user/', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json' 
         },
         body: JSON.stringify(userData),
-        credentials: 'include', // **AGREGADO: Manejo de cookies de sesión**
+        credentials: 'include', // ✅ Usar sesiones
     });
     
     if (!res.ok) {
-        // **AGREGADO: Manejo de errores**
         const errorData = await res.json();
         console.error("Error en registerUser:", errorData);
         throw new Error(errorData.error || 'Error desconocido al registrar');
@@ -49,18 +44,144 @@ export async function registerUser(userData) {
     return data;
 }
 
+// 3. Funciones de reseñas (reviews)
+export async function getReviews() {
+    try {
+        const res = await fetch(API_URL + 'reviews/', {
+            method: 'GET',
+            credentials: 'include', // ✅ Usar sesiones
+        });
 
-// 3. Ejemplo de función protegida (Usando fetch y la cookie de sesión/futuro JWT)
+        if (!res.ok) {
+            throw new Error(`Error obteniendo reseñas: ${res.status}`);
+        }
+
+        const reviews = await res.json();
+        return reviews;
+
+    } catch (error) {
+        console.error('Error obteniendo reseñas:', error);
+        throw error;
+    }
+}
+
+export async function postReview(reviewData) {
+    try {
+        const res = await fetch(API_URL + 'reviews/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(reviewData),
+            credentials: 'include', // ✅ Usar sesiones
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.mensaje || 'Error al enviar reseña');
+        }
+
+        const review = await res.json();
+        return review;
+
+    } catch (error) {
+        console.error('Error enviando reseña:', error);
+        throw error;
+    }
+}
+
+export async function deleteReview(reviewId) {
+    try {
+        const res = await fetch(`${API_URL}reviews/${reviewId}/`, {
+            method: 'DELETE',
+            credentials: 'include', // ✅ Usar sesiones
+        });
+
+        if (!res.ok) {
+            throw new Error(`Error eliminando reseña: ${res.status}`);
+        }
+
+        return res.json();
+
+    } catch (error) {
+        console.error('Error eliminando reseña:', error);
+        throw error;
+    }
+}
+
+// 4. Funciones de usuarios
+export async function updateUser(userId, userData) {
+    try {
+        const res = await fetch(`${API_URL}usuarios/${userId}/`, {
+            method: 'PUT', // o PATCH si tu backend lo soporta
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+            credentials: 'include', // ✅ Usar sesiones
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.mensaje || 'Error al actualizar usuario');
+        }
+
+        const updatedUser = await res.json();
+        return updatedUser;
+
+    } catch (error) {
+        console.error('Error actualizando usuario:', error);
+        throw error;
+    }
+}
+
+export async function deleteUser(userId) {
+    try {
+        const res = await fetch(`${API_URL}usuarios/${userId}/`, {
+            method: 'DELETE',
+            credentials: 'include', // ✅ Usar sesiones
+        });
+
+        if (!res.ok) {
+            throw new Error(`Error eliminando usuario: ${res.status}`);
+        }
+
+        return res.json();
+
+    } catch (error) {
+        console.error('Error eliminando usuario:', error);
+        throw error;
+    }
+}
+
+export async function getUserPhoto(userId) {
+    // Esta función obtiene la foto de usuario desde el backend
+    // Si estás guardando la foto en localStorage, puedes retornarla desde allí
+    // Si la obtienes del backend, haz una solicitud GET
+    try {
+        const res = await fetch(`${API_URL}usuarios/${userId}/foto/`, {
+            credentials: 'include', // ✅ Usar sesiones
+        });
+
+        if (!res.ok) {
+            throw new Error(`Error obteniendo foto: ${res.status}`);
+        }
+
+        const data = await res.json();
+        return data.foto || null;
+
+    } catch (error) {
+        console.error('Error obteniendo foto de usuario:', error);
+        return null;
+    }
+}
+
+// 5. Otras funciones
 export async function obtenerDatosEstadisticos() {
-    // NOTA: Si usas sesiones/cookies, NO necesitas el token en el header.
-    // El browser envía la cookie automáticamente si tienes credentials: 'include'.
-    // Si más adelante usas JWT (como pide la rúbrica), descomentarás el header de Auth.
-    
     try {
         const res = await fetch(API_URL + 'crear-reporte/', {
             method: 'GET',
-            credentials: 'include', // Envía la cookie de sesión automáticamente
-            // headers: { 'Authorization': `Bearer ${token}` } // Usar para JWT después
+            credentials: 'include', // ✅ Usar sesiones
         });
 
         if (!res.ok) {
@@ -75,14 +196,6 @@ export async function obtenerDatosEstadisticos() {
 
     } catch (error) {
         console.error('Error obteniendo datos estadísticos:', error);
-        throw error; // Relanza el error para que el componente lo maneje
+        throw error;
     }
 }
-
-
-export async function updateUser() { /* ... */ }
-export async function deleteUser() { /* ... */ }
-export async function getUserPhoto() { /* ... */ }
-export async function getReviews() { /* ... */ }
-export async function postReview() { /* ... */ }
-export async function deleteReview() { /* ... */ }

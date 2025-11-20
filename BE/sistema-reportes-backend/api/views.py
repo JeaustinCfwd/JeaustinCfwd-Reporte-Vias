@@ -74,7 +74,7 @@ class LoginUsuarioView(APIView):
   usuario = authenticate(username=nombre_usuario,password=clave_usuario)
   
   if usuario is not None:
-   return Response({"mensaje":"Inicio exitoso"})
+   return Response({"mensaje":"Inicio exitoso","id": usuario.id})
   else:
    return Response({"mensaje":"Inicio fallido, error 404"})
    
@@ -117,6 +117,14 @@ class ListUsersCreateView(ListCreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [IsAdminUser]
+
+class UsuarioPorIdView(ListCreateAPIView):
+ serializer_class = UsuarioSerializer
+ 
+ def get_queryset(self):
+  id_usuario = self.kwargs["id_usuario"]
+  return Usuario.objects.filter(id=id_usuario)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

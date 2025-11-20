@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Menu, X, MapPin, User, LogOut } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import ShinyText from './ShinyText';
+import { AuthContext } from '../App';
 
 // ==================== CONSTANTES ====================
 const enlaces = [
@@ -15,44 +16,38 @@ const enlaces = [
 // ==================== COMPONENTE PRINCIPAL ====================
 const Header = () => {
   // ========== HOOKS ==========
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // ========== ESTADO ==========
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('user'));
-    } catch (e) {
-      console.error("Error parsing user from localStorage", e);
-      return null;
-    }
-  });
 
   // ========== EFECTOS ==========
   useEffect(() => {
     const handleUserChange = () => {
       try {
-        setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+        // Opcional: Actualizar estado local si cambia localStorage
+        // Esto solo es necesario si AuthContext no se actualiza automáticamente
+        // Si AuthContext ya maneja la persistencia, este useEffect puede no ser necesario
       } catch (e) {
         console.error("Error parsing user from localStorage", e);
-        setUser(null);
       }
     };
 
-    window.addEventListener('userChange', handleUserChange);
     window.addEventListener('storage', handleUserChange);
 
     return () => {
-      window.removeEventListener('userChange', handleUserChange);
       window.removeEventListener('storage', handleUserChange);
     };
   }, []);
 
   // ========== FUNCIONES DE MANEJO ==========
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('user');
-    window.location.reload(); 
-  }, []);
+    logout();
+    // Disparar un evento personalizado para notificar a otros componentes
+    window.dispatchEvent(new Event('userChange'));
+    setMenuMovilAbierto(false);
+  }, [logout]);
 
   const handleProtectedClick = useCallback(() => {
     navigate('/login', { 
@@ -63,7 +58,7 @@ const Header = () => {
     });
     setMenuMovilAbierto(false);
   }, [navigate]);
-  
+
   const toggleMenuMovil = useCallback(() => {
     setMenuMovilAbierto(prev => !prev);
   }, []);
