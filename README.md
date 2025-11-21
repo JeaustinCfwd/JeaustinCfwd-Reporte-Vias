@@ -2,6 +2,16 @@
 
 Sistema web interactivo para la gestión y visualización de reportes sobre el estado de las vías públicas. Permite a los usuarios reportar problemas en las carreteras, visualizarlos en un mapa interactivo y gestionar su seguimiento mediante un dashboard administrativo.
 
+## 📊 Diagrama de Base de Datos
+
+Puedes ver el diagrama completo de la base de datos en:
+[Ver Diagrama en dbdiagram.io](https://dbdiagram.io/d/FullStack-ReporteVias-690cc7fb6735e11170983774)
+
+## 📋 Tablero de Progreso
+
+Sigue el progreso del proyecto en nuestro tablero de Trello:
+[Ver Tablero en Trello](https://trello.com/b/DGfEoNJR/fullstack-reportevias-cr)
+
 ## 📁 Estructura del Proyecto
 
 ```
@@ -13,7 +23,7 @@ Reporte-Vias/
 │   ├── contexts/            # Contextos para manejo de estado global
 │   ├── pages/               # Páginas principales de la aplicación
 │   ├── routes/              # Configuración de rutas y rutas privadas
-│   ├── services/            # Servicios y datos mock (db.json)
+│   ├── services/            # Servicios y API clients
 │   ├── styles/              # Archivos CSS y estilos
 │   ├── App.jsx              # Componente raíz
 │   └── main.jsx             # Punto de entrada
@@ -58,23 +68,30 @@ Reporte-Vias/
 - **React Router DOM 6.28** - Navegación y rutas
 - **TailwindCSS 4.1** - Framework de estilos utility-first
 
+### Backend
+- **Django 5.2** - Framework de desarrollo web en Python
+- **Django REST Framework** - Para construir la API REST
+- **Django REST Simple JWT** - Autenticación con JWT
+- **MySQL** - Base de datos relacional
+- **Django CORS Headers** - Manejo de CORS para el frontend
+
 ### Visualización de Datos
 - **Chart.js 4.5** - Gráficos y estadísticas
 - **React-ChartJS-2 5.3** - Integración de Chart.js con React
 - **Leaflet 1.9** - Mapas interactivos
 - **React-Leaflet 4.2** - Componentes de Leaflet para React
 
-### Animaciones y Efectos
-- **GSAP 3.13** - Animaciones avanzadas
-- **OGL 1.0** - Gráficos WebGL para efectos visuales
-
-### Backend
-- **JSON Server 1.0** - API REST mock para desarrollo
+### Seguridad
+- **JWT (JSON Web Tokens)** - Autenticación segura
+- **Validación de contraseñas** - Múltiples validadores integrados
+- **CSRF Protection** - Protección contra ataques CSRF
+- **CORS** - Configuración segura para peticiones cruzadas
 
 ### Herramientas de Desarrollo
 - **ESLint 9.35** - Linter de código
 - **PostCSS 8.5** - Procesador de CSS
 - **Autoprefixer 10.4** - Prefijos CSS automáticos
+- **Python 3.x** - Lenguaje de programación del backend
 
 ## 📋 Requisitos Previos
 
@@ -94,27 +111,62 @@ cd Reporte-Vias
 npm install
 ```
 
-3. **Configurar la base de datos**
-El archivo `src/services/db.json` contiene la estructura de datos inicial con:
-- `reportes`: Reportes de vías
-- `users`: Usuarios registrados
-- `reviews`: Calificaciones y comentarios
+3. **Configuración del entorno**
+
+   **Frontend**: Crea un archivo `.env` en la raíz del proyecto frontend con:
+   ```env
+   VITE_API_URL=http://localhost:8000/api  # URL de la API de Django
+   ```
+
+   **Backend**: Crea un archivo `.env` en la carpeta `sistema-reportes-backend` con:
+   ```env
+   # Configuración de la base de datos
+   DB_NAME=tu_base_de_datos
+   DB_USER=tu_usuario
+   DB_PASSWORD=tu_contraseña
+   DB_HOST=localhost
+   DB_PORT=3306
+
+   # Configuración de Django
+   SECRET_KEY=tu_clave_secreta_aqui
+   DEBUG=True
+   ALLOWED_HOSTS=localhost,127.0.0.1
+   ```
+
+4. **Configuración de la base de datos**
+   - Asegúrate de tener MySQL instalado y en ejecución
+   - Crea una base de datos con el nombre especificado en las variables de entorno
+   - Ejecuta las migraciones:
+     ```bash
+     cd sistema-reportes-backend
+     python manage.py migrate
+     ```
+   - Crea un superusuario para acceder al panel de administración:
+     ```bash
+     python manage.py createsuperuser
+     ```
 
 ## 🎮 Uso
 
 ### Modo Desarrollo
 
-1. **Iniciar el servidor de desarrollo**
+#### Frontend
+1. **Iniciar el servidor de desarrollo del frontend**
 ```bash
+# En la raíz del proyecto frontend
 npm run dev
 ```
 La aplicación estará disponible en `http://localhost:5173`
 
-2. **Iniciar el servidor JSON (en otra terminal)**
+#### Backend
+1. **Iniciar el servidor de desarrollo de Django**
 ```bash
-npm run server
+# En la carpeta sistema-reportes-backend
+python manage.py runserver
 ```
-La API estará disponible en `http://localhost:3001`
+La API estará disponible en `http://localhost:8000/api`
+El panel de administración estará en `http://localhost:8000/admin`
+
 
 ### Comandos Disponibles
 
@@ -122,8 +174,6 @@ La API estará disponible en `http://localhost:3001`
 # Desarrollo
 npm run dev          # Inicia el servidor de desarrollo con Vite
 
-# Backend Mock
-npm run server       # Inicia JSON Server en puerto 3001
 
 # Producción
 npm run build        # Construye la aplicación para producción
@@ -184,20 +234,34 @@ El sistema incluye:
 3. **Mapa Interactivo**: Visualización geográfica
 4. **Estadísticas Detalladas**: Métricas avanzadas
 
-## 🌐 API Endpoints (JSON Server)
+## 🌐 Documentación de la API
 
+La documentación completa de la API está disponible en el repositorio del backend. Incluye todos los endpoints disponibles, parámetros requeridos, formatos de solicitud y respuesta, y códigos de estado HTTP.
+
+### Autenticación
+La API utiliza JWT (JSON Web Tokens) para la autenticación. Incluye el token en el encabezado `Authorization: Bearer <token>` para las rutas protegidas.
+
+### Estándares de Respuesta
+Todas las respuestas siguen un formato estándar:
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "Mensaje descriptivo"
+}
 ```
-GET    /reportes          # Obtener todos los reportes
-POST   /reportes          # Crear nuevo reporte
-GET    /reportes/:id      # Obtener reporte específico
-PATCH  /reportes/:id      # Actualizar reporte
-DELETE /reportes/:id      # Eliminar reporte
 
-GET    /users             # Obtener usuarios
-POST   /users             # Crear usuario
-GET    /users/:id         # Obtener usuario específico
-PATCH  /users/:id         # Actualizar usuario
-
+### Manejo de Errores
+Los errores siguen un formato consistente:
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Mensaje de error descriptivo"
+  }
+}
+```
 GET    /reviews           # Obtener calificaciones
 POST   /reviews           # Crear calificación
 ```
