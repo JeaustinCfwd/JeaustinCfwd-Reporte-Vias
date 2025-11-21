@@ -4,7 +4,7 @@ import { User, Mail, Lock, Camera, Trash2, LogOut, Settings, Shield, Eye, EyeOff
 import { updateUser, deleteUser, getUserPhoto } from '../services/fetch.js';
 import "../styles/Profile.css";
 
-const ProfileEdit = () => {
+const ProfileEdit = ({ usuarioActual }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -28,7 +28,6 @@ const ProfileEdit = () => {
         password: '',
         confirmPassword: ''
       });
-      // Obtener la foto desde localStorage separado
       const userPhoto = getUserPhoto(storedUser.id);
       setPhotoPreview(userPhoto || '');
     } else {
@@ -98,15 +97,6 @@ const ProfileEdit = () => {
     setLoading(false);
   };
 
-  const handleBackToHome = () => {
-    navigate('/');
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
-
   if (!user) return <div className="profile-loading">Cargando...</div>;
 
   return (
@@ -114,96 +104,114 @@ const ProfileEdit = () => {
       <h1 className="profile-title">Editar Perfil</h1>
       <p className="profile-subtitle">Actualiza tu información personal</p>
 
-        <form onSubmit={handleSubmit} className="profile-form">
-          {/* Foto de Perfil */}
-          <div className="form-row">
-            <label className="form-label">Foto de Perfil</label>
-            <div className="form-field">
-              <div className="profile-photo-container">
-                <div className="profile-photo-wrapper">
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Profile" className="profile-photo" />
-                  ) : (
-                    <div className="profile-photo-placeholder">
-                      <User size={40} />
-                    </div>
-                  )}
-                </div>
-                <div className="photo-actions">
-                  <label htmlFor="photo" className="photo-upload-btn">
-                    <Camera size={18} />
-                    {photoPreview ? 'Cambiar foto' : 'Subir foto'}
-                  </label>
-                  {photoPreview && (
-                    <button
-                      type="button"
-                      onClick={() => setPhotoPreview('')}
-                      className="photo-remove-btn"
-                    >
-                      Eliminar foto
-                    </button>
-                  )}
-                  <input
-                    type="file"
-                    id="photo"
-                    name="photo"
-                    accept="image/*"
-                    onChange={handlePhotoChange}
-                    className="photo-input-hidden"
-                  />
-                </div>
+      <form onSubmit={handleSubmit} className="profile-form">
+        {/* Foto de Perfil */}
+        <div className="form-row">
+          <label className="form-label">Foto de Perfil</label>
+          <div className="form-field">
+            <div className="profile-photo-container">
+              <div className="profile-photo-wrapper">
+                {photoPreview ? (
+                  <img src={photoPreview} alt="Profile" className="profile-photo" />
+                ) : (
+                  <div className="profile-photo-placeholder">
+                    <User size={40} />
+                  </div>
+                )}
+              </div>
+              <div className="photo-actions">
+                <label htmlFor="photo" className="photo-upload-btn">
+                  <Camera size={18} />
+                  {photoPreview ? 'Cambiar foto' : 'Subir foto'}
+                </label>
+                {photoPreview && (
+                  <button
+                    type="button"
+                    onClick={() => setPhotoPreview('')}
+                    className="photo-remove-btn"
+                  >
+                    Eliminar foto
+                  </button>
+                )}
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="photo-input-hidden"
+                />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Nombre */}
-          <div className="form-row">
-            <label htmlFor="name" className="form-label">Nombre</label>
-            <div className="form-field">
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="form-input"
-                required
-              />
+        {/* Nombre - Lado a lado */}
+        <div className="form-row form-row-side-by-side">
+          {/* Datos Actuales (izquierda) */}
+          <div className="form-field form-field-display">
+            <label className="form-label">Nombre Actual</label>
+            <div className="display-value">
+              {usuarioActual?.username || 'No disponible'}
             </div>
           </div>
 
-          {/* Email */}
-          <div className="form-row">
-            <label htmlFor="email" className="form-label">Email</label>
-            <div className="form-field">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="form-input"
-                required
-              />
+          {/* Input de Edición (derecha) */}
+          <div className="form-field">
+            <label htmlFor="name" className="form-label">Nuevo Nombre</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Email - Lado a lado */}
+        <div className="form-row form-row-side-by-side">
+          {/* Datos Actuales (izquierda) */}
+          <div className="form-field form-field-display">
+            <label className="form-label">Email Actual</label>
+            <div className="display-value">
+              {usuarioActual?.email || 'No disponible'}
             </div>
           </div>
 
-          {/* Botones de Acción */}
-          <div className="form-actions">
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
-            </button>
-            <button 
-              type="button" 
-              onClick={handleDeleteAccount}
-              className="btn-danger"
-              disabled={loading}
-            >
-              <Trash2 size={18} />
-              Eliminar Cuenta
-            </button>
+          {/* Input de Edición (derecha) */}
+          <div className="form-field">
+            <label htmlFor="email" className="form-label">Nuevo Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
           </div>
-        </form>
+        </div>
+
+        {/* Botones de Acción */}
+        <div className="form-actions">
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Guardando...' : 'Guardar Cambios'}
+          </button>
+          <button 
+            type="button" 
+            onClick={handleDeleteAccount}
+            className="btn-danger"
+            disabled={loading}
+          >
+            <Trash2 size={18} />
+            Eliminar Cuenta
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

@@ -112,8 +112,8 @@ export async function deleteReview(reviewId) {
 // 4. Funciones de usuarios
 export async function updateUser(userId, userData) {
     try {
-        const res = await fetch(`${API_URL}usuarios/${userId}/`, {
-            method: 'PUT', // o PATCH si tu backend lo soporta
+        const res = await fetch(`${API_URL}usuario/${userId}/`, { 
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -122,7 +122,14 @@ export async function updateUser(userId, userData) {
         });
 
         if (!res.ok) {
-            const errorData = await res.json();
+            // Si la respuesta no es JSON, esto lanzará el error que ves
+            let errorData;
+            try {
+                errorData = await res.json();
+            } catch {
+                const errorText = await res.text();
+                throw new Error(errorText || 'Error al actualizar usuario');
+            }
             throw new Error(errorData.mensaje || 'Error al actualizar usuario');
         }
 
