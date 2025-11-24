@@ -224,3 +224,24 @@ export async function postData(obj,endpoint) {
    
  }
 }
+
+
+export async function getComentarios() {
+    try {
+        const res = await fetch(API_URL + 'crear-comentario/', {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if (!res.ok) {
+            throw new Error(`Error obteniendo comentarios: ${res.status}`);
+        }
+
+        const comentarios = await res.json();
+        return comentarios;
+
+    } catch (error) {
+        console.error('Error obteniendo comentarios:', error);
+        throw error;
+    }
+}

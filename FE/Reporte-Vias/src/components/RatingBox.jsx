@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarSelector from './StarSelector';
 import RatingSummary from './RatingSummary';
-import { getReviews, postReview, deleteReview, postData } from '../services/fetch.js';
+import { deleteReview, postData } from '../services/fetch.js';
 import '../styles/RatingBox.css';
 
 const RatingBox = () => {
@@ -20,8 +20,27 @@ const RatingBox = () => {
 
     const fetchReviews = async () => {
       try {
-        // Si Django devuelve los reviews en una propiedad, por ejemplo { results: [...] }
-        // setReviews(fetchedReviews.results || []);
+        // Obtener comentarios desde el backend
+        const response = await fetch('http://127.0.0.1:8000/api/crear-comentario/', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const comentarios = await response.json();
+          
+          // Transformar los datos del backend al formato que usa el componente
+          const reviewsFormateados = comentarios.map(comentario => ({
+            id: comentario.id,
+            rating: comentario.calificacion,
+            comment: comentario.contenido,
+            userName: comentario.usuario_nombre,
+            userId: comentario.usuario,
+            timestamp: comentario.fecha_creacion
+          }));
+          
+          setReviews(reviewsFormateados);
+        }
       } catch (error) {
         console.error('Error fetching reviews:', error);
       } finally {
@@ -44,8 +63,26 @@ const RatingBox = () => {
         contenido: comment.trim()
       };
       try {
-       const peticion = await postData(newReview,"crear-comentario")
-       console.log(peticion);
+        const peticion = await postData(newReview, "crear-comentario");
+        console.log(peticion);
+        
+        //  Agregar el nuevo comentario a la lista inmediatamente
+        const nuevoComentarioFormateado = {
+          id: peticion.id,
+          rating: peticion.calificacion,
+          comment: peticion.contenido,
+          userName: peticion.usuario_nombre,
+          userId: peticion.usuario,
+          timestamp: peticion.fecha_creacion
+        };
+        
+        setReviews([nuevoComentarioFormateado, ...reviews]);
+        
+        // Limpiar el formulario
+        setUserRating(0);
+        setComment('');
+        setShowForm(false);
+        
         alert('Reseña enviada exitosamente');
       } catch (error) {
         alert('Error al enviar reseña: ' + error.message);
