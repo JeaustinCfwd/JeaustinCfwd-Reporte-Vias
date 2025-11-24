@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarSelector from './StarSelector';
 import RatingSummary from './RatingSummary';
-import { getReviews, postReview, deleteReview } from '../services/fetch.js';
+import { getReviews, postReview, deleteReview, postData } from '../services/fetch.js';
 import '../styles/RatingBox.css';
 
 const RatingBox = () => {
@@ -20,13 +20,10 @@ const RatingBox = () => {
 
     const fetchReviews = async () => {
       try {
-        const fetchedReviews = await getReviews();
         // Si Django devuelve los reviews en una propiedad, por ejemplo { results: [...] }
         // setReviews(fetchedReviews.results || []);
-        setReviews(Array.isArray(fetchedReviews) ? fetchedReviews : []);
       } catch (error) {
         console.error('Error fetching reviews:', error);
-        setReviews([]); // Evita undefined
       } finally {
         setLoading(false);
       }
@@ -42,18 +39,13 @@ const RatingBox = () => {
   const submitRating = async () => {
     if (userRating > 0 && comment.trim() !== '' && user) {
       const newReview = {
-        userId: user.id,
-        userName: user.name,
-        rating: userRating,
-        comment: comment.trim(),
-        timestamp: new Date().toISOString()
+        usuario: localStorage.getItem("id_usuario"),
+        calificacion: userRating,
+        contenido: comment.trim()
       };
       try {
-        const review = await postReview(newReview);
-        setReviews([...reviews, review]);
-        setUserRating(0);
-        setComment('');
-        setShowForm(false);
+       const peticion = await postData(newReview,"crear-comentario")
+       console.log(peticion);
         alert('Reseña enviada exitosamente');
       } catch (error) {
         alert('Error al enviar reseña: ' + error.message);

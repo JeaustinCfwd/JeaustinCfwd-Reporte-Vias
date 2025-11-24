@@ -83,16 +83,11 @@ class Comentario(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='comentarios')
     contenido = models.TextField()
     calificacion = models.IntegerField()  # 1-5
-    es_aprobado = models.BooleanField(default=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_aprobacion = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'comentario'
         ordering = ['-fecha_creacion']
-        indexes = [
-            models.Index(fields=['es_aprobado', 'fecha_creacion']),
-        ]
 
     def __str__(self):
         return f"Comentario de {self.usuario.username}"

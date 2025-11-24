@@ -95,10 +95,8 @@ class EstadoCreateView(ListCreateAPIView):
 class ComentarioCreateView(ListCreateAPIView):
     queryset = Comentario.objects.all().order_by('-fecha_creacion')
     serializer_class = ComentarioSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
-    def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
 
 
 class ImagenReporteCreateView(ListCreateAPIView):

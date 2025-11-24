@@ -182,7 +182,8 @@ const ReportForm = () => {
       descripcion: formData.description,
       latitud: formData.location.lat,
       longitud: formData.location.lng,
-      estado: 'nuevo',
+      estado: 1,
+      usuario: localStorage.getItem("id_usuario"),
       categoria: formData.category,
 
     };
@@ -192,8 +193,8 @@ const ReportForm = () => {
       const res = await fetch('http://localhost:8000/api/crear-reporte/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          'Content-Type': 'application/json'
+          // ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(report),
       });

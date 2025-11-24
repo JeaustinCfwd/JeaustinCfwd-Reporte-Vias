@@ -55,7 +55,6 @@ class ComentarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comentario
         fields = '__all__'
-        read_only_fields = ['usuario', 'fecha_creacion', 'es_aprobado']
         
 # --- INICIO DEL SERIALIZADOR DE REGISTRO ---
 class UserRegisterSerializer(serializers.ModelSerializer):

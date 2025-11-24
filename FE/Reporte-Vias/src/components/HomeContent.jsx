@@ -70,7 +70,7 @@ function HomeContent() {
   const [totalReportes, setTotalReportes] = useState(0);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
+  useEffect(() => {
     const fetchEstadisticas = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -80,7 +80,6 @@ function HomeContent() {
         });
         if (res.ok) {
           const data = await res.json();
-          // Django REST Framework devuelve los datos en 'results' si usa paginación
           const reportes = data.results || data;
           const atendidos = reportes.filter(r => r.state === 'atendido').length;
           setReportesResueltos(atendidos);
@@ -100,6 +99,7 @@ function HomeContent() {
 
   return (
     <div className="contenedor-inicio">
+      {/* HERO SECTION */}
       <div className="seccion-hero">
         <Prism
           animationType="rotate"
@@ -118,11 +118,12 @@ function HomeContent() {
         </p>
         
         <div className="grupo-botones">
-  <Link to="/reportCreate" className="boton-inicio">Reportar un problema</Link>
-  <Link to="/dashboard" className="boton-inicio boton-secundario">Mapa Interactivo</Link>
-</div>
+          <Link to="/reportCreate" className="boton-inicio">Reportar un problema</Link>
+          <Link to="/dashboard" className="boton-inicio boton-secundario">Mapa Interactivo</Link>
+        </div>
       </div>
 
+      {/* ¿CÓMO FUNCIONA? - CARRUSEL 3D PASOS */}
       <div className="seccion-carousel">
         <ThreeDCarousel 
           items={carouselItems}
@@ -135,6 +136,7 @@ function HomeContent() {
         />
       </div>
 
+      {/* ESTADÍSTICAS */}
       <div className="seccion-info">
         <div className="contenedor-estadisticas">
           <div className="estadistica">
@@ -154,6 +156,7 @@ function HomeContent() {
         </div>
       </div>
 
+      {/* CATEGORY CAROUSEL - CARRUSEL CATEGORÍAS SIMPLE */}
       <CategoryCarousel
         items={categoryCarouselItems}
         autoRotate={true}
@@ -161,6 +164,7 @@ function HomeContent() {
         cardHeight={300}
       />
 
+      {/* DASHBOARD ADMINISTRATIVO */}
       <div className="seccion-plataforma">
         <div className="contenedor-plataforma">
           <div className="encabezado-plataforma">
@@ -222,6 +226,7 @@ function HomeContent() {
         </div>
       </div>
 
+      {/* RATING BOX - CALIFICACIONES */}
       <div className="seccion-ratingbox">
         <RatingBox />
       </div>
