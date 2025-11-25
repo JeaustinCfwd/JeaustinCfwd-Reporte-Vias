@@ -66,7 +66,7 @@ const RatingBox = () => {
         const peticion = await postData(newReview, "crear-comentario");
         console.log(peticion);
         
-        //  Agregar el nuevo comentario a la lista inmediatamente
+        // Agregar el nuevo comentario a la lista inmediatamente
         const nuevoComentarioFormateado = {
           id: peticion.id,
           rating: peticion.calificacion,
@@ -91,10 +91,21 @@ const RatingBox = () => {
   };
 
   const deleteComment = async (id) => {
-    if (!user) return;
+    // Verificar usuario logueado
+    const usuarioId = localStorage.getItem('id_usuario');
+    if (!usuarioId) {
+      alert('Debes iniciar sesión para eliminar comentarios');
+      return;
+    }
     
+    // Verificar que el comentario pertenece al usuario actual
     const review = reviews.find(r => r.id === id);
-    if (!review || review.userId !== user.id) {
+    if (!review) {
+      alert('Comentario no encontrado');
+      return;
+    }
+    
+    if (review.userId !== parseInt(usuarioId)) {
       alert('No tienes permiso para eliminar esta reseña');
       return;
     }
@@ -110,11 +121,10 @@ const RatingBox = () => {
       alert('Reseña eliminada exitosamente');
     } catch (error) {
       console.error('Error eliminando reseña:', error);
-      alert('Error al eliminar la reseña. Inténtalo de nuevo.');
+      alert(error.message || 'Error al eliminar la reseña. Inténtalo de nuevo.');
     }
   };
 
-  // Asegura que reviews siempre sea un arreglo
   const safeReviews = Array.isArray(reviews) ? reviews : [];
 
   const ratings = safeReviews.reduce((acc, r) => {
@@ -123,7 +133,9 @@ const RatingBox = () => {
   }, {});
 
   const total = safeReviews.length;
-  const average = total > 0 ? safeReviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
+  const average = total > 0
+    ? safeReviews.reduce((sum, r) => sum + r.rating, 0) / total
+    : 0;
 
   if (loading) return <div>Cargando reseñas...</div>;
 
@@ -131,13 +143,17 @@ const RatingBox = () => {
     <div className="container">
       <h2 className="heading">Califica Nuestro Sitio Web</h2>
       <p>{average.toFixed(1)} promedio basado en {total} reseñas.</p>
+
       {user ? (
-        <button className="rate-button" onClick={() => setShowForm(true)}>Calificar Ahora</button>
+        <button className="rate-button" onClick={() => setShowForm(true)}>
+          Calificar Ahora
+        </button>
       ) : (
         <button className="rate-button" onClick={() => navigate('/login')}>
           Inicia sesión para calificar
         </button>
       )}
+
       {showForm && user && (
         <div className="rating-form">
           <h3>Califica ReportaVías CR</h3>
@@ -147,7 +163,6 @@ const RatingBox = () => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows="3"
-            required
           />
           <div className="form-buttons">
             <button onClick={submitRating} disabled={userRating === 0 || comment.trim() === ''}>
@@ -157,22 +172,29 @@ const RatingBox = () => {
           </div>
         </div>
       )}
+
       <hr className="separator" />
+
       <RatingSummary ratings={ratings} total={total} />
+
       <div className="comments-section">
         <h3>Comentarios</h3>
         {safeReviews.length === 0 && <p>No hay comentarios aún.</p>}
+
         {safeReviews.map((review) => (
           <div key={review.id?.toString()} className="comment">
             <div className="comment-header">
               <span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
               <strong>{review.userName}</strong>
-              {user && review.userId === user.id && (
+
+              {localStorage.getItem('id_usuario') &&
+               review.userId === parseInt(localStorage.getItem('id_usuario')) && (
                 <button className="delete-button" onClick={() => deleteComment(review.id)}>
                   Eliminar
                 </button>
               )}
             </div>
+
             <p>{review.comment}</p>
             <small>{new Date(review.timestamp).toLocaleDateString()}</small>
           </div>

@@ -11,7 +11,7 @@ export async function loginUser(email, password) {
             username: email,
             password: password 
         }),
-        credentials: 'include', // ✅ Usar sesiones
+        credentials: 'include',
     });
 
     if (!res.ok) {
@@ -31,7 +31,7 @@ export async function registerUser(userData) {
             'Content-Type': 'application/json' 
         },
         body: JSON.stringify(userData),
-        credentials: 'include', // ✅ Usar sesiones
+        credentials: 'include',
     });
     
     if (!res.ok) {
@@ -49,7 +49,7 @@ export async function getReviews() {
     try {
         const res = await fetch(API_URL + 'reviews/', {
             method: 'GET',
-            credentials: 'include', // ✅ Usar sesiones
+            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -73,7 +73,7 @@ export async function postReview(reviewData) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(reviewData),
-            credentials: 'include', // ✅ Usar sesiones
+            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -90,21 +90,39 @@ export async function postReview(reviewData) {
     }
 }
 
-export async function deleteReview(reviewId) {
+// ❌ ESTA ERA LA FUNCIÓN ANTERIOR — YA NO EXISTE
+// export async function deleteReview(reviewId) { ... }
+
+// ✅ ESTA ES LA NUEVA FUNCIÓN (como pediste EXACTAMENTE)
+export async function deleteReview(comentarioId) {
     try {
-        const res = await fetch(`${API_URL}reviews/${reviewId}/`, {
+        const usuarioId = localStorage.getItem('id_usuario');
+        
+        if (!usuarioId) {
+            throw new Error('Debes estar autenticado para eliminar comentarios');
+        }
+
+        const res = await fetch(`http://127.0.0.1:8000/api/eliminar-comentario/${comentarioId}/`, {
             method: 'DELETE',
-            credentials: 'include', // ✅ Usar sesiones
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                usuario_id: usuarioId
+            }),
+            credentials: 'include',
         });
 
         if (!res.ok) {
-            throw new Error(`Error eliminando reseña: ${res.status}`);
+            const errorData = await res.json();
+            throw new Error(errorData.error || `Error eliminando comentario: ${res.status}`);
         }
 
-        return res.json();
+        const data = await res.json();
+        return data;
 
     } catch (error) {
-        console.error('Error eliminando reseña:', error);
+        console.error('Error eliminando comentario:', error);
         throw error;
     }
 }
@@ -118,11 +136,10 @@ export async function updateUser(userId, userData) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(userData),
-            credentials: 'include', // ✅ Usar sesiones
+            credentials: 'include',
         });
 
         if (!res.ok) {
-            // Si la respuesta no es JSON, esto lanzará el error que ves
             let errorData;
             try {
                 errorData = await res.json();
@@ -146,7 +163,7 @@ export async function deleteUser(userId) {
     try {
         const res = await fetch(`${API_URL}usuarios/${userId}/`, {
             method: 'DELETE',
-            credentials: 'include', // ✅ Usar sesiones
+            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -162,12 +179,9 @@ export async function deleteUser(userId) {
 }
 
 export async function getUserPhoto(userId) {
-    // Esta función obtiene la foto de usuario desde el backend
-    // Si estás guardando la foto en localStorage, puedes retornarla desde allí
-    // Si la obtienes del backend, haz una solicitud GET
     try {
         const res = await fetch(`${API_URL}usuarios/${userId}/foto/`, {
-            credentials: 'include', // ✅ Usar sesiones
+            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -188,7 +202,7 @@ export async function obtenerDatosEstadisticos() {
     try {
         const res = await fetch(API_URL + 'crear-reporte/', {
             method: 'GET',
-            credentials: 'include', // ✅ Usar sesiones
+            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -207,24 +221,24 @@ export async function obtenerDatosEstadisticos() {
     }
 }
 
-export async function postData(obj,endpoint) {
- try {
-   const peticion = await fetch(`http://127.0.0.1:8000/api/${endpoint}/`,{
-    method: "POST",
-    headers:{
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(obj)
-   })
-   const data = await peticion.json()
-   console.log(data);
-   return data
- } catch (error) {
-   console.error(error);
-   
- }
-}
+export async function postData(obj, endpoint) {
+    try {
+        const peticion = await fetch(`http://127.0.0.1:8000/api/${endpoint}/`, {
+            method: "POST",
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(obj)
+        });
 
+        const data = await peticion.json();
+        console.log(data);
+        return data;
+
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 export async function getComentarios() {
     try {

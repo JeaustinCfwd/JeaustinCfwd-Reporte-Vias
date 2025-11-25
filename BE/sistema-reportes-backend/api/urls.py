@@ -4,12 +4,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     CreateAdminUser, 
     CreateUser, 
-    # ListUsersView,
-    # ReporteViewSet, 
-    # EstadoViewSet, 
-    # ComentarioViewSet, 
-    # ImagenReporteViewSet,
-    # RolViewSet,
     ReporteCreateView,
     obtener_usuario_actual,
     EstadoCreateView,
@@ -18,16 +12,11 @@ from .views import (
     RolCreateView,
     LoginUsuarioView,
     ListUsersCreateView,
-    UsuarioPorIdView
+    UsuarioPorIdView,
+    ComentarioDeleteView  # ✅ AGREGADO
 )
 
 router = DefaultRouter()
-# router.register(r'usuarios', ListUsersView, basename='usuario')
-# router.register(r'reportes', ReporteViewSet, basename='reporte')
-# router.register(r'estados', EstadoViewSet, basename='estado')
-# router.register(r'comentarios', ComentarioViewSet, basename='comentario')
-# router.register(r'imagenes-reporte', ImagenReporteViewSet, basename='imagen-reporte')
-# router.register(r'roles', RolViewSet, basename='rol')
 
 urlpatterns = [
     # ===== AUTENTICACIÓN =====
@@ -41,15 +30,20 @@ urlpatterns = [
     # ===== USUARIO ACTUAL =====
     path('usuarios/me/', obtener_usuario_actual, name='usuario-actual'),
     
-    # ===== ROUTER (CRUD ENDPOINTS) =====
-    
-    # ===== CREACION DE REPORTES =====
+    # ===== CREACIÓN DE ELEMENTOS =====
     path('crear-reporte/', ReporteCreateView.as_view(), name='crear-reporte'),
     path('crear-estado/', EstadoCreateView.as_view(), name='crear-estado'),
     path('crear-comentario/', ComentarioCreateView.as_view(), name='crear-comentario'),
     path('crear-imagen/', ImagenReporteCreateView.as_view(), name='crear-imagen'),
     path('crear-rol/', RolCreateView.as_view(), name='rol'),
     path('crear-lista/', ListUsersCreateView.as_view(), name='crear-lista'),
+
+    # ===== LOGIN =====
     path('login/', LoginUsuarioView.as_view(), name='login'),
-    path('usuario/<int:id_usuario>/', UsuarioPorIdView.as_view(), name='login'),
+
+    # ===== USUARIO POR ID =====
+    path('usuario/<int:id_usuario>/', UsuarioPorIdView.as_view(), name='usuario-por-id'),
+    
+    # ===== ELIMINAR COMENTARIO =====
+    path('eliminar-comentario/<int:comentario_id>/', ComentarioDeleteView.as_view(), name='eliminar-comentario'),
 ]
