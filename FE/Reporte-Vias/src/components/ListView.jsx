@@ -75,12 +75,12 @@ const ListView = ({
             ))}
           </tbody>
         </table>
-        {filteredReports.length === 0 && (
-          <div className="no-results">
-            <p>No se encontraron reportes con los filtros aplicados</p>
-          </div>
-        )}
       </div>
+      {filteredReports.length === 0 && (
+        <div className="no-results">
+          <p>No se encontraron reportes con los filtros aplicados</p>
+        </div>
+      )}
     </div>
   );
 };

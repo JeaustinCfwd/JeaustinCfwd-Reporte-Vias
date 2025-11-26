@@ -366,12 +366,14 @@
   background: #FFFFFF;
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+  overflow-x: auto; /* <-- Asegura el scrollbar horizontal */
   border: 1px solid #F0F0F0;
+  margin-bottom: 2rem; /* Opcional: separa visualmente el scrollbar */
 }
 
 .reports-table {
   width: 100%;
+  min-width: 900px; /* <-- Fuerza el ancho mínimo para el scrollbar */
   border-collapse: separate;
   border-spacing: 0;
 }
