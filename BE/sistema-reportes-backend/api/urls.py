@@ -13,7 +13,7 @@ from .views import (
     LoginUsuarioView,
     ListUsersCreateView,
     UsuarioPorIdView,
-    ComentarioDeleteView  # ✅ AGREGADO
+    ComentarioDeleteView 
 )
 
 router = DefaultRouter()

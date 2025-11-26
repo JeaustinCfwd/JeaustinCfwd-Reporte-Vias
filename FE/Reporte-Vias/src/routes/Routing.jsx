@@ -34,7 +34,7 @@ const router = createBrowserRouter(
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: 'reportCreate', element: <PrivateRoute><ReportCreate /></PrivateRoute> },
-        { path: '/dashboard', element: <Dashboard /> },
+        { path: '/dashboard', element: <PrivateRoute><Dashboard /></PrivateRoute> },
         { path: 'report/:id', element: <PrivateRoute><ReportDetail /></PrivateRoute> },
         { path: 'profile', element: <PrivateRoute><Profile /></PrivateRoute> },
       ],
