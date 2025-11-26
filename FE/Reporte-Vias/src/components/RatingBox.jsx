@@ -91,7 +91,12 @@ const RatingBox = () => {
   };
 
   const deleteComment = async (id) => {
-    // Verificar usuario logueado
+       // Verificar usuario logueado
+       if (!user){
+        alert('Debes iniciar sesión para eliminar comentarios');
+        navigate('/login ');
+        return;
+       }
     const usuarioId = localStorage.getItem('id_usuario');
     if (!usuarioId) {
       alert('Debes iniciar sesión para eliminar comentarios');

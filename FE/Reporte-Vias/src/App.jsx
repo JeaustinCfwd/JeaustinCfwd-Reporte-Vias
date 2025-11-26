@@ -24,6 +24,7 @@ const AppContent = () => {
 
   const logout = useCallback(() => {
     localStorage.removeItem('user');
+        localStorage.removeItem('id_usuario');
     setUser(null);
   }, []);
 
