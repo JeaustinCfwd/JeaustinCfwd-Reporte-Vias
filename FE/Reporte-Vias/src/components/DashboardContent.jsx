@@ -216,7 +216,7 @@ const DashboardContent = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8000/api/reportes/${id}/`, {
+      const res = await fetch(`http://localhost:8000/api/eliminar-reporte/${id}/`, {
         method: 'DELETE',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });

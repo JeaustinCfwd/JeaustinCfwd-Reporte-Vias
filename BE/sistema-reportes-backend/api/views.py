@@ -88,6 +88,16 @@ class ReporteCreateView(ListCreateAPIView):
     serializer_class = ReporteSerializer
     # permission_classes = [IsAuthenticated]
 
+class ReporteDeleteView(APIView):
+     # permission_classes = [IsAuthenticated]  # 
+     def delete(self, request, reporte_id):
+      try:
+          reporte = Reporte.objects.get(id=reporte_id)
+          reporte.delete()
+          return Response({"mensaje":"Reporte eliminado exitosamente"}, status=status.HTTP_200_OK)
+      except Reporte.DoesNotExist:
+       return Response({"error":"Reporte no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class EstadoCreateView(ListCreateAPIView):
     queryset = Estado.objects.all()
