@@ -20,16 +20,12 @@ const RatingBox = () => {
 
     const fetchReviews = async () => {
       try {
-        // Obtener comentarios desde el backend
         const response = await fetch('http://127.0.0.1:8000/api/crear-comentario/', {
           method: 'GET',
           credentials: 'include',
         });
-        
         if (response.ok) {
           const comentarios = await response.json();
-          
-          // Transformar los datos del backend al formato que usa el componente
           const reviewsFormateados = comentarios.map(comentario => ({
             id: comentario.id,
             rating: comentario.calificacion,
@@ -38,7 +34,6 @@ const RatingBox = () => {
             userId: comentario.usuario,
             timestamp: comentario.fecha_creacion
           }));
-          
           setReviews(reviewsFormateados);
         }
       } catch (error) {
@@ -64,9 +59,6 @@ const RatingBox = () => {
       };
       try {
         const peticion = await postData(newReview, "crear-comentario");
-        console.log(peticion);
-        
-        // Agregar el nuevo comentario a la lista inmediatamente
         const nuevoComentarioFormateado = {
           id: peticion.id,
           rating: peticion.calificacion,
@@ -75,14 +67,10 @@ const RatingBox = () => {
           userId: peticion.usuario,
           timestamp: peticion.fecha_creacion
         };
-        
         setReviews([nuevoComentarioFormateado, ...reviews]);
-        
-        // Limpiar el formulario
         setUserRating(0);
         setComment('');
         setShowForm(false);
-        
         alert('Reseña enviada exitosamente');
       } catch (error) {
         alert('Error al enviar reseña: ' + error.message);
@@ -91,34 +79,28 @@ const RatingBox = () => {
   };
 
   const deleteComment = async (id) => {
-       // Verificar usuario logueado
-       if (!user){
-        alert('Debes iniciar sesión para eliminar comentarios');
-        navigate('/login ');
-        return;
-       }
+    if (!user){
+      alert('Debes iniciar sesión para eliminar comentarios');
+      navigate('/login');
+      return;
+    }
     const usuarioId = localStorage.getItem('id_usuario');
     if (!usuarioId) {
       alert('Debes iniciar sesión para eliminar comentarios');
       return;
     }
-    
-    // Verificar que el comentario pertenece al usuario actual
     const review = reviews.find(r => r.id === id);
     if (!review) {
       alert('Comentario no encontrado');
       return;
     }
-    
     if (review.userId !== parseInt(usuarioId)) {
       alert('No tienes permiso para eliminar esta reseña');
       return;
     }
-
     if (!window.confirm('¿Estás seguro de que quieres eliminar esta reseña?')) {
       return;
     }
-
     try {
       await deleteReview(id);
       const filteredReviews = reviews.filter(r => r.id !== id);
@@ -186,24 +168,28 @@ const RatingBox = () => {
         <h3>Comentarios</h3>
         {safeReviews.length === 0 && <p>No hay comentarios aún.</p>}
 
-        {safeReviews.map((review) => (
-          <div key={review.id?.toString()} className="comment">
-            <div className="comment-header">
-              <span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
-              <strong>{review.userName}</strong>
-
-              {localStorage.getItem('id_usuario') &&
-               review.userId === parseInt(localStorage.getItem('id_usuario')) && (
-                <button className="delete-button" onClick={() => deleteComment(review.id)}>
-                  Eliminar
-                </button>
-              )}
+        <div className="comments-stack">
+          {safeReviews.map((review, idx) => (
+            <div
+              key={review.id?.toString()}
+              className="comment-card"
+              style={{ left: `${idx * 32}px`, zIndex: safeReviews.length - idx }}
+            >
+              <div className="comment-header">
+                <span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                <strong>{review.userName}</strong>
+                {localStorage.getItem('id_usuario') &&
+                  review.userId === parseInt(localStorage.getItem('id_usuario')) && (
+                    <button className="delete-button" onClick={() => deleteComment(review.id)}>
+                      Eliminar
+                    </button>
+                )}
+              </div>
+              <p>{review.comment}</p>
+              <small>{new Date(review.timestamp).toLocaleDateString()}</small>
             </div>
-
-            <p>{review.comment}</p>
-            <small>{new Date(review.timestamp).toLocaleDateString()}</small>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
