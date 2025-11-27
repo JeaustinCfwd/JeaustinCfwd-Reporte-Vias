@@ -1,83 +1,67 @@
-import React from 'react';
-import { Facebook, Twitter, Instagram, Mail, MapPin } from 'lucide-react';
-import '../styles/Footer.css';
+import React, { useContext } from "react";
+import { NavLink } from "react-router-dom";
+import "../styles/Footer.css";
+import SocialLinks from "./SocialLinks";
+import { AuthContext } from "../App";
 
-const CURRENT_YEAR = new Date().getFullYear();
+const Footer = () => {
+  const { user } = useContext(AuthContext);
 
-function Footer() {
   return (
     <footer className="footer-container">
+      {/* SECCIÓN PRINCIPAL */}
       <div className="footer-main">
         <div className="footer-grid">
-          {/* Logo y Slogan */}
-          <div className="footer-column">
-            <h2 className="footer-logo">REPORTAVÍAS CR</h2>
-            <p className="footer-slogan">Plataforma Ciudadana</p>
+          {/* Columna logo */}
+          <div>
+            <h2 className="footer-logo">Reporte Vías CR</h2>
+            <p className="footer-slogan">Mejorando las carreteras de Costa Rica.</p>
           </div>
 
-          {/* Servicios */}
-         <div className="footer-column">
-  <h3 className="footer-heading">SERVICIOS</h3>
-  <ul className="footer-links">
-    <li><a href="/reportCreate">Crear Reporte</a></li>
-    <li><a href="/dashboard/">Mapa Interactivo</a></li>
-    <li><a href="/dashboard">Dashboard</a></li>
-  </ul>
-</div>
-
-          {/* Recursos */}
-          <div className="footer-column">
-            <h3 className="footer-heading">RECURSOS</h3>
+          {/* Columna 1 */}
+          <div>
+            <h3 className="footer-heading">Navegación</h3>
             <ul className="footer-links">
-              <li><a href="/">Inicio</a></li>
-              <li><a href="/profile">Mi Perfil</a></li>
-              <li><a href="/">Ayuda</a></li>
+              <li><NavLink to="/">Inicio</NavLink></li>
+              <li><NavLink to="/dashboard">Mapa</NavLink></li>
+              <li><NavLink to="/dashboard">Reportes</NavLink></li>
             </ul>
           </div>
 
-          {/* Acerca de */}
-          <div className="footer-column">
-            <h3 className="footer-heading">ACERCA DE</h3>
+          {/* Columna 2 */}
+          <div>
+            <h3 className="footer-heading">Cuenta</h3>
             <ul className="footer-links">
-              <li><a href="/">Nosotros</a></li>
-              <li><a href="/">Contacto</a></li>
-              <li><a href="/">Afiliados</a></li>
+              <li><NavLink to="/login">Iniciar Sesión</NavLink></li>
+              <li><NavLink to="/register">Registrarse</NavLink></li>
+              {user && <li><NavLink to="/profile">Perfil</NavLink></li>}
             </ul>
           </div>
 
-          {/* Contacto */}
-          <div className="footer-column">
-            <h3 className="footer-heading">CONTACTO</h3>
+          {/* Columna 3 */}
+          <div>
+            <h3 className="footer-heading">Soporte</h3>
             <ul className="footer-links">
-              <li><MapPin size={14} className="inline" /> San José, CR</li>
-              <li><Mail size={14} className="inline" /> info@reportavias.cr</li>
+              <li><NavLink to="/faq">Preguntas Frecuentes</NavLink></li>
+              <li><NavLink to="/contacto">Contacto</NavLink></li>
+              <li><NavLink to="/terminos">Términos y Condiciones</NavLink></li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* Divider */}
+      {/* DIVISOR */}
       <div className="footer-divider"></div>
 
-      {/* Social y Copyright */}
+      {/* PARTE DE ABAJO */}
       <div className="footer-bottom">
-        <div className="footer-social">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-icon">
-            <Facebook size={20} />
-          </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="social-icon">
-            <Twitter size={20} />
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-icon">
-            <Instagram size={20} />
-          </a>
-        </div>
+        <SocialLinks />
         <p className="footer-copyright">
-          &copy; {CURRENT_YEAR} ReporteVías CR. Todos los derechos reservados.
+          © {new Date().getFullYear()} Reporte Vías CR — Todos los derechos reservados.
         </p>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;
