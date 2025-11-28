@@ -17,14 +17,14 @@ body {
    ============================ */
 
 .sidebar {
-  position: fixed;
+  position: sticky;
   top: 60px;
-  left: 0;
-  height: calc(100% - 60px);
+  height: calc(100vh - 60px);
   width: 260px;
   background: #11101d;
   z-index: 100;
   transition: all 0.5s ease;
+  flex-shrink: 0;
 }
 
 .sidebar.close {
@@ -275,19 +275,13 @@ body {
 .dashboard-main {
   position: relative;
   background: #E4E9F7;
-  min-height: 100vh;
-  margin-left: 260px;
-  width: calc(100% - 260px);
+  flex-grow: 1;
   transition: all 0.5s ease;
   padding: 2.5rem 3rem;
   padding-top: 70px;
   padding-bottom: 100px;
 }
 
-.sidebar.close ~ .dashboard-main {
-  margin-left: 78px;
-  width: calc(100% - 78px);
-}
 
 /* Encabezado */
 .dashboard-header {
