@@ -18,9 +18,9 @@ body {
 
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 60px;
   left: 0;
-  height: 100%;
+  height: calc(100% - 60px);
   width: 260px;
   background: #11101d;
   z-index: 100;

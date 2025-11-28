@@ -3,7 +3,7 @@
 }
 
 main {
-  padding-top: 80px !important; /* se aumentó el padding para compensar la altura del encabezado fijo */
+  padding-top: 60px !important; /* se aumentó el padding para compensar la altura del encabezado fijo */
   box-sizing: border-box;
 }
 
