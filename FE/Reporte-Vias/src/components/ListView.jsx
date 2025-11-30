@@ -1,4 +1,6 @@
 import React from 'react';
+import { RiDeleteBin5Line } from "react-icons/ri";
+
 
 const ListView = ({ 
   filteredReports, 
@@ -52,7 +54,7 @@ const ListView = ({
                       className="delete-btn-small"
                       title="Eliminar"
                     >
-                      🗑️
+                      <RiDeleteBin5Line />
                     </button>
                   </div>
                 </td>
