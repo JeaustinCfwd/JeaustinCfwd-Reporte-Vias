@@ -632,12 +632,6 @@ body {
   color: #48BB78;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
 .report-title-link {
   background: none;
   border: none;
@@ -654,17 +648,6 @@ body {
 .report-title-link:hover {
   color: #4338CA;
   text-decoration-color: #4338CA;
-}
-
-.view-btn-small {
-  background: #4F46E5;
-  border: none;
-  padding: 0.5rem 0.625rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  color: #fff;
 }
 
 .view-btn-small:hover {

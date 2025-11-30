@@ -1,12 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const ListView = ({ 
   filteredReports, 
   handleUpdateState, 
   handleDeleteReport 
 }) => {
-  const navigate = useNavigate();
 
   return (
     <div className="list-content">
@@ -28,13 +26,7 @@ const ListView = ({
               <tr key={report.id}>
                 <td>{report.id}</td>
                 <td>
-                  <button 
-                    onClick={() => navigate(`/report/${report.id}`)}
-                    className="report-title-link"
-                    title="Ver detalles"
-                  >
-                    {report.titulo}
-                  </button>
+                  <span>{report.titulo}</span>
                 </td>
                 <td className="description-cell">{report.descripcion}</td>
                 <td>
@@ -46,13 +38,6 @@ const ListView = ({
                 <td>{report.fecha_creacion ? new Date(report.fecha_creacion).toLocaleDateString('es-ES') : '-'}</td>
                 <td>
                   <div className="action-buttons">
-                    <button 
-                      onClick={() => navigate(`/report/${report.id}`)}
-                      className="view-btn-small"
-                      title="Ver detalles"
-                    >
-                      👁️
-                    </button>
                     <select 
                       value={report.state} 
                       onChange={(e) => handleUpdateState(report.id, e.target.value)}

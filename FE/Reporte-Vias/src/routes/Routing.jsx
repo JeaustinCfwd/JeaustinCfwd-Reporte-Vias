@@ -13,7 +13,6 @@ import Register from '../pages/Register';
 import ReportCreate from '../pages/ReportCreate';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
-import ReportDetail from '../pages/ReportDetail';
 
 import PrivateRoute from './PrivateRoute';
 const router = createBrowserRouter(
@@ -29,13 +28,12 @@ const router = createBrowserRouter(
           <Footer />
         </div>
       ),
- children: [
+      children: [
         { index: true, element: <Home /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: 'reportCreate', element: <PrivateRoute><ReportCreate /></PrivateRoute> },
         { path: '/dashboard', element: <PrivateRoute><Dashboard /></PrivateRoute> },
-        { path: 'report/:id', element: <PrivateRoute><ReportDetail /></PrivateRoute> },
         { path: 'profile', element: <PrivateRoute><Profile /></PrivateRoute> },
       ],
     },
