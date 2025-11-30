@@ -17,14 +17,14 @@ body {
    ============================ */
 
 .sidebar {
-  position: sticky;
-  top: 60px;
-  height: calc(100vh - 60px);
+  position: relative;
+  flex-shrink: 0;
   width: 260px;
   background: #11101d;
   z-index: 100;
   transition: all 0.5s ease;
-  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar.close {
@@ -61,10 +61,16 @@ body {
   pointer-events: none;
 }
 
+.nav-links {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
 .sidebar .nav-links {
-  height: 100%;
-  padding: 30px 0 150px 0;
-  overflow: auto;
+ flex-grow: 1;
+ overflow-y: auto;
+ overflow-x: hidden;
+ padding-bottom: 20px;
 }
 
 .sidebar.close .nav-links {
@@ -200,6 +206,15 @@ body {
   transform: translateY(-50%);
 }
 
+.profile-details {
+  width: 100%;
+  background: #1d1b31;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .sidebar .profile-details {
   position: fixed;
   bottom: 0;
@@ -258,13 +273,14 @@ body {
   margin-left: 0;
 }
 
+
 /* ============================
    DASHBOARD WRAPPER
    ============================ */
 
 .dashboard-wrapper {
   display: flex;
-  min-height: 100vh;
+  height: 100%;  
   background: #E4E9F7;
 }
 
@@ -276,10 +292,9 @@ body {
   position: relative;
   background: #E4E9F7;
   flex-grow: 1;
+  overflow-y: auto;
   transition: all 0.5s ease;
-  padding: 2.5rem 3rem;
-  padding-top: 70px;
-  padding-bottom: 100px;
+  padding: 20px;
 }
 
 
@@ -874,11 +889,6 @@ body {
     margin-left: 240px;
     width: calc(100% - 240px);
     padding: 1rem;
-  }
-  
-  .sidebar.close ~ .dashboard-main {
-    margin-left: 78px;
-    width: calc(100% - 78px);
   }
 
   .dashboard-title {
