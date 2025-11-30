@@ -311,7 +311,7 @@ const DashboardContent = () => {
 
   // ========== RENDER PRINCIPAL ==========
   return (
-    <div className="dashboard-wrapper">
+    <>
       {/* ==================== SIDEBAR ==================== */}
       <DashboardSidebar 
         sidebarOpen={sidebarOpen}
@@ -322,7 +322,12 @@ const DashboardContent = () => {
       />
 
       {/* ==================== CONTENIDO PRINCIPAL ==================== */}
-      <main className={`dashboard-main ${sidebarOpen ? '' : 'full-width'}`}>
+      <main className="dashboard-main">
+        {/* Botón de Menú Hamburguesa */}
+        <div className="home-content">
+          <i className='bx bx-menu' onClick={() => setSidebarOpen(!sidebarOpen)}></i>
+        </div>
+
         {/* Header con filtros */}
         <DashboardHeader 
           filteredReports={filteredReports}
@@ -380,7 +385,7 @@ const DashboardContent = () => {
           />
         )}
       </main>
-    </div>
+    </>
   );
 };
 

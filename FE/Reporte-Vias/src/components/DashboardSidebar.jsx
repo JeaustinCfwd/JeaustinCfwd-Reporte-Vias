@@ -19,6 +19,7 @@ const DashboardSidebar = ({
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "" : "close"}`}>
+
       {/* HEADER / LOGO */}
       <div className="logo-details">
         <i className="bx bx-grid-alt"></i>
@@ -26,9 +27,8 @@ const DashboardSidebar = ({
       </div>
 
       <ul className="nav-links">
-        {/* ---------------------------
-              OPCIÓN 1: RESUMEN GENERAL
-        ---------------------------- */}
+
+        {/* RESUMEN GENERAL */}
         <li>
           <a onClick={() => setActiveView("overview")}>
             <i className="bx bx-stats"></i>
@@ -36,9 +36,7 @@ const DashboardSidebar = ({
           </a>
         </li>
 
-        {/* ---------------------------
-              OPCIÓN 2: REPORTES (SUBMENÚ)
-        ---------------------------- */}
+        {/* REPORTES SUBMENU */}
         <li className={openMenus.reportes ? "showMenu" : ""}>
           <div className="iocn-link">
             <a onClick={() => setActiveView("list")}>
@@ -58,9 +56,7 @@ const DashboardSidebar = ({
           </ul>
         </li>
 
-        {/* ---------------------------
-              MAPA
-        ---------------------------- */}
+        {/* MAPA */}
         <li>
           <a onClick={() => setActiveView("map")}>
             <i className="bx bx-map"></i>
@@ -68,14 +64,12 @@ const DashboardSidebar = ({
           </a>
         </li>
 
-        {/* ---------------------------
-              ESTADÍSTICAS (SUBMENÚ)
-        ---------------------------- */}
+        {/* ESTADISTICAS SUBMENU */}
         <li className={openMenus.stats ? "showMenu" : ""}>
           <div className="iocn-link">
             <a onClick={() => setActiveView("stats")}>
               <i className="bx bx-line-chart"></i>
-              <span className="link_name">Estadísticas</span>
+              <span className="link_name">Estadisticas</span>
             </a>
             <i
               className="bx bxs-chevron-down arrow"
@@ -85,14 +79,12 @@ const DashboardSidebar = ({
 
           <ul className="sub-menu">
             <li><a>Resumen</a></li>
-            <li><a>Categorías</a></li>
+            <li><a>Categorias</a></li>
             <li><a>Estados</a></li>
           </ul>
         </li>
 
-        {/* ---------------------------
-              EXPORTAR
-        ---------------------------- */}
+        {/* EXPORTAR CSV */}
         <li>
           <a onClick={exportToCSV}>
             <i className="bx bx-download"></i>
@@ -100,23 +92,22 @@ const DashboardSidebar = ({
           </a>
         </li>
 
-        {/* PERFIL (OPCIONAL) */}
-        <li>
-          <div className="profile-details">
-            <div className="profile-content">
-              <img
-                src="/profile.jpg"
-                alt="profileImg"
-              />
-            </div>
-            <div className="name-job">
-              <div className="profile_name">Administrador</div>
-              <div className="job">Usuario</div>
-            </div>
-            <i className="bx bx-log-out"></i>
-          </div>
-        </li>
       </ul>
+
+      {/* PERFIL - FUERA DEL UL */}
+      <div className="profile-details">
+        <div className="profile-content">
+          <img src="/profile.jpg" alt="profileImg" />
+        </div>
+
+        <div className="name-job">
+          <div className="profile_name">Administrador</div>
+          <div className="job">Usuario</div>
+        </div>
+
+        <i className="bx bx-log-out"></i>
+      </div>
+
     </aside>
   );
 };

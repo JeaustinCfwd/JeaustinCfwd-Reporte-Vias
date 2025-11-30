@@ -1,5 +1,7 @@
 import React from 'react';
 import { Bar, Pie, Line } from 'react-chartjs-2';
+import { FcBarChart, FcOpenedFolder, FcAbout } from "react-icons/fc";
+import { GiMagnifyingGlass } from "react-icons/gi";
 
 const OverviewView = ({ 
   filteredReports, 
@@ -14,28 +16,28 @@ const OverviewView = ({
       {/* Tarjetas de estadísticas */}
       <div className="dashboard-stats">
         <div className="stat-card total">
-          <div className="stat-icon">📊</div>
+          <div className="stat-icon"><FcBarChart /></div>
           <div className="stat-info">
             <h3>Total de Reportes</h3>
             <p className="stat-number">{filteredReports.length}</p>
           </div>
         </div>
         <div className="stat-card nuevo">
-          <div className="stat-icon">🆕</div>
+          <div className="stat-icon"><FcOpenedFolder /></div>
           <div className="stat-info">
             <h3>Nuevos</h3>
             <p className="stat-number">{statsByState.nuevo || 0}</p>
           </div>
         </div>
         <div className="stat-card revision">
-          <div className="stat-icon">🔍</div>
+          <div className="stat-icon"><GiMagnifyingGlass /></div>
           <div className="stat-info">
             <h3>En Revisión</h3>
             <p className="stat-number">{statsByState.en_revision || 0}</p>
           </div>
         </div>
         <div className="stat-card atendido">
-          <div className="stat-icon">✅</div>
+          <div className="stat-icon"><FcAbout /></div>
           <div className="stat-info">
             <h3>Atendidos</h3>
             <p className="stat-number">{statsByState.atendido || 0}</p>

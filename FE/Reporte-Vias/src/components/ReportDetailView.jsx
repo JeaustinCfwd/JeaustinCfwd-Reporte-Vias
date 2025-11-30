@@ -4,6 +4,8 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/ReportDetail.css';
+import { FcOpenedFolder, FcAbout } from "react-icons/fc";
+import { GiMagnifyingGlass } from "react-icons/gi";
 
 // Fix para iconos de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,19 +19,19 @@ const STATE_CONFIG = {
   nuevo: { 
     label: 'Nuevo', 
     color: '#FC8181', 
-    icon: '🆕',
+    icon: <FcOpenedFolder />,
     description: 'Reporte recién creado, pendiente de revisión'
   },
   en_revision: { 
     label: 'En Revisión', 
     color: '#5A67D8', 
-    icon: '🔍',
+    icon: <GiMagnifyingGlass />,
     description: 'El reporte está siendo evaluado por las autoridades'
   },
   atendido: { 
     label: 'Atendido', 
     color: '#48BB78', 
-    icon: '✅',
+    icon: <FcAbout />,
     description: 'El problema ha sido resuelto'
   }
 };

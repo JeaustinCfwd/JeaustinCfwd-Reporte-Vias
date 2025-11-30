@@ -1,5 +1,7 @@
 import React from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
+import { FcOpenedFolder, FcAbout } from "react-icons/fc";
+import { GiMagnifyingGlass } from "react-icons/gi";
 
 const StatsView = ({ 
   reports, 
@@ -40,15 +42,15 @@ const StatsView = ({
         <div className="stat-detail-card">
           <h3>Por Estado</h3>
           <div className="metric-row">
-            <span>🆕 Nuevos:</span>
+            <span><FcOpenedFolder /> Nuevos:</span>
             <strong className="orange">{statsByState.nuevo || 0}</strong>
           </div>
           <div className="metric-row">
-            <span>🔍 En Revisión:</span>
+            <span><GiMagnifyingGlass /> En Revisión:</span>
             <strong className="blue">{statsByState.en_revision || 0}</strong>
           </div>
           <div className="metric-row">
-            <span>✅ Atendidos:</span>
+            <span><FcAbout /> Atendidos:</span>
             <strong className="green">{statsByState.atendido || 0}</strong>
           </div>
         </div>

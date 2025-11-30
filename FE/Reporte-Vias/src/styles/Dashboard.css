@@ -13,18 +13,18 @@ body {
 }
 
 /* ============================
-   SIDEBAR STYLES (ORIGINAL)
+   SIDEBAR STYLES
    ============================ */
 
 .sidebar {
-  position: relative;
-  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
   width: 260px;
   background: #11101d;
   z-index: 100;
   transition: all 0.5s ease;
-  display: flex;
-  flex-direction: column;
 }
 
 .sidebar.close {
@@ -61,16 +61,10 @@ body {
   pointer-events: none;
 }
 
-.nav-links {
-  flex: 1 1 auto;
-  overflow-y: auto;
-}
-
 .sidebar .nav-links {
- flex-grow: 1;
- overflow-y: auto;
- overflow-x: hidden;
- padding-bottom: 20px;
+  height: 100%;
+  padding: 30px 0 150px 0;
+  overflow: auto;
 }
 
 .sidebar.close .nav-links {
@@ -102,10 +96,10 @@ body {
 }
 
 .sidebar .nav-links li i {
-  height: 50px;
+  height: 60px;
   min-width: 78px;
   text-align: center;
-  line-height: 50px;
+  line-height: 60px;
   color: #fff;
   font-size: 20px;
   cursor: pointer;
@@ -125,6 +119,7 @@ body {
   align-items: center;
   text-decoration: none;
   cursor: pointer;
+  padding: 8px 0;
 }
 
 .sidebar .nav-links li a .link_name {
@@ -132,6 +127,7 @@ body {
   font-weight: 400;
   color: #fff;
   transition: all 0.4s ease;
+  line-height: 1.4;
 }
 
 .sidebar.close .nav-links li a .link_name {
@@ -140,7 +136,7 @@ body {
 }
 
 .sidebar .nav-links li .sub-menu {
-  padding: 6px 6px 14px 80px;
+  padding: 8px 6px 16px 80px;
   margin-top: -10px;
   background: #1d1b31;
   display: none;
@@ -153,10 +149,11 @@ body {
 .sidebar .nav-links li .sub-menu a {
   color: #fff;
   font-size: 15px;
-  padding: 5px 0;
+  padding: 8px 0;
   white-space: nowrap;
   opacity: 0.6;
   transition: all 0.3s ease;
+  display: block;
 }
 
 .sidebar .nav-links li .sub-menu a:hover {
@@ -206,18 +203,14 @@ body {
   transform: translateY(-50%);
 }
 
-.profile-details {
-  width: 100%;
-  background: #1d1b31;
-  padding: 12px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+/* ============================
+   PROFILE DETAILS (FUERA DEL UL)
+   ============================ */
 
 .sidebar .profile-details {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 260px;
   display: flex;
   align-items: center;
@@ -251,6 +244,16 @@ body {
   padding: 10px;
 }
 
+.sidebar .profile-details .name-job {
+  margin-left: 10px;
+  transition: all 0.4s ease;
+}
+
+.sidebar.close .profile-details .name-job {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .sidebar .profile-details .profile_name,
 .sidebar .profile-details .job {
   color: #fff;
@@ -259,7 +262,6 @@ body {
   white-space: nowrap;
 }
 
-.sidebar.close .profile-details i,
 .sidebar.close .profile-details .profile_name,
 .sidebar.close .profile-details .job {
   display: none;
@@ -269,34 +271,68 @@ body {
   font-size: 12px;
 }
 
-.sidebar .profile-details .name-job {
-  margin-left: 0;
+.sidebar .profile-details .bx-log-out {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 78px;
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.5s ease;
 }
 
+.sidebar.close .profile-details .bx-log-out {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* ============================
-   DASHBOARD WRAPPER
+   DASHBOARD WRAPPER & MAIN
    ============================ */
 
 .dashboard-wrapper {
-  display: flex;
-  height: 100%;  
   background: #E4E9F7;
+  min-height: 100vh;
 }
-
-/* ============================
-   MAIN CONTENT AREA
-   ============================ */
 
 .dashboard-main {
   position: relative;
   background: #E4E9F7;
-  flex-grow: 1;
-  overflow-y: auto;
+  min-height: 100vh;
+  left: 260px;
+  width: calc(100% - 260px);
   transition: all 0.5s ease;
-  padding: 20px;
+  padding: 12px;
 }
 
+.sidebar.close ~ .dashboard-main {
+  left: 78px;
+  width: calc(100% - 78px);
+}
+
+/* ============================
+   HOME CONTENT (HAMBURGER)
+   ============================ */
+.home-content {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.home-content .bx-menu {
+  color: #11101d;
+  font-size: 35px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+}
+
+.home-content .bx-menu:hover {
+  color: #5A67D8;
+}
 
 /* Encabezado */
 .dashboard-header {
@@ -475,18 +511,6 @@ body {
   color: #333333;
   margin: 0;
   letter-spacing: -1px;
-}
-
-.stat-number.orange {
-  color: #FC8181;
-}
-
-.stat-number.blue {
-  color: #5A67D8;
-}
-
-.stat-number.green {
-  color: #48BB78;
 }
 
 /* ============================
@@ -840,35 +864,12 @@ body {
    ============================ */
 
 @media (max-width: 1024px) {
-  .sidebar {
-    width: 78px;
-  }
-  
-  .sidebar .logo-details .logo_name,
-  .sidebar .nav-links li a .link_name {
-    opacity: 0;
-    pointer-events: none;
-  }
-  
-  .sidebar .profile-details {
-    width: 78px;
-  }
-  
-  .sidebar .profile-details .name-job {
-    display: none;
-  }
-  
-  .dashboard-main {
-    margin-left: 78px;
-    width: calc(100% - 78px);
-  }
-  
   .dashboard-charts {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 400px) {
   .sidebar {
     width: 240px;
   }
@@ -882,13 +883,19 @@ body {
   }
   
   .sidebar.close .profile-details {
+    background: none;
     width: 78px;
   }
   
   .dashboard-main {
-    margin-left: 240px;
+    left: 240px;
     width: calc(100% - 240px);
     padding: 1rem;
+  }
+  
+  .sidebar.close ~ .dashboard-main {
+    left: 78px;
+    width: calc(100% - 78px);
   }
 
   .dashboard-title {
