@@ -5,7 +5,7 @@ import CategoryCarousel from './CategoryCarousel';
 import GlareHover from './GlareHover';
 import RatingBox from './RatingBox';
 import CountUp from './CountUp';
-import Prism from './PrismOGL';
+import Hyperspeed from './Hyperspeed-HS';
 import '../styles/Home.css';
 
 const carouselItems = [
@@ -101,17 +101,9 @@ function HomeContent() {
     <div className="contenedor-inicio">
       {/* HERO SECTION */}
       <div className="seccion-hero">
-        <Prism
-          animationType="rotate"
-          timeScale={0.5}
-          height={3.5}
-          baseWidth={5.5}
-          scale={3.6}
-          hueShift={0}
-          colorFrequency={1}
-          noise={0}
-          glow={1}
-        />
+        <div id="lights" style={{ position: 'absolute', inset: '0px', zIndex: 0 }}>
+          <Hyperspeed />
+        </div>
         <h2 className="titulo-principal">Transforma tu ciudad con cada reporte</h2>
         <p className="descripcion-inicio">
           ReportaVías CR conecta a la comunidad con las autoridades para crear ciudades más seguras y funcionales. Tu voz importa, tu reporte cuenta.
