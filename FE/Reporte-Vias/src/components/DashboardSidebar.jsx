@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/Dashboard.css";
+import "../styles/Sidebar.css";
 
 const DashboardSidebar = ({
   sidebarOpen,
@@ -19,21 +19,25 @@ const DashboardSidebar = ({
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "" : "close"}`}>
-
-      {/* HEADER / LOGO */}
+      {/* LOGO */}
       <div className="logo-details">
         <i className="bx bx-grid-alt"></i>
-        <span className="logo_name">Dashboard</span>
+        <span className="logo_name">ReporteVías CR</span>
       </div>
 
       <ul className="nav-links">
-
         {/* RESUMEN GENERAL */}
         <li>
-          <a onClick={() => setActiveView("overview")}>
+          <a 
+            onClick={() => setActiveView("overview")}
+            className={activeView === "overview" ? "active" : ""}
+          >
             <i className="bx bx-stats"></i>
             <span className="link_name">Resumen General</span>
           </a>
+          <ul className="sub-menu blank">
+            <li><a className="link_name">Resumen General</a></li>
+          </ul>
         </li>
 
         {/* REPORTES SUBMENU */}
@@ -50,6 +54,7 @@ const DashboardSidebar = ({
           </div>
 
           <ul className="sub-menu">
+            <li><a className="link_name">Reportes</a></li>
             <li><a>Ver Lista</a></li>
             <li><a>Filtrar</a></li>
             <li><a>Historial</a></li>
@@ -58,10 +63,16 @@ const DashboardSidebar = ({
 
         {/* MAPA */}
         <li>
-          <a onClick={() => setActiveView("map")}>
+          <a 
+            onClick={() => setActiveView("map")}
+            className={activeView === "map" ? "active" : ""}
+          >
             <i className="bx bx-map"></i>
             <span className="link_name">Mapa Interactivo</span>
           </a>
+          <ul className="sub-menu blank">
+            <li><a className="link_name">Mapa Interactivo</a></li>
+          </ul>
         </li>
 
         {/* ESTADISTICAS SUBMENU */}
@@ -69,7 +80,7 @@ const DashboardSidebar = ({
           <div className="iocn-link">
             <a onClick={() => setActiveView("stats")}>
               <i className="bx bx-line-chart"></i>
-              <span className="link_name">Estadisticas</span>
+              <span className="link_name">Estadísticas</span>
             </a>
             <i
               className="bx bxs-chevron-down arrow"
@@ -78,8 +89,9 @@ const DashboardSidebar = ({
           </div>
 
           <ul className="sub-menu">
+            <li><a className="link_name">Estadísticas</a></li>
             <li><a>Resumen</a></li>
-            <li><a>Categorias</a></li>
+            <li><a>Categorías</a></li>
             <li><a>Estados</a></li>
           </ul>
         </li>
@@ -90,24 +102,27 @@ const DashboardSidebar = ({
             <i className="bx bx-download"></i>
             <span className="link_name">Exportar CSV</span>
           </a>
+          <ul className="sub-menu blank">
+            <li><a className="link_name">Exportar CSV</a></li>
+          </ul>
         </li>
 
+        {/* PERFIL */}
+        <li>
+          <div className="profile-details">
+            <div className="profile-content">
+              <img src="/profile.jpg" alt="profileImg" />
+            </div>
+
+            <div className="name-job">
+              <div className="profile_name">Administrador</div>
+              <div className="job">Usuario</div>
+            </div>
+
+            <i className="bx bx-log-out"></i>
+          </div>
+        </li>
       </ul>
-
-      {/* PERFIL - FUERA DEL UL */}
-      <div className="profile-details">
-        <div className="profile-content">
-          <img src="/profile.jpg" alt="profileImg" />
-        </div>
-
-        <div className="name-job">
-          <div className="profile_name">Administrador</div>
-          <div className="job">Usuario</div>
-        </div>
-
-        <i className="bx bx-log-out"></i>
-      </div>
-
     </aside>
   );
 };

@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Camera, MapPin, Send } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
+import gsap from 'gsap';
 import '../styles/ReportForm.css';
 
 // Componente para actualizar el centro del mapa
@@ -66,6 +67,106 @@ const ReportForm = () => {
     { value: 'iluminacion_deficiente', label: 'Iluminación deficiente' },
     { value: 'otro', label: 'Otro' },
   ];
+
+  // useEffect para manejar la animación del botón
+  useEffect(() => {
+    const button = document.querySelector('.truck-button');
+    if (!button) return;
+
+    const handleClick = (e) => {
+      const box = button.querySelector('.box');
+      const truck = button.querySelector('.truck');
+      
+      if (!button.classList.contains('done')) {
+        if (!button.classList.contains('animation')) {
+          button.classList.add('animation');
+
+          gsap.to(button, {
+            '--box-s': 1,
+            '--box-o': 1,
+            duration: .3,
+            delay: .5
+          });
+
+          gsap.to(box, {
+            x: 0,
+            duration: .4,
+            delay: .7
+          });
+
+          gsap.to(button, {
+            '--hx': -5,
+            '--bx': 50,
+            duration: .18,
+            delay: .92
+          });
+
+          gsap.to(box, {
+            y: 0,
+            duration: .1,
+            delay: 1.15
+          });
+
+          gsap.set(button, {
+            '--truck-y': 0,
+            '--truck-y-n': -26
+          });
+
+          gsap.to(button, {
+            '--truck-y': 1,
+            '--truck-y-n': -25,
+            duration: .2,
+            delay: 1.25,
+            onComplete() {
+              gsap.timeline({
+                onComplete() {
+                  button.classList.add('done');
+                }
+              }).to(truck, {
+                x: 0,
+                duration: .4
+              }).to(truck, {
+                x: 40,
+                duration: 1
+              }).to(truck, {
+                x: 20,
+                duration: .6
+              }).to(truck, {
+                x: 96,
+                duration: .4
+              });
+              gsap.to(button, {
+                '--progress': 1,
+                duration: 2.4,
+                ease: "power2.in"
+              });
+            }
+          });
+        }
+      } else {
+        button.classList.remove('animation', 'done');
+        gsap.set(truck, {
+          x: 4
+        });
+        gsap.set(button, {
+          '--progress': 0,
+          '--hx': 0,
+          '--bx': 0,
+          '--box-s': .5,
+          '--box-o': 0,
+          '--truck-y': 0,
+          '--truck-y-n': -26
+        });
+        gsap.set(box, {
+          x: -24,
+          y: -6
+        });
+      }
+    };
+
+    button.addEventListener('click', handleClick);
+    return () => button.removeEventListener('click', handleClick);
+  }, []);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
@@ -142,86 +243,116 @@ const ReportForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitError('');
-    setSubmitSuccess(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSubmitError('');
+  setSubmitSuccess(false);
 
-    // Validate lat and lng
-    if (
-      typeof formData.location.lat !== 'number' || isNaN(formData.location.lat) ||
-      typeof formData.location.lng !== 'number' || isNaN(formData.location.lng)
-    ) {
-      setSubmitError('Por favor, ingresa una ubicación válida con latitud y longitud.');
-      showError('Por favor, selecciona una ubicación válida en el mapa');
-      return;
-    }
-    
-    if (!formData.category) {
-      showError('Por favor, selecciona una categoría');
-      return;
-    }
-    
-    if (!formData.description.trim()) {
-      showError('Por favor, agrega una descripción del problema');
-      return;
-    }
+  // Validate lat and lng
+  if (
+    typeof formData.location.lat !== 'number' || isNaN(formData.location.lat) ||
+    typeof formData.location.lng !== 'number' || isNaN(formData.location.lng)
+  ) {
+    setSubmitError('Por favor, ingresa una ubicación válida con latitud y longitud.');
+    showError('Por favor, selecciona una ubicación válida en el mapa');
+    return;
+  }
+  
+  if (!formData.category) {
+    showError('Por favor, selecciona una categoría');
+    return;
+  }
+  
+  if (!formData.description.trim()) {
+    showError('Por favor, agrega una descripción del problema');
+    return;
+  }
 
-    // Convert images to Base64
-    const photos = [];
-    for (const file of selectedFiles) {
+  // Validar que el usuario existe
+  const userId = localStorage.getItem("id_usuario");
+  if (!userId) {
+    showError('No se encontró el ID de usuario. Por favor inicia sesión nuevamente.');
+    return;
+  }
+
+  // Convert images to Base64
+  const photos = [];
+  for (const file of selectedFiles) {
+    try {
       const base64 = await convertToBase64(file);
       photos.push(base64);
+    } catch (err) {
+      console.error('Error al convertir imagen:', err);
+      showError('Error al procesar las imágenes');
+      return;
     }
+  }
 
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    const report = {
-      // id: String(Date.now()), // Django genera el id automáticamente
-      titulo: formData.category.charAt(0).toUpperCase() + formData.category.slice(1).replace(/_/g, ' '),
-      descripcion: formData.description,
-      latitud: formData.location.lat,
-      longitud: formData.location.lng,
-      estado: 1,
-      usuario: localStorage.getItem("id_usuario"),
-      categoria: formData.category,
-
-    };
-
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8000/api/crear-reporte/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-          // ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(report),
-      });
-
-
-      if (!res.ok) {
-        throw new Error(`Error al enviar reporte: ${res.status}`);
-      }
-
-      setSubmitSuccess(true);
-      success('¡Reporte enviado exitosamente! Gracias por tu colaboración.');
-      
-      // Restablecer formulario
-      setFormData({
-        photos: [],
-        description: '',
-        category: '',
-        location: { lat: 9.7489, lng: -83.7534 }
-      });
-      setSelectedFiles([]);
-    } catch (error) {
-      setSubmitError(error.message);
-      showError('Error al enviar el reporte. Por favor, intenta nuevamente.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  // Prueba primero con estado: 1 (como estaba originalmente)
+  const report = {
+    titulo: formData.category.charAt(0).toUpperCase() + formData.category.slice(1).replace(/_/g, ' '),
+    descripcion: formData.description,
+    latitud: parseFloat(formData.location.lat),
+    longitud: parseFloat(formData.location.lng),
+    estado: 1, // Vuelve a usar 1 en lugar de 'nuevo'
+    usuario: parseInt(userId), // Asegúrate de que sea un número si el backend lo espera así
+    categoria: formData.category,
+    ...(photos.length > 0 && { fotos: photos }) // Solo incluir fotos si hay
   };
+
+  console.log('Enviando reporte:', {
+    ...report,
+    fotos: photos.length > 0 ? `[${photos.length} fotos]` : 'sin fotos'
+  });
+
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:8000/api/crear-reporte/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(report),
+    });
+
+    let responseData;
+    try {
+      responseData = await res.json();
+    } catch (jsonError) {
+      responseData = await res.text();
+    }
+    
+    console.log('Respuesta del servidor:', responseData);
+
+    if (!res.ok) {
+      const errorMsg = typeof responseData === 'object' 
+        ? JSON.stringify(responseData) 
+        : responseData;
+      throw new Error(`Error ${res.status}: ${errorMsg}`);
+    }
+
+    setSubmitSuccess(true);
+    success('¡Reporte enviado exitosamente! Gracias por tu colaboración.');
+    
+    // Restablecer formulario
+    setFormData({
+      photos: [],
+      description: '',
+      category: '',
+      location: { lat: 9.7489, lng: -83.7534 }
+    });
+    setSelectedFiles([]);
+  } catch (error) {
+    console.error('Error completo:', error);
+    setSubmitError(error.message);
+    showError('Error al enviar el reporte. Revisa la consola para más detalles.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="report-form-container">
@@ -326,56 +457,56 @@ const ReportForm = () => {
             </p>
           </div>
 
-<div className="map-container">
-  <MapContainer
-    center={[formData.location.lat, formData.location.lng]}
-    zoom={7}
-    minZoom={6}
-    maxZoom={18}
-    maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
-    maxBoundsViscosity={1.0}
-    style={{ height: '600px', width: '100%' }}
-    className="leaflet-map"
-  >
-    <ChangeMapView center={[formData.location.lat, formData.location.lng]} zoom={7} />
-    <MapClickHandler
-      onLocationChange={(loc) => {
-        // Validar que esté dentro de Costa Rica
-        if (
-          loc.lat >= 8.0 && loc.lat <= 11.5 &&
-          loc.lng >= -86.0 && loc.lng <= -82.5
-        ) {
-          setFormData(prev => ({ ...prev, location: loc }));
-        } else {
-          // Puedes usar showError o warning
-          warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
-        }
-      }}
-    />
-    <TileLayer
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    />
-    <Marker
-      position={[formData.location.lat, formData.location.lng]}
-      draggable={true}
-      eventHandlers={{
-        dragend: (e) => {
-          const newPos = e.target.getLatLng();
-          // Validar que esté dentro de Costa Rica
-          if (
-            newPos.lat >= 8.0 && newPos.lat <= 11.5 &&
-            newPos.lng >= -86.0 && newPos.lng <= -82.5
-          ) {
-            setFormData(prev => ({ ...prev, location: newPos }));
-          } else {
-            warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
-          }
-        }
-      }}
-    />
-  </MapContainer>
-</div>
+          <div className="map-container">
+            <MapContainer
+              center={[formData.location.lat, formData.location.lng]}
+              zoom={7}
+              minZoom={6}
+              maxZoom={18}
+              maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
+              maxBoundsViscosity={1.0}
+              style={{ height: '600px', width: '100%' }}
+              className="leaflet-map"
+            >
+              <ChangeMapView center={[formData.location.lat, formData.location.lng]} zoom={7} />
+              <MapClickHandler
+                onLocationChange={(loc) => {
+                  // Validar que esté dentro de Costa Rica
+                  if (
+                    loc.lat >= 8.0 && loc.lat <= 11.5 &&
+                    loc.lng >= -86.0 && loc.lng <= -82.5
+                  ) {
+                    setFormData(prev => ({ ...prev, location: loc }));
+                  } else {
+                    // Puedes usar showError o warning
+                    warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
+                  }
+                }}
+              />
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker
+                position={[formData.location.lat, formData.location.lng]}
+                draggable={true}
+                eventHandlers={{
+                  dragend: (e) => {
+                    const newPos = e.target.getLatLng();
+                    // Validar que esté dentro de Costa Rica
+                    if (
+                      newPos.lat >= 8.0 && newPos.lat <= 11.5 &&
+                      newPos.lng >= -86.0 && newPos.lng <= -82.5
+                    ) {
+                      setFormData(prev => ({ ...prev, location: newPos }));
+                    } else {
+                      warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
+                    }
+                  }
+                }}
+              />
+            </MapContainer>
+          </div>
           
           <div className="location-inputs">
             <input
@@ -399,9 +530,20 @@ const ReportForm = () => {
           </div>
         </section>
 
-        <button type="submit" className="submit-button" disabled={isSubmitting}>
-          <Send className="submit-icon" />
-          {isSubmitting ? 'Enviando...' : 'Enviar Reporte'}
+        <button type="submit" className="truck-button" disabled={isSubmitting}>
+          <span className="default">Enviar Reporte</span>
+          <span className="success">
+            Reporte Enviado
+            <svg viewBox="0 0 12 10">
+              <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+            </svg>
+          </span>
+          <div className="truck">
+            <div className="wheel"></div>
+            <div className="back"></div>
+            <div className="front"></div>
+            <div className="box"></div>
+          </div>
         </button>
       </form>
 
