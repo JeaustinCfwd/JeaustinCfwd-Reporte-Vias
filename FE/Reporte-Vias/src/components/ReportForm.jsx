@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Camera, MapPin } from 'lucide-react';
+import { MapPinHouse  , Cctv } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import gsap from 'gsap';
 import '../styles/ReportForm.css';
@@ -78,6 +78,13 @@ const ReportForm = () => {
     { value: 'senalizacion_deficiente', label: 'Señalización deficiente' },
     { value: 'alcantarilla_danada', label: 'Alcantarilla dañada' },
     { value: 'iluminacion_deficiente', label: 'Iluminación deficiente' },
+    { value: 'inundacion', label: 'Inundación' },
+    { value: 'derrumbe', label: 'Derrumbe' },
+    { value: 'arbol_caido', label: 'Árbol Caído' },
+    { value: 'hundimiento_calzada', label: 'Hundimiento de Calzada' },
+    { value: 'fuga_agua', label: 'Fuga de Agua' },
+    { value: 'cableado_caido', label: 'Cableado Caído' },
+    { value: 'obstruccion_via', label: 'Obstrucción de Vía' },
     { value: 'otro', label: 'Otro' },
   ];
 
@@ -331,8 +338,7 @@ const ReportForm = () => {
   return (
     <>
       {/* Fondo Animado */}
-      <div className="prism-background"
-      >
+      <div className="prism-background">
         <Prism
           animationType="hover"
           timeScale={0.5}
@@ -353,10 +359,11 @@ const ReportForm = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="report-form">
+
           {/* === Fotos === */}
           <section className="form-section">
             <h2 className="section-title">
-              <Camera className="section-icon" /> Fotos del Problema
+              <Cctv className="section-icon" /> Fotos del Problema
             </h2>
 
             <div className="file-upload">
@@ -405,7 +412,9 @@ const ReportForm = () => {
               className="select-input"
               required
             >
-              <option value="">Selecciona una categoría</option>
+              <option value="" disabled>
+                Selecciona una categoría
+              </option>
               {categories.map((cat) => (
                 <option key={cat.value} value={cat.value}>
                   {cat.label}
@@ -417,7 +426,7 @@ const ReportForm = () => {
           {/* === UBICACIÓN === */}
           <section className="form-section">
             <h2 className="section-title">
-              <MapPin className="section-icon" /> Ubicación
+              <MapPinHouse  className="section-icon" /> Ubicación
             </h2>
 
             {/* Búsqueda */}
@@ -438,7 +447,8 @@ const ReportForm = () => {
                 disabled={isSearching}
                 className="address-search-button"
               >
-                {isSearching ? 'Buscando...' : 'Buscar'}
+                <span>{isSearching ? 'Buscando...' : 'Buscar'}</span>
+                <span></span>
               </button>
 
               {searchError && <p className="search-error">{searchError}</p>}
@@ -479,9 +489,7 @@ const ReportForm = () => {
                   }}
                 />
 
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                 <Marker
                   position={[formData.location.lat, formData.location.lng]}
