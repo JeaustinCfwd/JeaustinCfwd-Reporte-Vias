@@ -110,6 +110,16 @@ const DashboardContent = () => {
     return () => clearInterval(interval);
   }, [navigate]);
 
+  // ========== NUEVO: Gestión de clases del body para el sidebar ==========
+  useEffect(() => {
+    // Actualizar clase del body cuando cambia el estado del sidebar
+    if (sidebarOpen) {
+      document.body.classList.remove('sidebar-closed');
+    } else {
+      document.body.classList.add('sidebar-closed');
+    }
+  }, [sidebarOpen]);
+
   // ========== DATOS COMPUTADOS ==========
   const filteredReports = useMemo(() => {
     return reports.filter(report => {
@@ -231,16 +241,16 @@ const DashboardContent = () => {
     }
   }, [reports, success, showError]);
 
-  const handleUpdateState = useCallback(async (id, newState) => {
+  const handleUpdateState = useCallback(async (id, newEstadoId) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8000/api/reportes/${id}/`, {
-        method: 'PATCH',
+      const res = await fetch(`http://localhost:8000/api/editar-reporte/${id}/`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ state: newState })
+        body: JSON.stringify({ estado: newEstadoId })
       });
       
       if (!res.ok) throw new Error(`Error updating report: ${res.status}`);
@@ -253,6 +263,31 @@ const DashboardContent = () => {
     } catch (error) {
       console.error('Error updating report state:', error);
       showError('Error al actualizar el estado');
+    }
+  }, [reports, success, showError]);
+
+  const handleUpdateReport = useCallback(async (id, updates) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8000/api/editar-reporte/${id}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(updates)
+      });
+      
+      if (!res.ok) throw new Error(`Error updating report: ${res.status}`);
+
+      const updatedReport = await res.json();
+      setReports(reports.map(report =>
+        String(report.id) === String(id) ? { ...report, ...updatedReport } : report
+      ));
+      success('Reporte actualizado correctamente');
+    } catch (error) {
+      console.error('Error updating report:', error);
+      showError('Error al actualizar el reporte');
     }
   }, [reports, success, showError]);
 
@@ -363,6 +398,7 @@ const DashboardContent = () => {
             filteredReports={filteredReports}
             handleUpdateState={handleUpdateState}
             handleDeleteReport={handleDeleteReport}
+            handleUpdateReport={handleUpdateReport}
           />
         )}
 

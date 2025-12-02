@@ -15,26 +15,45 @@ import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
 
 import PrivateRoute from './PrivateRoute';
+
+// Layout para páginas normales (CON Footer)
+const MainLayout = () => (
+  <div className="flex flex-col min-h-screen">
+    <Header />
+    <main className="flex-1 main-content">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+);
+
+// Layout para Dashboard (SIN Footer, ya que el Dashboard maneja su propio layout)
+const DashboardLayout = () => (
+  <div className="flex flex-col min-h-screen">
+    <Header />
+    <Outlet />
+    <Footer />
+  </div>
+);
+
 const router = createBrowserRouter(
   [
     {
       path: '/',
-      element: (
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-1 main-content">
-            <Outlet />
-          </main>
-          <Footer />
-        </div>
-      ),
+      element: <MainLayout />,
       children: [
         { index: true, element: <Home /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: 'reportCreate', element: <PrivateRoute><ReportCreate /></PrivateRoute> },
-        { path: '/dashboard', element: <PrivateRoute><Dashboard /></PrivateRoute> },
         { path: 'profile', element: <PrivateRoute><Profile /></PrivateRoute> },
+      ],
+    },
+    {
+      path: '/dashboard',
+      element: <DashboardLayout />,
+      children: [
+        { index: true, element: <PrivateRoute><Dashboard /></PrivateRoute> },
       ],
     },
     {

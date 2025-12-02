@@ -285,8 +285,8 @@ const ReportForm = () => {
         formData.category.charAt(0).toUpperCase() +
         formData.category.slice(1).replace(/_/g, ' '),
       descripcion: formData.description,
-      latitud: formData.location.lat,
-      longitud: formData.location.lng,
+      latitud: parseFloat(formData.location.lat.toFixed(6)),
+      longitud: parseFloat(formData.location.lng.toFixed(6)),
       estado: 1,
       usuario: parseInt(userId),
       categoria: formData.category,

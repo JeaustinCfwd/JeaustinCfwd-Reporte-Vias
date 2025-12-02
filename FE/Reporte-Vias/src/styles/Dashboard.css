@@ -16,19 +16,28 @@ body {
    DASHBOARD WRAPPER & MAIN
    ============================ */
 
+.dashboard-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .dashboard-wrapper {
   background: #E4E9F7;
   min-height: 100vh;
+  flex: 1;
 }
 
 .dashboard-main {
   position: relative;
   background: #E4E9F7;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px - 250px); /* ← RESTA la altura estimada del footer */
   left: 260px;
   width: calc(100% - 260px);
   transition: all 0.5s ease;
   padding: 12px;
+  padding-bottom: 250px; /* ← ESPACIO para el footer */
+  margin-top: 60px;
 }
 
 .sidebar.close ~ .dashboard-main {
@@ -652,6 +661,7 @@ body {
 @media screen and (max-width: 400px) {
   .dashboard-main {
     padding: 1rem;
+    padding-top: 72px;
   }
 
   .dashboard-title {
@@ -683,4 +693,3 @@ body {
     gap: 0.5rem;
   }
 }
-

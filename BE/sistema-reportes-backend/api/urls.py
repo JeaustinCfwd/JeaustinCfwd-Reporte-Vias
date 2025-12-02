@@ -5,6 +5,7 @@ from .views import (
     CreateAdminUser, 
     CreateUser, 
     ReporteCreateView,
+    ReporteUpdateView,
     obtener_usuario_actual,
     EstadoCreateView,
     ComentarioCreateView,
@@ -44,9 +45,9 @@ urlpatterns = [
 
     # ===== USUARIO POR ID =====
     path('usuario/<int:id_usuario>/', UsuarioPorIdView.as_view(), name='usuario-por-id'),
-    
-    # ===== ELIMINAR COMENTARIO =====
+
+    # ===== ELIMINAR/EDITAR =====
     path('eliminar-comentario/<int:comentario_id>/', ComentarioDeleteView.as_view(), name='eliminar-comentario'),
-    # ===== ELIMINAR Reporte =====
     path('eliminar-reporte/<int:reporte_id>/', ReporteDeleteView.as_view(), name='eliminar-reporte'),
+    path('editar-reporte/<int:reporte_id>/', ReporteUpdateView.as_view(), name='editar-reporte'),
 ]

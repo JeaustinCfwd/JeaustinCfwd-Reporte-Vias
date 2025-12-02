@@ -6,12 +6,12 @@
 /* Sidebar Container */
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 60px; /* IMPORTANTE: Comienza DEBAJO del header */
   left: 0;
-  height: 100vh;
+  height: calc(100vh - 60px); /* IMPORTANTE: Altura menos el header */
   width: 260px;
   background: linear-gradient(135deg, #1a1d29 0%, #2d1b3d 100%);
-  z-index: 100;
+  z-index: 99; /* IMPORTANTE: Menor que el header (1001) */
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -71,7 +71,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 20px 12px 80px 12px;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 200px); /* Ajustado para el header */
 }
 
 .sidebar.close .nav-links {
@@ -266,10 +266,10 @@
 
 /* Profile Section */
 .sidebar .profile-details {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 260px;
+  position: relative; /* Cambiado de absolute a relative */
+  bottom: auto;
+  left: auto;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -280,11 +280,12 @@
   cursor: pointer;
   flex-shrink: 0;
   min-height: 70px;
+  margin-top: auto; /* Empuja el perfil al final del sidebar */
 }
 
 .sidebar.close .profile-details {
   background: rgba(255, 255, 255, 0.03);
-  width: 78px;
+  width: 100%;
   justify-content: center;
 }
 
@@ -365,11 +366,12 @@
 .dashboard-main {
   position: relative;
   background: #E4E9F7;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px); /* Altura menos el header */
   left: 260px;
   width: calc(100% - 260px);
   transition: all 0.5s ease;
   padding: 12px;
+  margin-top: 60px; /* IMPORTANTE: Espacio para el header fijo */
 }
 
 .sidebar.close ~ .dashboard-main {
@@ -399,6 +401,7 @@
 /* Responsive */
 @media screen and (max-width: 768px) {
   .sidebar {
+    top: 60px;
     width: 260px;
     transform: translateX(-100%);
   }
@@ -414,6 +417,7 @@
   .dashboard-main {
     left: 0;
     width: 100%;
+    margin-top: 60px;
   }
 
   .sidebar.close ~ .dashboard-main {
@@ -425,6 +429,7 @@
 @media screen and (max-width: 400px) {
   .sidebar {
     width: 240px;
+    top: 60px;
   }
   
   .sidebar.close {
@@ -444,6 +449,7 @@
     left: 240px;
     width: calc(100% - 240px);
     padding: 1rem;
+    margin-top: 60px;
   }
   
   .sidebar.close ~ .dashboard-main {
