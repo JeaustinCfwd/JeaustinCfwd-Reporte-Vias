@@ -120,25 +120,18 @@ const DashboardContent = () => {
     }
   }, [sidebarOpen]);
 
-  // ========== DATOS COMPUTADOS ==========
-  const filteredReports = useMemo(() => {
-    return reports.filter(report => {
-      if (filterState !== 'all' && report.state !== filterState) return false;
-      if (filterCategory !== 'all' && report.category !== filterCategory) return false;
-      if (filterDateFrom && new Date(report.timestamp) < new Date(filterDateFrom)) return false;
-      if (filterDateTo && new Date(report.timestamp) > new Date(filterDateTo)) return false;
-      
-      if (searchTerm) {
-        const search = searchTerm.toLowerCase();
-        return (
-          report.titulo?.toLowerCase().includes(search) ||
-          report.description?.toLowerCase().includes(search)
-        );
-      }
-      
-      return true;
-    });
-  }, [reports, filterState, filterCategory, filterDateFrom, filterDateTo, searchTerm]);
+  const [filteredReports,setFilteredReports] = useState([])
+
+
+  useEffect(()=>{
+    const traerReportes = async()=>{
+     const reports = await fetch(`http://127.0.0.1:8000/api/crear-reporte/`)
+     const data = await reports.json()
+     setFilteredReports(data)
+     console.log(data);
+    }
+     traerReportes()
+  },[])
 
   const statsByState = useMemo(() => {
     return filteredReports.reduce((acc, report) => {
@@ -300,8 +293,8 @@ const DashboardContent = () => {
         r.description || '',
         r.state || '',
         r.category || '',
-        r.lat || '',
-        r.lng || '',
+        r.latitud || '',
+        r.longitud || '',
         r.timestamp ? new Date(r.timestamp).toLocaleString('es-ES') : ''
       ]);
 

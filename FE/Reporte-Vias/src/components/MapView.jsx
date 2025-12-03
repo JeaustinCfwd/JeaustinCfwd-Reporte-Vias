@@ -62,13 +62,13 @@ const MapView = ({ filteredReports, statsByState }) => {
           />
           {filteredReports
             .filter(report =>
-              report.lat >= 8.0 && report.lat <= 11.5 &&
-              report.lng >= -86.0 && report.lng <= -82.5
+              report.latitud >= 8.0 && report.latitud <= 11.5 &&
+              report.longitud >= -86.0 && report.longitud <= -82.5
             )
             .map(report => (
               <Marker
                 key={report.id}
-                position={[report.lat, report.lng]}
+                position={[report.latitud, report.longitud]}
                 icon={stateIcons[report.state] || stateIcons.nuevo}
               >
                 <Popup>
