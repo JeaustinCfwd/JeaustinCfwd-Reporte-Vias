@@ -1,236 +1,413 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Menu, X, MapPin, User, LogOut } from 'lucide-react';
+import React, { useCallback, useLayoutEffect, useRef, useState, useContext } from 'react';
+import { gsap } from 'gsap';
 import { NavLink, useNavigate } from 'react-router-dom';
-import '../styles/Navbar.css';
+import "../styles/Navbar.css";
 import ShinyText from './ShinyText';
 import { AuthContext } from '../App';
 
-// ==================== CONSTANTES ====================
-const enlaces = [
-  { id: 'inicio', nombre: 'Inicio', ruta: '/' },
-  { id: 'reportar', nombre: 'Reportar', ruta: '/reportCreate', icono: <MapPin size={16} />, protected: true },
-  { id: 'mapa', nombre: 'Mapa', ruta: '/dashboard', protected: true },
-  { id: 'dashboard', nombre: 'Dashboard', ruta: '/dashboard', protected: true },
-];
+const Navbar = ({
+    position = 'right',
+    colors = ['#667eea', '#764ba2'],
+    displayItemNumbering = true,
+    menuButtonColor = '#fff',
+    openMenuButtonColor = '#fff',
+    accentColor = '#667eea',
+    changeMenuColorOnOpen = true,
+    closeOnClickAway = true,
+}) => {
+    const { user, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
 
-// ==================== COMPONENTE PRINCIPAL ====================
-const Navbar = () => {
-  // ========== HOOKS ==========
-  const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+    const openRef = useRef(false);
+    const panelRef = useRef(null);
+    const preLayersRef = useRef(null);
+    const preLayerElsRef = useRef([]);
+    const plusHRef = useRef(null);
+    const plusVRef = useRef(null);
+    const iconRef = useRef(null);
+    const textInnerRef = useRef(null);
+    const textWrapRef = useRef(null);
+    const textLines = ['Menu', 'Close'];
 
-  // ========== ESTADO ==========
-  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
+    const openTlRef = useRef(null);
+    const closeTweenRef = useRef(null);
+    const spinTweenRef = useRef(null);
+    const textCycleAnimRef = useRef(null);
+    const colorTweenRef = useRef(null);
+    const toggleBtnRef = useRef(null);
+    const busyRef = useRef(false);
+    const itemEntranceTweenRef = useRef(null);
 
-  // ========== EFECTOS ==========
-  useEffect(() => {
-    const handleUserChange = () => {
-      try {
-        // Opcional: Actualizar estado local si cambia localStorage
-        // Esto solo es necesario si AuthContext no se actualiza automáticamente
-        // Si AuthContext ya maneja la persistencia, este useEffect puede no ser necesario
-      } catch (e) {
-        console.error("Error parsing user from localStorage", e);
-      }
+    // Enlaces del menú
+    const menuItems = [
+        { label: 'Inicio', link: '/', protected: false },
+        { label: 'Reportar', link: '/reportCreate', protected: true },
+        { label: 'Mapa', link: '/dashboard', protected: true },
+        { label: 'Dashboard', link: '/dashboard', protected: true },
+    ];
+
+    const userItems = user
+        ? [
+            { label: 'Perfil', link: '/profile' },
+            {
+                label: 'Cerrar Sesión', link: '#', onClick: () => {
+                    logout();
+                    window.dispatchEvent(new Event('userChange'));
+                    closeMenu();
+                }
+            },
+        ]
+        : [{ label: 'Iniciar Sesión', link: '/login' }];
+
+    useLayoutEffect(() => {
+        const ctx = gsap.context(() => {
+            const panel = panelRef.current;
+            const preContainer = preLayersRef.current;
+            const plusH = plusHRef.current;
+            const plusV = plusVRef.current;
+            const icon = iconRef.current;
+            const textInner = textInnerRef.current;
+            if (!panel || !plusH || !plusV || !icon || !textInner) return;
+
+            let preLayers = [];
+            if (preContainer) {
+                preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
+            }
+            preLayerElsRef.current = preLayers;
+
+            const offscreen = position === 'left' ? -100 : 100;
+            gsap.set([panel, ...preLayers], { xPercent: offscreen });
+            gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
+            gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
+            gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
+            gsap.set(textInner, { yPercent: 0 });
+            if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+        });
+        return () => ctx.revert();
+    }, [menuButtonColor, position]);
+
+    const buildOpenTimeline = useCallback(() => {
+        const panel = panelRef.current;
+        const layers = preLayerElsRef.current;
+        if (!panel) return null;
+
+        openTlRef.current?.kill();
+        if (closeTweenRef.current) {
+            closeTweenRef.current.kill();
+            closeTweenRef.current = null;
+        }
+        itemEntranceTweenRef.current?.kill();
+
+        const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
+        const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
+
+        const layerStates = layers.map(el => ({ el, start: Number(gsap.getProperty(el, 'xPercent')) }));
+        const panelStart = Number(gsap.getProperty(panel, 'xPercent'));
+
+        if (itemEls.length) {
+            gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+        }
+        if (numberEls.length) {
+            gsap.set(numberEls, { '--sm-num-opacity': 0 });
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        layerStates.forEach((ls, i) => {
+            tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
+        });
+        const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0;
+        const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0);
+        const panelDuration = 0.65;
+        tl.fromTo(
+            panel,
+            { xPercent: panelStart },
+            { xPercent: 0, duration: panelDuration, ease: 'power4.out' },
+            panelInsertTime
+        );
+
+        if (itemEls.length) {
+            const itemsStartRatio = 0.15;
+            const itemsStart = panelInsertTime + panelDuration * itemsStartRatio;
+            tl.to(
+                itemEls,
+                {
+                    yPercent: 0,
+                    rotate: 0,
+                    duration: 1,
+                    ease: 'power4.out',
+                    stagger: { each: 0.1, from: 'start' }
+                },
+                itemsStart
+            );
+            if (numberEls.length) {
+                tl.to(
+                    numberEls,
+                    {
+                        duration: 0.6,
+                        ease: 'power2.out',
+                        '--sm-num-opacity': 1,
+                        stagger: { each: 0.08, from: 'start' }
+                    },
+                    itemsStart + 0.1
+                );
+            }
+        }
+
+        openTlRef.current = tl;
+        return tl;
+    }, []);
+
+    const playOpen = useCallback(() => {
+        if (busyRef.current) return;
+        busyRef.current = true;
+        const tl = buildOpenTimeline();
+        if (tl) {
+            tl.eventCallback('onComplete', () => {
+                busyRef.current = false;
+            });
+            tl.play(0);
+        } else {
+            busyRef.current = false;
+        }
+    }, [buildOpenTimeline]);
+
+    const playClose = useCallback(() => {
+        openTlRef.current?.kill();
+        openTlRef.current = null;
+        itemEntranceTweenRef.current?.kill();
+
+        const panel = panelRef.current;
+        const layers = preLayerElsRef.current;
+        if (!panel) return;
+
+        const all = [...layers, panel];
+        closeTweenRef.current?.kill();
+        const offscreen = position === 'left' ? -100 : 100;
+        closeTweenRef.current = gsap.to(all, {
+            xPercent: offscreen,
+            duration: 0.32,
+            ease: 'power3.in',
+            overwrite: 'auto',
+            onComplete: () => {
+                const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
+                if (itemEls.length) {
+                    gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+                }
+                const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
+                if (numberEls.length) {
+                    gsap.set(numberEls, { '--sm-num-opacity': 0 });
+                }
+                busyRef.current = false;
+            }
+        });
+    }, [position]);
+
+    const animateIcon = useCallback(opening => {
+        const icon = iconRef.current;
+        if (!icon) return;
+        spinTweenRef.current?.kill();
+        if (opening) {
+            spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto' });
+        } else {
+            spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto' });
+        }
+    }, []);
+
+    const animateColor = useCallback(
+        opening => {
+            const btn = toggleBtnRef.current;
+            if (!btn) return;
+            colorTweenRef.current?.kill();
+            if (changeMenuColorOnOpen) {
+                const targetColor = opening ? openMenuButtonColor : menuButtonColor;
+                colorTweenRef.current = gsap.to(btn, {
+                    color: targetColor,
+                    delay: 0.18,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            } else {
+                gsap.set(btn, { color: menuButtonColor });
+            }
+        },
+        [openMenuButtonColor, menuButtonColor, changeMenuColorOnOpen]
+    );
+
+    React.useEffect(() => {
+        if (toggleBtnRef.current) {
+            if (changeMenuColorOnOpen) {
+                const targetColor = openRef.current ? openMenuButtonColor : menuButtonColor;
+                gsap.set(toggleBtnRef.current, { color: targetColor });
+            } else {
+                gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+            }
+        }
+    }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
+
+    const animateText = useCallback(opening => {
+        const inner = textInnerRef.current;
+        if (!inner) return;
+        textCycleAnimRef.current?.kill();
+
+        // Simple slide animation: Menu (0%) -> Close (-50%)
+        // Assuming textLines is fixed as ['Menu', 'Close']
+        const targetPercent = opening ? -50 : 0;
+
+        textCycleAnimRef.current = gsap.to(inner, {
+            yPercent: targetPercent,
+            duration: 0.5,
+            ease: 'power4.out'
+        });
+    }, []);
+
+    const toggleMenu = useCallback(() => {
+        const target = !openRef.current;
+        openRef.current = target;
+        setOpen(target);
+        if (target) {
+            playOpen();
+        } else {
+            playClose();
+        }
+        animateIcon(target);
+        animateColor(target);
+        animateText(target);
+    }, [playOpen, playClose, animateIcon, animateColor, animateText]);
+
+    const closeMenu = useCallback(() => {
+        if (openRef.current) {
+            openRef.current = false;
+            setOpen(false);
+            playClose();
+            animateIcon(false);
+            animateColor(false);
+            animateText(false);
+        }
+    }, [playClose, animateIcon, animateColor, animateText]);
+
+    React.useEffect(() => {
+        if (!closeOnClickAway || !open) return;
+
+        const handleClickOutside = event => {
+            if (panelRef.current && !panelRef.current.contains(event.target)) {
+                closeMenu();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [closeOnClickAway, open, closeMenu]);
+
+    const handleProtectedClick = (e, link) => {
+        if (!user) {
+            e.preventDefault();
+            navigate('/login', {
+                state: {
+                    from: link,
+                    message: 'Debes iniciar sesión para acceder a esta función.'
+                }
+            });
+            closeMenu();
+        }
     };
 
-    window.addEventListener('storage', handleUserChange);
-
-    return () => {
-      window.removeEventListener('storage', handleUserChange);
-    };
-  }, []);
-
-  // ========== FUNCIONES DE MANEJO ==========
-  const handleLogout = useCallback(() => {
-    logout();
-    // Disparar un evento personalizado para notificar a otros componentes
-    window.dispatchEvent(new Event('userChange'));
-    setMenuMovilAbierto(false);
-  }, [logout]);
-
-  const handleProtectedClick = useCallback(() => {
-    navigate('/login', {
-      state: {
-        from: window.location.pathname,
-        message: 'Debes iniciar sesión para acceder a esta función.'
-      }
-    });
-    setMenuMovilAbierto(false);
-  }, [navigate]);
-
-  const toggleMenuMovil = useCallback(() => {
-    setMenuMovilAbierto(prev => !prev);
-  }, []);
-
-  const closeMenuMovil = useCallback(() => {
-    setMenuMovilAbierto(false);
-  }, []);
-
-  // ========== COMPONENTES AUXILIARES ==========
-  const renderNavLink = (enlace) => {
-    if (enlace.protected && !user) {
-      return (
-        <button
-          onClick={handleProtectedClick}
-          className="enlace-nav btn-reset"
-        >
-          {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-          {enlace.nombre}
-        </button>
-      );
-    }
-
     return (
-      <NavLink
-        to={enlace.ruta}
-        className="enlace-nav"
-      >
-        {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-        {enlace.nombre}
-      </NavLink>
-    );
-  };
-
-  const renderMobileNavLink = (enlace) => {
-    if (enlace.protected && !user) {
-      return (
-        <button
-          key={enlace.id}
-          onClick={handleProtectedClick}
-          className="enlace-movil btn-reset mobile-full-width"
+        <div
+            className="staggered-menu-wrapper fixed-wrapper"
+            style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
+            data-position={position}
+            data-open={open || undefined}
         >
-          {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-          {enlace.nombre}
-        </button>
-      );
-    }
-
-    return (
-      <NavLink
-        key={enlace.id}
-        to={enlace.ruta}
-        className="enlace-movil"
-        onClick={closeMenuMovil}
-      >
-        {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
-        {enlace.nombre}
-      </NavLink>
-    );
-  };
-
-  // ========== RENDER PRINCIPAL ==========
-  return (
-    <header className="navbar-sitio">
-      <div className="contenedor-navbar">
-        {/* Logo */}
-        <div className="logo-sitio">
-          <NavLink to="/" className="logo-link">
-            <h1 style={{ margin: 0 }}>
-              <ShinyText text="ReporteVías CR" speed={3} />
-            </h1>
-          </NavLink>
-        </div>
-
-        {/* ==================== MENÚ ESCRITORIO ==================== */}
-        <nav className="navegacion-desktop">
-          <ul className="nav-lista">
-            {/* Enlaces principales */}
-            {enlaces.map(enlace => (
-              <li key={enlace.id}>
-                {renderNavLink(enlace)}
-              </li>
-            ))}
-
-            {/* Enlaces de usuario */}
-            {user ? (
-              <>
-                <li>
-                  <NavLink
-                    to="/profile"
-                    className="enlace-nav"
-                  >
-                    <User size={16} className="inline mr-1" />
-                    Perfil
-                  </NavLink>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="enlace-nav btn-reset"
-                  >
-                    <LogOut size={16} className="inline mr-1" />
-                    Cerrar Sesión
-                  </button>
-                </li>
-              </>
-            ) : (
-              <li>
-                <NavLink
-                  to="/login"
-                  className={({ isActive }) => `enlace-nav boton-login ${isActive ? 'activo' : ''}`}
-                >
-                  Iniciar Sesión
-                </NavLink>
-              </li>
-            )}
-          </ul>
-        </nav>
-
-        {/* Botón menú móvil */}
-        <button
-          onClick={toggleMenuMovil}
-          className="boton-menu-movil"
-          aria-expanded={menuMovilAbierto}
-          aria-controls="menu-movil-container"
-          aria-label={menuMovilAbierto ? "Cerrar menú" : "Abrir menú"}
-        >
-          {menuMovilAbierto ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* ==================== MENÚ MÓVIL ==================== */}
-      {menuMovilAbierto && (
-        <div className="menu-movil" id="menu-movil-container">
-          <nav className="navegacion-movil">
-            {/* Enlaces principales */}
-            {enlaces.map(enlace => renderMobileNavLink(enlace))}
-
-            <hr className="separador-movil" />
-
-            {/* Enlaces de usuario */}
-            {user ? (
-              <>
-                <NavLink
-                  to="/profile"
-                  className="enlace-movil"
-                  onClick={closeMenuMovil}
-                >
-                  <User size={16} className="inline mr-2" />
-                  Perfil
-                </NavLink>
+            <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
+                {(() => {
+                    const raw = colors && colors.length ? colors.slice(0, 4) : ['#667eea', '#764ba2'];
+                    let arr = [...raw];
+                    if (arr.length >= 3) {
+                        const mid = Math.floor(arr.length / 2);
+                        arr.splice(mid, 1);
+                    }
+                    return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
+                })()}
+            </div>
+            <header className="staggered-menu-header" aria-label="Main navigation header">
+                <div className="sm-logo" aria-label="Logo">
+                    <NavLink to="/" style={{ textDecoration: 'none' }}>
+                        <ShinyText text="ReporteVías CR" speed={3} />
+                    </NavLink>
+                </div>
                 <button
-                  onClick={handleLogout}
-                  className="enlace-movil boton-login-movil btn-reset mobile-full-width"
+                    ref={toggleBtnRef}
+                    className="sm-toggle"
+                    aria-label={open ? 'Close menu' : 'Open menu'}
+                    aria-expanded={open}
+                    aria-controls="staggered-menu-panel"
+                    onClick={toggleMenu}
+                    type="button"
                 >
-                  <LogOut size={16} className="inline mr-2" />
-                  Cerrar Sesión
+                    <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
+                        <span ref={textInnerRef} className="sm-toggle-textInner">
+                            {textLines.map((l, i) => (
+                                <span className="sm-toggle-line" key={i}>
+                                    {l}
+                                </span>
+                            ))}
+                        </span>
+                    </span>
+                    <span ref={iconRef} className="sm-icon" aria-hidden="true">
+                        <span ref={plusHRef} className="sm-icon-line" />
+                        <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
+                    </span>
                 </button>
-              </>
-            ) : (
-              <NavLink
-                to="/login"
-                className="enlace-movil boton-login-movil"
-                onClick={closeMenuMovil}
-              >
-                Iniciar Sesión
-              </NavLink>
-            )}
-          </nav>
+            </header>
+
+            <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
+                <div className="sm-panel-inner">
+                    <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
+                        {menuItems.map((it, idx) => (
+                            <li className="sm-panel-itemWrap" key={it.label + idx}>
+                                <NavLink
+                                    className="sm-panel-item"
+                                    to={it.link}
+                                    data-index={idx + 1}
+                                    onClick={(e) => {
+                                        if (it.protected) {
+                                            handleProtectedClick(e, it.link);
+                                        } else {
+                                            closeMenu();
+                                        }
+                                    }}
+                                >
+                                    <span className="sm-panel-itemLabel">{it.label}</span>
+                                </NavLink>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="sm-socials" aria-label="User menu">
+                        <h3 className="sm-socials-title">Cuenta</h3>
+                        <ul className="sm-socials-list" role="list">
+                            {userItems.map((s, i) => (
+                                <li key={s.label + i} className="sm-socials-item">
+                                    {s.onClick ? (
+                                        <button onClick={s.onClick} className="sm-socials-link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}>
+                                            {s.label}
+                                        </button>
+                                    ) : (
+                                        <NavLink to={s.link} className="sm-socials-link" onClick={closeMenu}>
+                                            {s.label}
+                                        </NavLink>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </aside>
         </div>
-      )}
-    </header>
-  );
+    );
 };
 
 export default Navbar;

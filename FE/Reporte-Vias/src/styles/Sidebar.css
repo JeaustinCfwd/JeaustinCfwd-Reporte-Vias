@@ -35,7 +35,7 @@
 /* Sidebar Container */
 .sidebar {
   position: fixed;
-  top: 60px;
+  top: 100px;
   left: 0;
   height: calc(100vh - 60px);
   width: var(--sidebar-width-expanded);
