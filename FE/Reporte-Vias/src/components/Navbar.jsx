@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Menu, X, MapPin, User, LogOut } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import '../styles/Header.css';
+import '../styles/Navbar.css';
 import ShinyText from './ShinyText';
 import { AuthContext } from '../App';
 
@@ -14,7 +14,7 @@ const enlaces = [
 ];
 
 // ==================== COMPONENTE PRINCIPAL ====================
-const Header = () => {
+const Navbar = () => {
   // ========== HOOKS ==========
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -50,11 +50,11 @@ const Header = () => {
   }, [logout]);
 
   const handleProtectedClick = useCallback(() => {
-    navigate('/login', { 
-      state: { 
-        from: window.location.pathname, 
-        message: 'Debes iniciar sesión para acceder a esta función.' 
-      } 
+    navigate('/login', {
+      state: {
+        from: window.location.pathname,
+        message: 'Debes iniciar sesión para acceder a esta función.'
+      }
     });
     setMenuMovilAbierto(false);
   }, [navigate]);
@@ -84,7 +84,7 @@ const Header = () => {
     return (
       <NavLink
         to={enlace.ruta}
-       className="enlace-nav"
+        className="enlace-nav"
       >
         {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
         {enlace.nombre}
@@ -121,11 +121,11 @@ const Header = () => {
 
   // ========== RENDER PRINCIPAL ==========
   return (
-    <header className="encabezado-sitio">
+    <header className="navbar-sitio">
       <div className="contenedor-navbar">
         {/* Logo */}
         <div className="logo-sitio">
-          <NavLink to="/" className="logo-link"> 
+          <NavLink to="/" className="logo-link">
             <h1 style={{ margin: 0 }}>
               <ShinyText text="ReporteVías CR" speed={3} />
             </h1>
@@ -148,7 +148,7 @@ const Header = () => {
                 <li>
                   <NavLink
                     to="/profile"
-                   className="enlace-nav"
+                    className="enlace-nav"
                   >
                     <User size={16} className="inline mr-1" />
                     Perfil
@@ -178,10 +178,10 @@ const Header = () => {
         </nav>
 
         {/* Botón menú móvil */}
-        <button 
-          onClick={toggleMenuMovil} 
-          className="boton-menu-movil" 
-          aria-expanded={menuMovilAbierto} 
+        <button
+          onClick={toggleMenuMovil}
+          className="boton-menu-movil"
+          aria-expanded={menuMovilAbierto}
           aria-controls="menu-movil-container"
           aria-label={menuMovilAbierto ? "Cerrar menú" : "Abrir menú"}
         >
@@ -195,9 +195,9 @@ const Header = () => {
           <nav className="navegacion-movil">
             {/* Enlaces principales */}
             {enlaces.map(enlace => renderMobileNavLink(enlace))}
-            
+
             <hr className="separador-movil" />
-            
+
             {/* Enlaces de usuario */}
             {user ? (
               <>
@@ -233,4 +233,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Navbar;

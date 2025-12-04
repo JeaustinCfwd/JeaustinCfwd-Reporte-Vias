@@ -5,7 +5,7 @@ import {
   Navigate,
   Outlet,
 } from 'react-router-dom';
-import Header from '../components/Header';
+import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
@@ -19,7 +19,7 @@ import PrivateRoute from './PrivateRoute';
 // Layout para páginas normales (CON Footer)
 const MainLayout = () => (
   <div className="flex flex-col min-h-screen">
-    <Header />
+    <Navbar />
     <main className="flex-1 main-content">
       <Outlet />
     </main>
@@ -30,7 +30,7 @@ const MainLayout = () => (
 // Layout para Dashboard (SIN Footer, ya que el Dashboard maneja su propio layout)
 const DashboardLayout = () => (
   <div className="flex flex-col min-h-screen">
-    <Header />
+    <Navbar />
     <Outlet />
     <Footer />
   </div>

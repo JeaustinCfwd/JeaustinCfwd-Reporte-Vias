@@ -1,16 +1,21 @@
-/* Contenedor principal del encabezado */
-.encabezado-sitio {
-  position: fixed;      /* Fijo en la parte superior */
+/* Contenedor principal del navbar */
+.navbar-sitio {
+  position: fixed;
+  /* Fijo en la parte superior */
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1001;        /* Muy por encima del fondo del inicio de sesión */
-  background-color: #111827; /* Fondo oscuro semitransparente */
+  z-index: 1001;
+  /* Muy por encima del fondo del inicio de sesión */
+  background-color: #111827;
+  /* Fondo oscuro semitransparente */
   color: #fff;
   padding: 10px 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  height: 60px; /* Altura fija */
-  line-height: 40px; /* Ajustar altura de línea para alineación vertical */
+  height: 60px;
+  /* Altura fija */
+  line-height: 40px;
+  /* Ajustar altura de línea para alineación vertical */
 }
 
 /* Contenedor interno para alinear logo y navegación */
@@ -34,7 +39,8 @@
   display: flex;
   gap: 20px;
   list-style: none;
-  align-items: center; /* Agregado para alinear elementos de navegación verticalmente */
+  align-items: center;
+  /* Agregado para alinear elementos de navegación verticalmente */
 }
 
 .enlace-nav {
@@ -159,9 +165,10 @@
   text-align: left;
 }
 
-/* Clase para compensar el encabezado fijo */
+/* Clase para compensar el navbar fijo */
 .main-content {
-  padding-top: 60px; /* Altura del encabezado */
+  padding-top: 60px;
+  /* Altura del navbar */
 }
 
 /* Responsivo */
@@ -169,6 +176,7 @@
   .navegacion-desktop {
     display: none;
   }
+
   .boton-menu-movil {
     display: block;
   }
