@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { MapPinHouse, Cctv } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
-import gsap from 'gsap';
 import '../styles/ReportForm.css';
 import Prism from './PrismOGL';
+import RPFotos from './RPFotos';
+import RPDescripcion from './RPDescripcion';
+import RPCategoria from './RPCategoria';
+import RPUbicacion from './RPUbicacion';
+import RPBoton from './RPBoton';
+import { INITIAL_LOCATION } from './RPConstantes';
 
 // ==========================
 // AUX: Cambiar centro del mapa
@@ -61,32 +62,15 @@ const ReportForm = () => {
   photos: [],
   description: '',
   category: '',
-  location: { latitud: 9.7489, longitud: -83.7534 }, // Centro de Costa Rica
+  location: INITIAL_LOCATION,
  });
 
  const [selectedFiles, setSelectedFiles] = useState([]);
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [submitSuccess, setSubmitSuccess] = useState(false);
  const [submitError, setSubmitError] = useState('');
- const [addressSearch, setAddressSearch] = useState('');
- const [isSearching, setIsSearching] = useState(false);
- const [searchError, setSearchError] = useState('');
 
- const categories = [
-  { value: 'bache', label: 'Bache' },
-  { value: 'semaforo_danado', label: 'Semáforo dañado' },
-  { value: 'senalizacion_deficiente', label: 'Señalización deficiente' },
-  { value: 'alcantarilla_danada', label: 'Alcantarilla dañada' },
-  { value: 'iluminacion_deficiente', label: 'Iluminación deficiente' },
-  { value: 'inundacion', label: 'Inundación' },
-  { value: 'derrumbe', label: 'Derrumbe' },
-  { value: 'arbol_caido', label: 'Árbol Caído' },
-  { value: 'hundimiento_calzada', label: 'Hundimiento de Calzada' },
-  { value: 'fuga_agua', label: 'Fuga de Agua' },
-  { value: 'cableado_caido', label: 'Cableado Caído' },
-  { value: 'obstruccion_via', label: 'Obstrucción de Vía' },
-  { value: 'otro', label: 'Otro' },
- ];
+
 
  // ==========================
  // Animación del botón TRUCK
@@ -174,68 +158,6 @@ const ReportForm = () => {
  const handleInputChange = (e) => {
   const { name, value } = e.target;
   setFormData((prev) => ({ ...prev, [name]: value }));
- };
-
- // ==========================
- // Inputs Lat / Lng
- // ==========================
- const handleLocationChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({
-   ...prev,
-   location: {
-    ...prev.location,
-    [name]: parseFloat(value) || prev.location[name],
-   },
-  }));
- };
-
- // ==========================
- // Búsqueda de dirección
- // ==========================
- const handleAddressSearch = async () => {
-  if (!addressSearch.trim()) {
-   setSearchError('Por favor ingresa una dirección');
-   return;
-  }
-
-  setIsSearching(true);
-  setSearchError('');
-
-  try {
-   const query = encodeURIComponent(`${addressSearch}, Costa Rica`);
-   const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=cr&limit=5`,
-    {
-     headers: { 'User-Agent': 'ReporteViasCR/1.0' },
-    }
-   );
-
-   if (!response.ok) throw new Error('Error al buscar la dirección');
-
-   const data = await response.json();
-
-   if (data.length === 0) {
-    setSearchError(
-     'No se encontró la dirección. Intenta buscar: "Desamparados", "La Capri" o el cantón/distrito más cercano.'
-    );
-    return;
-   }
-
-   const { lat, lon } = data[0];   
-
-   setFormData((prev) => ({
-    ...prev,
-    location: {
-     latitud: parseFloat(lat),
-     longitud: parseFloat(lon),  
-    },
-   }));
-  } catch (error) {
-   setSearchError(error.message);
-  } finally {
-   setIsSearching(false);
-  }
  };
 
 
@@ -326,7 +248,7 @@ const ReportForm = () => {
     photos: [],
     description: '',
     category: '',
-    location: { latitud: 9.7489, longitud: -83.7534 },
+    location: INITIAL_LOCATION,
    });
    setSelectedFiles([]);
   } catch (err) {
@@ -364,204 +286,11 @@ const ReportForm = () => {
     </p>
 
     <form onSubmit={handleSubmit} className="report-form">
-
-     {/* === Fotos === */}
-     <section className="form-section">
-      <h2 className="section-title">
-       <Cctv className="section-icon" /> Fotos del Problema
-      </h2>
-
-      <div className="file-upload">
-       <input
-        type="file"
-        id="photos"
-        multiple
-        accept="image/*"
-        onChange={handleFileChange}
-        className="file-input"
-       />
-
-       <label htmlFor="photos" className="file-label">
-        Haz clic para subir fotos o arrastra aquí
-       </label>
-
-       {selectedFiles.length > 0 && (
-        <p className="file-count">
-         {selectedFiles.length} foto(s) seleccionada(s)
-        </p>
-       )}
-      </div>
-     </section>
-
-     {/* === Descripción === */}
-     <section className="form-section">
-      <h2 className="section-title">Descripción del Problema</h2>
-      <textarea
-       name="description"
-       value={formData.description}
-       onChange={handleInputChange}
-       placeholder="Describe el problema vial..."
-       rows={4}
-       className="textarea-input"
-       required
-      ></textarea>
-     </section>
-
-     {/* === Categorías === */}
-     <section className="form-section">
-      <h2 className="section-title">Categoría</h2>
-      <select
-       name="category"
-       value={formData.category}
-       onChange={handleInputChange}
-       className="select-input"
-       required
-      >
-       <option value="" disabled>
-        Selecciona una categoría
-       </option>
-       {categories.map((cat) => (
-        <option key={cat.value} value={cat.value}>
-         {cat.label}
-        </option>
-       ))}
-      </select>
-     </section>
-
-     {/* === UBICACIÓN === */}
-     <section className="form-section">
-      <h2 className="section-title">
-       <MapPinHouse className="section-icon" /> Ubicación
-      </h2>
-
-      {/* Búsqueda */}
-      <div className="address-search-container">
-       <input
-        type="text"
-        placeholder="Ej: La Capri, Desamparados"
-        onChange={(e) => setAddressSearch(e.target.value)}
-        onKeyPress={(e) =>
-         e.key === 'Enter' && (e.preventDefault(), handleAddressSearch())
-        }
-        className="address-search-input"
-       />
-
-       <button
-        type="button"
-        onClick={handleAddressSearch}
-        disabled={isSearching}
-        className="address-search-button"
-       >
-        <span>{isSearching ? 'Buscando...' : 'Buscar'}</span>
-        <span></span>
-       </button>
-
-       {searchError && <p className="search-error">{searchError}</p>}
-      </div>
-
-      {/* MAPA */}
-      <div className="map-container">
-       <MapContainer
-        center={[formData.location.latitud, formData.location.longitud]}
-        zoom={7}
-        minZoom={6}
-        maxZoom={18}
-        maxBounds={[
-         [8.0, -86.0],
-         [11.5, -82.5],
-        ]}
-        maxBoundsViscosity={1.0}
-        style={{ height: '600px', width: '100%' }}
-        className="leaflet-map"
-       >
-        <ChangeMapView
-         center={[formData.location.latitud, formData.location.longitud]}
-         zoom={7}
-        />
-
-        <MapClickHandler
-         onLocationChange={(loc) => {
-          if (
-           loc.latitud >= 8.0 &&
-           loc.latitud <= 11.5 &&
-           loc.longitud >= -86.0 &&
-           loc.longitud <= -82.5
-          ) {
-           setFormData((prev) => ({ ...prev, location: loc }));
-          } else {
-           warning('Solo puedes marcar ubicaciones dentro de Costa Rica');
-          }
-         }}
-        />
-
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-        <Marker
-         position={[formData.location.latitud, formData.location.longitud]}
-         draggable={true}
-         eventHandlers={{
-          dragend: (e) => {
-           const newPos = e.target.getLatLng();
-           if (
-            newPos.latitud >= 8.0 &&
-            newPos.latitud <= 11.5 &&
-            newPos.longitud >= -86.0 &&
-            newPos.longitud <= -82.5
-           ) {
-            setFormData((prev) => ({
-             ...prev,
-             location: newPos,
-            }));
-           } else {
-            warning(
-             'Solo puedes marcar ubicaciones dentro de Costa Rica'
-            );
-           }
-          },
-         }}
-        />
-       </MapContainer>
-      </div>
-
-      {/* Inputs Lat/Lng */}
-      <div className="location-inputs">
-       <input
-        type="number"
-        name="lat"
-        value={formData.location.latitud}
-        onChange={handleLocationChange}
-        step="any"
-        className="location-input"
-       />
-       <input
-        type="number"
-        name="lng"
-        value={formData.location.longitud}
-        onChange={handleLocationChange}
-        step="any"
-        className="location-input"
-       />
-      </div>
-     </section>
-
-     {/* BOTÓN SUBMIT ANIMADO */}
-     <button type="submit" className="truck-button" disabled={isSubmitting}>
-      <span className="default">Enviar Reporte</span>
-
-      <span className="success">
-       Reporte Enviado
-       <svg viewBox="0 0 12 10">
-        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-       </svg>
-      </span>
-
-      <div className="truck">
-       <div className="wheel"></div>
-       <div className="back"></div>
-       <div className="front"></div>
-       <div className="box"></div>
-      </div>
-     </button>
+     <RPFotos onFileChange={handleFileChange} selectedFiles={selectedFiles} />
+     <RPDescripcion value={formData.description} onChange={handleInputChange} />
+     <RPCategoria value={formData.category} onChange={handleInputChange} />
+     <RPUbicacion location={formData.location} onLocationChange={(loc) => setFormData((prev) => ({ ...prev, location: loc }))} />
+     <RPBoton isSubmitting={isSubmitting} />
     </form>
 
     {submitSuccess && <p className="success-message">Reporte enviado exitosamente!</p>}

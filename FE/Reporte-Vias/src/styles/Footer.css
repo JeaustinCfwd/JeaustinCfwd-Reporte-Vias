@@ -9,6 +9,7 @@
   left: 0;
   width: 100%;
   transition: all 0.5s ease;
+  z-index: 100; /* Mayor que el sidebar (99) */
 }
 
 /* IMPORTANTE: Ajuste para cuando hay sidebar visible */

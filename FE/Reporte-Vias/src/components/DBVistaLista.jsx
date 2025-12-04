@@ -17,9 +17,9 @@ const categories = [
   { value: 'otro', label: 'Otro' },
 ];
 
-const ListView = ({ 
-  filteredReports, 
-  handleUpdateState, 
+const DBVistaLista = ({
+  filteredReports,
+  handleUpdateState,
   handleDeleteReport,
   handleUpdateReport
 }) => {
@@ -124,8 +124,8 @@ const ListView = ({
 
                 {/* Estado con dropdown */}
                 <td>
-                  <select 
-                    value={getEstadoNombre(report.estado)} 
+                  <select
+                    value={getEstadoNombre(report.estado)}
                     onChange={(e) => handleUpdateState(report.id, getEstadoId(e.target.value))}
                     className="state-select"
                   >
@@ -158,19 +158,19 @@ const ListView = ({
 
                 {/* Fecha */}
                 <td>
-                  {report.fecha_creacion 
+                  {report.fecha_creacion
                     ? new Date(report.fecha_creacion).toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })
                     : '-'
                   }
                 </td>
-                
+
                 {/* Acciones */}
                 <td>
-                  <button 
+                  <button
                     onClick={() => handleDeleteReport(report.id)}
                     className="delete-btn-small"
                     title="Eliminar"
@@ -192,4 +192,4 @@ const ListView = ({
   );
 };
 
-export default ListView;
+export default DBVistaLista;

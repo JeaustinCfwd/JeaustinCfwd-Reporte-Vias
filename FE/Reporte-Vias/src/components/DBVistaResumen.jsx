@@ -3,13 +3,13 @@ import { Bar, Pie, Line } from 'react-chartjs-2';
 import { FcBarChart, FcOpenedFolder, FcAbout } from "react-icons/fc";
 import { GiMagnifyingGlass } from "react-icons/gi";
 
-const OverviewView = ({ 
-  filteredReports, 
-  statsByState, 
-  timelineData, 
-  stateData, 
-  categoryData, 
-  CHART_OPTIONS 
+const DBVistaResumen = ({
+  filteredReports,
+  statsByState,
+  timelineData,
+  stateData,
+  categoryData,
+  CHART_OPTIONS
 }) => {
   return (
     <div className="overview-content">
@@ -73,4 +73,4 @@ const OverviewView = ({
   );
 };
 
-export default OverviewView;
+export default DBVistaResumen;

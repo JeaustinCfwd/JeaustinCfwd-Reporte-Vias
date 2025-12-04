@@ -3,14 +3,14 @@ import { Bar, Pie } from 'react-chartjs-2';
 import { FcOpenedFolder, FcAbout } from "react-icons/fc";
 import { GiMagnifyingGlass } from "react-icons/gi";
 
-const StatsView = ({ 
-  reports, 
-  filteredReports, 
-  statsByState, 
-  statsByCategory, 
-  stateData, 
-  categoryData, 
-  CHART_OPTIONS 
+const DBVistaEstadisticas = ({
+  reports,
+  filteredReports,
+  statsByState,
+  statsByCategory,
+  stateData,
+  categoryData,
+  CHART_OPTIONS
 }) => {
   return (
     <div className="stats-content">
@@ -28,8 +28,8 @@ const StatsView = ({
           <div className="metric-row">
             <span>Tasa de Atención:</span>
             <strong>
-              {reports.length > 0 
-                ? ((statsByState.atendido || 0) / reports.length * 100).toFixed(1) 
+              {reports.length > 0
+                ? ((statsByState.atendido || 0) / reports.length * 100).toFixed(1)
                 : 0}%
             </strong>
           </div>
@@ -84,4 +84,4 @@ const StatsView = ({
   );
 };
 
-export default StatsView;
+export default DBVistaEstadisticas;

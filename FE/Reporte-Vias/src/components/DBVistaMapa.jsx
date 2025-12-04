@@ -26,7 +26,7 @@ const stateIcons = {
   atendido: createCustomIcon('#48BB78')
 };
 
-const MapView = ({ filteredReports, statsByState }) => {
+const DBVistaMapa = ({ filteredReports, statsByState }) => {
   return (
     <div className="map-content">
       <div className="map-legend">
@@ -44,7 +44,7 @@ const MapView = ({ filteredReports, statsByState }) => {
           <span>Atendidos ({statsByState.atendido || 0})</span>
         </div>
       </div>
-      
+
       <div className="map-container-wrapper">
         <MapContainer
           center={[9.7489, -83.7534]}
@@ -85,4 +85,4 @@ const MapView = ({ filteredReports, statsByState }) => {
   );
 };
 
-export default MapView;
+export default DBVistaMapa;

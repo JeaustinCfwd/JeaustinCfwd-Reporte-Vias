@@ -84,7 +84,7 @@ const Header = () => {
     return (
       <NavLink
         to={enlace.ruta}
-        className={({ isActive }) => `enlace-nav ${isActive ? 'activo' : ''}`}
+       className="enlace-nav"
       >
         {enlace.icono && <span className="icono-enlace">{enlace.icono}</span>}
         {enlace.nombre}
@@ -148,7 +148,7 @@ const Header = () => {
                 <li>
                   <NavLink
                     to="/profile"
-                    className={({ isActive }) => `enlace-nav ${isActive ? 'activo' : ''}`}
+                   className="enlace-nav"
                   >
                     <User size={16} className="inline mr-1" />
                     Perfil

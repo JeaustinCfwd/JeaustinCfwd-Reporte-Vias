@@ -1,7 +1,18 @@
 import React, { useState } from "react";
 import "../styles/Sidebar.css";
+import {
+  LayoutDashboard,
+  BarChart3,
+  Folder,
+  Map,
+  LineChart,
+  Download,
+  User,
+  LogOut,
+  ChevronDown
+} from 'lucide-react';
 
-const DashboardSidebar = ({
+const DBSidebar = ({
   sidebarOpen,
   setSidebarOpen,
   activeView,
@@ -21,18 +32,22 @@ const DashboardSidebar = ({
     <aside className={`sidebar ${sidebarOpen ? "" : "close"}`}>
       {/* LOGO */}
       <div className="logo-details">
-        <i className="bx bx-grid-alt"></i>
-        <span className="logo_name">ReporteVías CR</span>
+        <LayoutDashboard size={20} />
+        <span className="logo_name">Dashboard</span>
       </div>
 
       <ul className="nav-links">
         {/* RESUMEN GENERAL */}
         <li>
-          <a 
-            onClick={() => setActiveView("overview")}
-            className={activeView === "overview" ? "active" : ""}
+          <a
+            onClick={() => {
+              console.log('Cambiando a overview, activeView actual:', activeView);
+              setActiveView("overview");
+            }}
+
+            style={{ cursor: 'pointer' }}
           >
-            <i className="bx bx-stats"></i>
+            <BarChart3 size={20} />
             <span className="link_name">Resumen General</span>
           </a>
           <ul className="sub-menu blank">
@@ -43,14 +58,18 @@ const DashboardSidebar = ({
         {/* REPORTES SUBMENU */}
         <li className={openMenus.reportes ? "showMenu" : ""}>
           <div className="iocn-link">
-            <a onClick={() => setActiveView("list")}>
-              <i className="bx bx-folder"></i>
+            <a onClick={() => {
+              console.log('Cambiando a list, activeView actual:', activeView);
+              setActiveView("list");
+            }} style={{ cursor: 'pointer' }}>
+              <Folder size={20} />
               <span className="link_name">Reportes</span>
             </a>
-            <i
-              className="bx bxs-chevron-down arrow"
+            <ChevronDown
+              size={16}
+              className="arrow"
               onClick={() => toggleMenu("reportes")}
-            ></i>
+            />
           </div>
 
           <ul className="sub-menu">
@@ -63,11 +82,14 @@ const DashboardSidebar = ({
 
         {/* MAPA */}
         <li>
-          <a 
-            onClick={() => setActiveView("map")}
-            className={activeView === "map" ? "active" : ""}
+          <a
+            onClick={() => {
+              console.log('Cambiando a map, activeView actual:', activeView);
+              setActiveView("map");
+            }}
+            style={{ cursor: 'pointer' }}
           >
-            <i className="bx bx-map"></i>
+            <Map size={20} />
             <span className="link_name">Mapa Interactivo</span>
           </a>
           <ul className="sub-menu blank">
@@ -78,14 +100,18 @@ const DashboardSidebar = ({
         {/* ESTADISTICAS SUBMENU */}
         <li className={openMenus.stats ? "showMenu" : ""}>
           <div className="iocn-link">
-            <a onClick={() => setActiveView("stats")}>
-              <i className="bx bx-line-chart"></i>
+            <a onClick={() => {
+              console.log('Cambiando a stats, activeView actual:', activeView);
+              setActiveView("stats");
+            }} style={{ cursor: 'pointer' }}>
+              <LineChart size={20} />
               <span className="link_name">Estadísticas</span>
             </a>
-            <i
-              className="bx bxs-chevron-down arrow"
+            <ChevronDown
+              size={16}
+              className="arrow"
               onClick={() => toggleMenu("stats")}
-            ></i>
+            />
           </div>
 
           <ul className="sub-menu">
@@ -98,33 +124,40 @@ const DashboardSidebar = ({
 
         {/* EXPORTAR CSV */}
         <li>
-          <a onClick={exportToCSV}>
-            <i className="bx bx-download"></i>
+          <a onClick={exportToCSV} style={{ cursor: 'pointer' }}>
+            <Download size={20} />
             <span className="link_name">Exportar CSV</span>
           </a>
           <ul className="sub-menu blank">
             <li><a className="link_name">Exportar CSV</a></li>
           </ul>
         </li>
-
-        {/* PERFIL */}
-        <li>
-          <div className="profile-details">
-            <div className="profile-content">
-              <img src="/profile.jpg" alt="profileImg" />
-            </div>
-
-            <div className="name-job">
-              <div className="profile_name">Administrador</div>
-              <div className="job">Usuario</div>
-            </div>
-
-            <i className="bx bx-log-out"></i>
-          </div>
-        </li>
       </ul>
+
+      {/* PERFIL */}
+      <div className="profile-details">
+        <div className="profile-content">
+          <div className="profile-avatar">
+            <User size={18} />
+          </div>
+          <div className="name-job">
+            <div className="profile_name">Administrador</div>
+            <div className="job">Usuario</div>
+          </div>
+        </div>
+        <LogOut size={20}
+        style={{ cursor: "pointer"}}
+        onClick={() => {
+       // Elimina el token y el id de usuario
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+               // Redirige al login
+               window.location.href = "/login";
+        }}
+      />
+      </div>
     </aside>
   );
 };
 
-export default DashboardSidebar;
+export default DBSidebar;

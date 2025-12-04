@@ -54,10 +54,6 @@
   color: #00bcd4;
 }
 
-.enlace-nav.activo {
-  border-bottom: 2px solid #00bcd4;
-}
-
 /* Estilo especial para el botón de Iniciar Sesión */
 .enlace-nav.boton-login {
   background-color: #FFFFFF;
