@@ -25,13 +25,8 @@ const NavbarLayout = ({
     userItems
 }) => {
     return (
-        <div
-            className="staggered-menu-wrapper fixed-wrapper"
-            style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
-            data-position={position}
-            data-open={open || undefined}
-        >
-            <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
+        <>
+            <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true" data-position={position}>
                 {(() => {
                     const raw = colors && colors.length ? colors.slice(0, 4) : ['#667eea', '#764ba2'];
                     let arr = [...raw];
@@ -56,6 +51,7 @@ const NavbarLayout = ({
                     aria-controls="staggered-menu-panel"
                     onClick={toggleMenu}
                     type="button"
+                    style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
                 >
                     <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
                         <span ref={textInnerRef} className="sm-toggle-textInner">
@@ -73,7 +69,17 @@ const NavbarLayout = ({
                 </button>
             </header>
 
-            <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
+            <aside
+                id="staggered-menu-panel"
+                ref={panelRef}
+                className="staggered-menu-panel"
+                data-position={position}
+                inert={!open ? "" : undefined}
+                style={{
+                    pointerEvents: open ? 'auto' : 'none',
+                    ...(accentColor ? { ['--sm-accent']: accentColor } : {})
+                }}
+            >
                 <div className="sm-panel-inner">
                     <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
                         {menuItems.map((it, idx) => (
@@ -115,7 +121,7 @@ const NavbarLayout = ({
                     </div>
                 </div>
             </aside>
-        </div>
+        </>
     );
 };
 

@@ -23,6 +23,7 @@ const RPUbicacion = ({ location, onLocationChange }) => {
  };
 
  const handleAddressSearch = async () => {
+    console.log('Botón Buscar ejecutado');
   if (!addressSearch.trim()) {
    setSearchError('Por favor ingresa una dirección');
    return;

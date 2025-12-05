@@ -409,7 +409,23 @@ const Prism = ({
         if (io) io.disconnect();
         delete container.__prismIO;
       }
-      if (gl.canvas.parentElement === container) container.removeChild(gl.canvas);
+
+      // Properly dispose of WebGL context
+      if (renderer && gl) {
+        try {
+          if (!gl.isContextLost()) {
+            const ext = gl.getExtension('WEBGL_lose_context');
+            if (ext) ext.loseContext();
+          }
+          renderer.gl = null;
+        } catch (e) {
+          // Context already lost, ignore
+        }
+      }
+
+      if (gl.canvas && gl.canvas.parentElement === container) {
+        container.removeChild(gl.canvas);
+      }
     };
   }, [
     height,

@@ -277,6 +277,13 @@ const Navbar = ({
 
     const closeMenu = useCallback(() => {
         if (openRef.current) {
+            // Remove focus from any element inside the panel to prevent aria-hidden focus trap
+            if (panelRef.current && document.activeElement) {
+                if (panelRef.current.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+            }
+
             openRef.current = false;
             setOpen(false);
             playClose();

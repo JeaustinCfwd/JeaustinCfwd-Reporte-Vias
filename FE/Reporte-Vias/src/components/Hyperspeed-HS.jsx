@@ -6,8 +6,8 @@ import '../styles/Hyperspeed-hs.css';
 
 const Hyperspeed = ({
   effectOptions = {
-    onSpeedUp: () => {},
-    onSlowDown: () => {},
+    onSpeedUp: () => { },
+    onSlowDown: () => { },
     distortion: 'turbulentDistortion',
     length: 400,
     roadWidth: 10,
@@ -109,11 +109,11 @@ const Hyperspeed = ({
           let uAmp = mountainUniforms.uAmp.value;
           let distortion = new THREE.Vector3(
             Math.cos(progress * Math.PI * uFreq.x + time) * uAmp.x -
-              Math.cos(movementProgressFix * Math.PI * uFreq.x + time) * uAmp.x,
+            Math.cos(movementProgressFix * Math.PI * uFreq.x + time) * uAmp.x,
             nsin(progress * Math.PI * uFreq.y + time) * uAmp.y -
-              nsin(movementProgressFix * Math.PI * uFreq.y + time) * uAmp.y,
+            nsin(movementProgressFix * Math.PI * uFreq.y + time) * uAmp.y,
             nsin(progress * Math.PI * uFreq.z + time) * uAmp.z -
-              nsin(movementProgressFix * Math.PI * uFreq.z + time) * uAmp.z
+            nsin(movementProgressFix * Math.PI * uFreq.z + time) * uAmp.z
           );
           let lookAtAmp = new THREE.Vector3(2, 2, 2);
           let lookAtOffset = new THREE.Vector3(0, 0, -5);
@@ -141,9 +141,9 @@ const Hyperspeed = ({
           let uAmp = xyUniforms.uAmp.value;
           let distortion = new THREE.Vector3(
             Math.cos(progress * Math.PI * uFreq.x + time) * uAmp.x -
-              Math.cos(movementProgressFix * Math.PI * uFreq.x + time) * uAmp.x,
+            Math.cos(movementProgressFix * Math.PI * uFreq.x + time) * uAmp.x,
             Math.sin(progress * Math.PI * uFreq.y + time + Math.PI / 2) * uAmp.y -
-              Math.sin(movementProgressFix * Math.PI * uFreq.y + time + Math.PI / 2) * uAmp.y,
+            Math.sin(movementProgressFix * Math.PI * uFreq.y + time + Math.PI / 2) * uAmp.y,
             0
           );
           let lookAtAmp = new THREE.Vector3(2, 0.4, 1);
@@ -172,9 +172,9 @@ const Hyperspeed = ({
           let uAmp = LongRaceUniforms.uAmp.value;
           let distortion = new THREE.Vector3(
             Math.sin(progress * Math.PI * uFreq.x + time) * uAmp.x -
-              Math.sin(camProgress * Math.PI * uFreq.x + time) * uAmp.x,
+            Math.sin(camProgress * Math.PI * uFreq.x + time) * uAmp.x,
             Math.sin(progress * Math.PI * uFreq.y + time) * uAmp.y -
-              Math.sin(camProgress * Math.PI * uFreq.y + time) * uAmp.y,
+            Math.sin(camProgress * Math.PI * uFreq.y + time) * uAmp.y,
             0
           );
           let lookAtAmp = new THREE.Vector3(1, 1, 0);
@@ -403,6 +403,7 @@ const Hyperspeed = ({
         this.speedUpTarget = 0;
         this.speedUp = 0;
         this.timeOffset = 0;
+        this.animationFrameId = null;
 
         this.tick = this.tick.bind(this);
         this.init = this.init.bind(this);
@@ -428,6 +429,10 @@ const Hyperspeed = ({
       }
 
       initPasses() {
+        if (!this.renderer || !this.composer || this.disposed) {
+          return;
+        }
+
         this.renderPass = new RenderPass(this.scene, this.camera);
         this.bloomPass = new EffectPass(
           this.camera,
@@ -480,6 +485,10 @@ const Hyperspeed = ({
       }
 
       init() {
+        if (this.disposed) {
+          return;
+        }
+
         this.initPasses();
         const options = this.options;
         this.road.init();
@@ -579,11 +588,31 @@ const Hyperspeed = ({
       dispose() {
         this.disposed = true;
 
+        // Cancel animation frame
+        if (this.animationFrameId) {
+          cancelAnimationFrame(this.animationFrameId);
+          this.animationFrameId = null;
+        }
+
         if (this.renderer) {
-          this.renderer.dispose();
+          try {
+            const gl = this.renderer.getContext();
+            if (gl && !gl.isContextLost()) {
+              this.renderer.dispose();
+              if (this.renderer.forceContextLoss) {
+                this.renderer.forceContextLoss();
+              }
+            }
+          } catch (e) {
+            // Context already lost, ignore
+          }
         }
         if (this.composer) {
-          this.composer.dispose();
+          try {
+            this.composer.dispose();
+          } catch (e) {
+            // Composer already disposed, ignore
+          }
         }
         if (this.scene) {
           this.scene.clear();
@@ -616,7 +645,7 @@ const Hyperspeed = ({
         const delta = this.clock.getDelta();
         this.render(delta);
         this.update(delta);
-        requestAnimationFrame(this.tick);
+        this.animationFrameId = requestAnimationFrame(this.tick);
       }
     }
 
