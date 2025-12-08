@@ -1,6 +1,6 @@
 .container {
   font-family: 'Roboto', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  max-width: 900px;
+  max-width: 300px;
   margin: 0 auto;
   padding: 40px;
   background-color: #FFFFFF;
@@ -15,7 +15,7 @@
   margin: 0 0 8px 0;
 }
 
-.container > p {
+.container>p {
   font-size: 0.95rem;
   color: #666666;
   margin: 0 0 24px 0;
@@ -208,44 +208,6 @@
   margin: 0 0 20px 0;
 }
 
-.comment {
-  padding: 16px;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  background-color: #FFFFFF;
-}
-
-.comment-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.comment-header span {
-  color: #00C853;
-  font-size: 1rem;
-}
-
-.comment-header strong {
-  color: #212121;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.comment p {
-  color: #212121;
-  font-size: 0.95rem;
-  margin: 8px 0;
-  line-height: 1.5;
-}
-
-.comment small {
-  color: #666666;
-  font-size: 0.85rem;
-}
-
 .delete-button {
   margin-left: auto;
   padding: 6px 12px;
@@ -268,58 +230,169 @@
   .container {
     padding: 24px;
   }
-  
+
   .rating-bar-row {
     grid-template-columns: 50px 1fr 40px;
     gap: 10px;
   }
 }
 
-.comments-stack {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
+/* Vertical Comments List Container */
+.comments-list-container {
   position: relative;
-  min-height: 140px;
   margin-top: 16px;
-  padding-bottom: 24px;
-  overflow-x: auto;
+}
+
+.comments-list {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 0;
+  position: relative;
+}
+
+/* Custom Scrollbar - Vertical Only */
+.comments-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comments-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.comments-list::-webkit-scrollbar-thumb {
+  background: #00C853;
+  border-radius: 10px;
+}
+
+.comments-list::-webkit-scrollbar-thumb:hover {
+  background: #00A844;
 }
 
 .comment-card {
-  position: relative;
-  min-width: 120px;
-  max-width: 180px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  margin-right: -48px; /* Solapamiento */
-  padding: 16px 12px;
-  border: 2px solid #eee;
-  transition: transform 0.2s;
-  cursor: pointer;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 16px 0;
+  margin-bottom: 0;
+  border: none;
+  transition: background-color 0.2s ease;
 }
 
-.comment-card:hover {
-  transform: scale(1.05) translateX(16px);
-  z-index: 100;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+/* Gradient Overlays */
+.top-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 10;
 }
 
-.comment-header {
+/* Comment Card Specific Styles - LARGER FONTS */
+.comment-card .comment-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.delete-button {
+.comment-card .comment-header span {
+  color: #00C853;
+  font-size: 1.3rem;
+}
+
+.comment-card .comment-header strong {
+  color: #212121;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.comment-card .comment-text {
+  color: #212121;
+  font-size: 1.15rem;
+  margin: 12px 0;
+  line-height: 1.6;
+}
+
+.comment-card small {
+  color: #666666;
+  font-size: 1rem;
+}
+
+/* Three-Dot Menu Styles */
+.menu-container {
+  position: relative;
   margin-left: auto;
-  background: #ff4444;
-  color: #fff;
+  margin-right: 12px;
+}
+
+.menu-button {
+  background: transparent;
   border: none;
-  border-radius: 6px;
-  padding: 2px 8px;
+  font-size: 1.5rem;
+  color: #666666;
   cursor: pointer;
-  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.menu-button:hover {
+  background-color: #F0F0F0;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 120px;
+  z-index: 100;
+  margin-top: 4px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #212121;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: #F5F5F5;
+}
+
+.menu-item.delete-item {
+  color: #FF4444;
+}
+
+.menu-item.delete-item:hover {
+  background-color: #FFEBEE;
 }

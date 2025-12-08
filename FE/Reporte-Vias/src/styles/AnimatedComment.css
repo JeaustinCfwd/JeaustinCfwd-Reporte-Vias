@@ -1,0 +1,15 @@
+.animated-comment {
+transition: all 0.35 ease;
+opacity: 0;
+transform: translateY(20px)
+}
+
+.animated-comment.show {
+opacity: 1;
+transform: translateY(0);
+}
+
+.animated-comment.hide {
+opacity: 0;
+transform: translateX(20px);
+}

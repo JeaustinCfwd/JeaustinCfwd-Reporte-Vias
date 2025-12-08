@@ -80,6 +80,10 @@
 }
 
 /* Contenido Principal */
+.profile-main {
+  flex: 1;
+}
+
 .profile-content {
   flex: 1;
   padding: 40px 60px;
@@ -133,12 +137,6 @@
   display: block;
 }
 
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 /* Sección Divisora */
 .form-section-divider {
   margin: 30px 0 20px 0;
@@ -160,12 +158,37 @@
   align-items: start;
 }
 
+/* Layout lado a lado para mostrar datos actuales vs nuevos */
+.form-row-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.form-field-display {
+  background-color: #F8F8F8;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #CCCCCC;
+}
+
+.display-value {
+  font-size: 0.95rem;
+  color: #333333;
+  font-weight: 400;
+  margin-top: 8px;
+}
+
 .form-label {
   font-size: 0.95rem;
   font-weight: 400;
   color: #333333;
   padding-top: 10px;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .form-field {
@@ -364,6 +387,31 @@
   cursor: not-allowed;
 }
 
+/* Zona Peligrosa */
+.danger-zone {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff5f5;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  gap: 20px;
+}
+
+.danger-zone-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #dc3545;
+  margin: 0 0 5px 0;
+}
+
+.danger-zone-description {
+  font-size: 0.9rem;
+  color: #666666;
+  margin: 0;
+}
+
 /* Loading State */
 .profile-loading {
   display: flex;
@@ -401,7 +449,8 @@
     padding: 30px 20px;
   }
 
-  .form-row {
+  .form-row,
+  .form-row-side-by-side {
     grid-template-columns: 1fr;
     gap: 10px;
   }
@@ -425,5 +474,9 @@
     width: 100%;
     justify-content: center;
   }
-}
 
+  .danger-zone {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

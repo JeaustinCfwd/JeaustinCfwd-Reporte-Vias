@@ -4,6 +4,8 @@ import StarSelector from './StarSelector';
 import RatingSummary from './RatingSummary';
 import { deleteReview, postData } from '../services/fetch.js';
 import '../styles/RatingBox.css';
+import AnimatedComment from './AnimatedComment';
+
 
 const RatingBox = () => {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ const RatingBox = () => {
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
@@ -79,7 +82,7 @@ const RatingBox = () => {
   };
 
   const deleteComment = async (id) => {
-    if (!user){
+    if (!user) {
       alert('Debes iniciar sesión para eliminar comentarios');
       navigate('/login');
       return;
@@ -168,28 +171,46 @@ const RatingBox = () => {
         <h3>Comentarios</h3>
         {safeReviews.length === 0 && <p>No hay comentarios aún.</p>}
 
-        <div className="comments-stack">
-          {safeReviews.map((review, idx) => (
-            <div
-              key={review.id?.toString()}
-              className="comment-card"
-              style={{ left: `${idx * 32}px`, zIndex: safeReviews.length - idx }}
-            >
-              <div className="comment-header">
-                <span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
-                <strong>{review.userName}</strong>
-                {localStorage.getItem('id_usuario') &&
-                  review.userId === parseInt(localStorage.getItem('id_usuario')) && (
-                    <button className="delete-button" onClick={() => deleteComment(review.id)}>
-                      Eliminar
-                    </button>
-                )}
-              </div>
-              <p>{review.comment}</p>
-              <small>{new Date(review.timestamp).toLocaleDateString()}</small>
+        {safeReviews.length > 0 && (
+          <div className="comments-list-container">
+            <div className="comments-list">
+              {safeReviews.map((review, idx) => (
+                <AnimatedComment key={review.id}>
+                  <div className="comment-card">
+                    <div className="comment-header">
+                      <span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                      <strong>{review.userName}</strong>
+                      <div className="menu-container">
+                        <button
+                          className="menu-button"
+                          onClick={() => setOpenMenuId(openMenuId === review.id ? null : review.id)}
+                        >
+                          ⋮
+                        </button>
+                        {openMenuId === review.id && (
+                          <div className="menu-dropdown">
+                            <button
+                              className="menu-item delete-item"
+                              onClick={() => {
+                                deleteComment(review.id);
+                                setOpenMenuId(null);
+                              }}
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <p className="comment-text">{review.comment}</p>
+                    <small>{new Date(review.timestamp).toLocaleDateString()}</small>
+                  </div>
+                </AnimatedComment>
+              ))}
             </div>
-          ))}
-        </div>
+            <div className="top-gradient"></div>
+          </div>
+        )}
       </div>
     </div>
   );
