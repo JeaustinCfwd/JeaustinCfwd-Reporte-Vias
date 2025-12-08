@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Camera, Trash2 } from 'lucide-react';
+import { User, Mail, Camera } from 'lucide-react';
 import { updateUser, getUserPhoto } from '../services/fetch.js';
 import "../styles/Profile.css";
 
@@ -7,7 +7,13 @@ export const PFTabPerfil = ({ usuarioActual }) => {
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        email: ''
+        email: '',
+        bio: '',
+        phone: '',
+        location: '',
+        website: '',
+        birthDate: '',
+        gender: 'male'
     });
     const [photoPreview, setPhotoPreview] = useState('');
     const [loading, setLoading] = useState(false);
@@ -20,7 +26,13 @@ export const PFTabPerfil = ({ usuarioActual }) => {
             setUser(storedUser);
             setFormData({
                 name: storedUser.name || '',
-                email: storedUser.email || ''
+                email: storedUser.email || '',
+                bio: storedUser.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
+                phone: storedUser.phone || '',
+                location: storedUser.location || '',
+                website: storedUser.website || '',
+                birthDate: storedUser.birthDate || '',
+                gender: storedUser.gender || 'male'
             });
             const userPhoto = getUserPhoto(storedUser.id);
             setPhotoPreview(userPhoto || '');
@@ -54,8 +66,7 @@ export const PFTabPerfil = ({ usuarioActual }) => {
         setSuccess('');
 
         const updateData = {
-            name: formData.name,
-            email: formData.email,
+            ...formData,
             photo: photoPreview
         };
 
@@ -124,17 +135,18 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                     </div>
                 </div>
 
+                <div className="form-section-divider">
+                    <h2 className="form-section-title">Información Personal</h2>
+                </div>
+
                 {/* Nombre - Lado a lado */}
-                <div className="form-row form-row-side-by-side">
-                    {/* Datos Actuales (izquierda) */}
+                <div className="form-row-side-by-side">
                     <div className="form-field form-field-display">
                         <label className="form-label">Nombre Actual</label>
                         <div className="display-value">
                             {usuarioActual?.username || user?.name || 'No disponible'}
                         </div>
                     </div>
-
-                    {/* Input de Edición (derecha) */}
                     <div className="form-field">
                         <label htmlFor="name" className="form-label">Nuevo Nombre</label>
                         <input
@@ -150,16 +162,13 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                 </div>
 
                 {/* Email - Lado a lado */}
-                <div className="form-row form-row-side-by-side">
-                    {/* Datos Actuales (izquierda) */}
+                <div className="form-row-side-by-side">
                     <div className="form-field form-field-display">
                         <label className="form-label">Email Actual</label>
                         <div className="display-value">
                             {usuarioActual?.email || user?.email || 'No disponible'}
                         </div>
                     </div>
-
-                    {/* Input de Edición (derecha) */}
                     <div className="form-field">
                         <label htmlFor="email" className="form-label">Nuevo Email</label>
                         <input
@@ -171,6 +180,108 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                             className="form-input"
                             required
                         />
+                    </div>
+                </div>
+
+                <div className="form-section-divider">
+                    <h2 className="form-section-title">Información Adicional</h2>
+                </div>
+
+                {/* Biografía */}
+                <div className="form-row">
+                    <label htmlFor="bio" className="form-label">Biografía</label>
+                    <div className="form-field">
+                        <textarea
+                            id="bio"
+                            name="bio"
+                            value={formData.bio}
+                            onChange={handleInputChange}
+                            rows={4}
+                            className="form-input"
+                            placeholder="Cuéntanos sobre ti..."
+                        />
+                    </div>
+                </div>
+
+                {/* Teléfono */}
+                <div className="form-row">
+                    <label htmlFor="phone" className="form-label">Teléfono</label>
+                    <div className="form-field">
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            className="form-input"
+                            placeholder="+1234567890"
+                        />
+                    </div>
+                </div>
+
+                {/* Ubicación */}
+                <div className="form-row">
+                    <label htmlFor="location" className="form-label">Ubicación</label>
+                    <div className="form-field">
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            value={formData.location}
+                            onChange={handleInputChange}
+                            className="form-input"
+                            placeholder="Ciudad, País"
+                        />
+                    </div>
+                </div>
+
+                {/* Sitio Web */}
+                <div className="form-row">
+                    <label htmlFor="website" className="form-label">Sitio Web</label>
+                    <div className="form-field">
+                        <input
+                            type="url"
+                            id="website"
+                            name="website"
+                            value={formData.website}
+                            onChange={handleInputChange}
+                            className="form-input"
+                            placeholder="https://tusitio.com"
+                        />
+                    </div>
+                </div>
+
+                {/* Fecha de Nacimiento */}
+                <div className="form-row">
+                    <label htmlFor="birthDate" className="form-label">Fecha de Nacimiento</label>
+                    <div className="form-field">
+                        <input
+                            type="date"
+                            id="birthDate"
+                            name="birthDate"
+                            value={formData.birthDate}
+                            onChange={handleInputChange}
+                            className="form-input"
+                        />
+                    </div>
+                </div>
+
+                {/* Género */}
+                <div className="form-row">
+                    <label htmlFor="gender" className="form-label">Género</label>
+                    <div className="form-field">
+                        <select
+                            id="gender"
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleInputChange}
+                            className="form-input"
+                        >
+                            <option value="male">Masculino</option>
+                            <option value="female">Femenino</option>
+                            <option value="other">Otro</option>
+                            <option value="prefer-not-say">Prefiero no decir</option>
+                        </select>
                     </div>
                 </div>
 
