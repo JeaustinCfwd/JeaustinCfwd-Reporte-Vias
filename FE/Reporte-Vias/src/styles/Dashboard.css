@@ -40,7 +40,7 @@ body {
   margin-top: 60px;
 }
 
-.sidebar.close ~ .dashboard-main {
+.sidebar.close~.dashboard-main {
   left: 78px;
   width: calc(100% - 78px);
 }
@@ -111,8 +111,15 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* ============================
@@ -217,10 +224,21 @@ body {
   border-color: #E0E0E0;
 }
 
-.stat-card.total { border-left: 3px solid #667eea; }
-.stat-card.nuevo { border-left: 3px solid #FC8181; }
-.stat-card.revision { border-left: 3px solid #667eea; }
-.stat-card.atendido { border-left: 3px solid #48BB78; }
+.stat-card.total {
+  border-left: 3px solid #667eea;
+}
+
+.stat-card.nuevo {
+  border-left: 3px solid #FC8181;
+}
+
+.stat-card.revision {
+  border-left: 3px solid #667eea;
+}
+
+.stat-card.atendido {
+  border-left: 3px solid #48BB78;
+}
 
 .stat-icon {
   font-size: 2.5rem;
@@ -528,6 +546,11 @@ svg.lucide {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+.leaflet-map {
+  height: 100%;
+  width: 100%;
+}
+
 /* ============================
    STATS VIEW
    ============================ */
@@ -589,9 +612,17 @@ svg.lucide {
   letter-spacing: -0.5px;
 }
 
-.metric-row strong.orange { color: #FC8181; }
-.metric-row strong.blue { color: #667eea; }
-.metric-row strong.green { color: #48BB78; }
+.metric-row strong.orange {
+  color: #FC8181;
+}
+
+.metric-row strong.blue {
+  color: #667eea;
+}
+
+.metric-row strong.green {
+  color: #48BB78;
+}
 
 /* ============================
    OVERVIEW & LIST VIEWS
@@ -628,7 +659,9 @@ svg.lucide {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .dashboard-loading p {
@@ -646,7 +679,7 @@ svg.lucide {
   .dashboard-charts {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -658,7 +691,7 @@ svg.lucide {
     width: 100%;
   }
 
-  .sidebar.close ~ .dashboard-main {
+  .sidebar.close~.dashboard-main {
     left: 0;
     width: 100%;
   }

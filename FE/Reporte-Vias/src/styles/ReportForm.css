@@ -50,6 +50,8 @@
   width: 24px;
   height: 24px;
   color: #3b82f6;
+  font-size: 24px;
+  margin-right: 0.5rem;
 }
 
 .file-upload {
@@ -462,6 +464,21 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
+/* Global Map Styles */
+.map-container {
+  height: 400px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.map-container .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .report-form-container {
     padding: 1rem;
@@ -477,14 +494,27 @@
   }
 
   .map-container {
-    height: 250px;
+    height: 300px;
+  }
+
+  .map-error {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 1rem;
   }
 }
 
 /* Estilos para búsqueda de dirección */
 .address-search-container {
   display: flex;
-  gap: 0.75rem; /* 12px */
+  gap: 0.75rem;
+  /* 12px */
   align-items: center;
   margin-bottom: 1.5rem;
 }
@@ -516,7 +546,7 @@
 .address-search-input:focus {
   outline: none;
   border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .address-search-button {
@@ -528,8 +558,10 @@
   background-color: transparent;
   border-radius: 100px;
   font-weight: 600;
-  color: #444444; /* Color de texto visible por defecto */
-  box-shadow: 0 0 0 2px #474747; /* Borde visible por defecto */
+  color: #444444;
+  /* Color de texto visible por defecto */
+  box-shadow: 0 0 0 2px #474747;
+  /* Borde visible por defecto */
   cursor: pointer;
   overflow: hidden;
   transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
@@ -557,14 +589,14 @@
 .address-search-button:hover {
   box-shadow: 0 0 0 5px rgba(33, 149, 243, 0.4);
   color: #fff;
- }
+}
 
- .address-search-button:active {
+.address-search-button:active {
   transform: scale(0.95);
- }
+}
 
- .address-search-button:hover span:last-child {
- width: 150px;
+.address-search-button:hover span:last-child {
+  width: 150px;
   height: 150px;
   opacity: 1;
 }
