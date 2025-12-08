@@ -27,12 +27,20 @@ const MainLayout = () => (
   </div>
 );
 
-// Layout para Dashboard (SIN Footer, ya que el Dashboard maneja su propio layout)
+// Layout para Dashboard (SIN Footer)
 const DashboardLayout = () => (
   <div className="flex flex-col min-h-screen">
     <Navbar />
     <Outlet />
-    <Footer />
+    {/* <Footer /> */}
+  </div>
+);
+
+// Layout para Perfil (SIN Footer)
+const ProfileLayout = () => (
+  <div className="flex flex-col min-h-screen">
+    <Navbar />
+    <Outlet />
   </div>
 );
 
@@ -46,7 +54,6 @@ const router = createBrowserRouter(
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: 'reportCreate', element: <PrivateRoute><ReportCreate /></PrivateRoute> },
-        { path: 'profile', element: <PrivateRoute><Profile /></PrivateRoute> },
       ],
     },
     {
@@ -54,6 +61,13 @@ const router = createBrowserRouter(
       element: <DashboardLayout />,
       children: [
         { index: true, element: <PrivateRoute><Dashboard /></PrivateRoute> },
+      ],
+    },
+    {
+      path: '/profile',
+      element: <ProfileLayout />,
+      children: [
+        { index: true, element: <PrivateRoute><Profile /></PrivateRoute> },
       ],
     },
     {

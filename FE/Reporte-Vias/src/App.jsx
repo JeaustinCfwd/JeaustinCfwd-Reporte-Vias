@@ -3,6 +3,7 @@ import Routing from './routes/Routing';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/ToastContainer';
 import { useToast } from './contexts/ToastContext';
+// BrowserRouter removed
 
 export const AuthContext = createContext();
 
@@ -16,7 +17,6 @@ const AppContent = () => {
     }
   });
 
-  // No necesitas token si usas sesiones
   const login = useCallback((userData) => {
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
@@ -29,7 +29,6 @@ const AppContent = () => {
     });
   }, []);
 
-  // No necesitas isAuthenticated si solo usas user
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       <Routing />
