@@ -145,7 +145,7 @@ const CategoryCarousel = ({
       <div className="category-carousel-container">
         <div
           className="category-carousel-wrapper"
-          style={{ height: `${cardHeight + 50}px` }}
+          style={{ '--carousel-height': `${cardHeight + 50}px` }}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
           onMouseMove={throttledMouseMove}

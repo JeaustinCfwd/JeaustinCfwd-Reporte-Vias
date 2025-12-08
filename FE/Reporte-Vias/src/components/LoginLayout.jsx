@@ -4,25 +4,14 @@ import LoginForm from '../components/LoginForm';
 
 const LoginLayout = () => {
   useEffect(() => {
-    const prevBg = document.body.style.backgroundColor;
-    const prevColor = document.body.style.color;
-    document.body.style.backgroundColor = '#000'; // fondo global negro
-    document.body.style.color = '#fff'; // texto por defecto blanco
+    document.body.classList.add('login-page-body');
     return () => {
-      document.body.style.backgroundColor = prevBg;
-      document.body.style.color = prevColor;
+      document.body.classList.remove('login-page-body');
     };
   }, []);
 
   return (
-    <div style={{ 
-      position: 'relative', 
-      minHeight: 'calc(100vh - 60px)', 
-      width: '100%', 
-      overflow: 'hidden',
-      isolation: 'isolate',
-      backgroundColor: '#000' // fondo local negro
-    }}>
+    <div className="login-layout-container">
       <Plasma 
         color="#ffffff"        // humo blanco
         speed={0.4}

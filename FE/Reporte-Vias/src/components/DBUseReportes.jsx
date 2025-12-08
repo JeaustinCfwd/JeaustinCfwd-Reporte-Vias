@@ -16,7 +16,7 @@ export const useReportes = () => {
         const fetchReports = async () => {
             setLoading(true);
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('access_token');
                 const res = await fetch('http://localhost:8000/api/crear-reporte/', {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {},
                 });
@@ -32,6 +32,7 @@ export const useReportes = () => {
                 const data = await res.json();
                 const reportsData = Array.isArray(data) ? data : (data.results || []);
                 setReports(reportsData);
+                setFilteredReports(reportsData);
             } catch (err) {
                 setError(err.message);
                 const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
@@ -45,17 +46,6 @@ export const useReportes = () => {
         const interval = setInterval(fetchReports, 30000);
         return () => clearInterval(interval);
     }, [navigate]);
-
-    // Traer reportes filtrados
-    useEffect(() => {
-        const traerReportes = async () => {
-            const reports = await fetch(`http://127.0.0.1:8000/api/crear-reporte/`);
-            const data = await reports.json();
-            setFilteredReports(data);
-            console.log(data);
-        };
-        traerReportes();
-    }, []);
 
     return {
         reports,

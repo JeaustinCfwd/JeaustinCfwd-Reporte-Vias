@@ -11,7 +11,7 @@ export const useAcciones = (reports, setReports, filteredReports) => {
         if (!window.confirm('¿Estás seguro de que quieres eliminar este reporte?')) return;
 
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('access_token');
             const res = await fetch(`http://localhost:8000/api/eliminar-reporte/${id}/`, {
                 method: 'DELETE',
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {},
@@ -30,7 +30,7 @@ export const useAcciones = (reports, setReports, filteredReports) => {
     // Actualizar estado del reporte
     const handleUpdateState = useCallback(async (id, newEstadoId) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('access_token');
             const res = await fetch(`http://localhost:8000/api/editar-reporte/${id}/`, {
                 method: 'PUT',
                 headers: {
@@ -56,7 +56,7 @@ export const useAcciones = (reports, setReports, filteredReports) => {
     // Actualizar reporte completo
     const handleUpdateReport = useCallback(async (id, updates) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('access_token');
             const res = await fetch(`http://localhost:8000/api/editar-reporte/${id}/`, {
                 method: 'PUT',
                 headers: {

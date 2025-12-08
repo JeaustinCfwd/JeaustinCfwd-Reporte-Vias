@@ -1,6 +1,52 @@
 /* Estilos compartidos para LoginForm y RegisterForm */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+.error-message {
+  color: red;
+  margin-bottom: 1rem;
+}
+
+.enlace-registro {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.login-page-body {
+  background-color: #000;
+  color: #fff;
+}
+
+.login-layout-container {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #000;
+}
+
+.register-page-body {
+  background-color: #000;
+  color: #fff;
+}
+
+.register-layout-container {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #000;
+}
+
+.register-layout-content {
+  position: relative;
+  z-index: 1;
+  min-height: inherit;
+  color: #fff;
+}
+
 /* Variables globales y reset básico */
 * {
   box-sizing: border-box;

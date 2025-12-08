@@ -28,6 +28,13 @@ const DBSidebar = ({
     }));
   };
 
+  const handleLogout = () => {
+    import('../services/fetch').then(({ logout }) => {
+      logout();
+      window.location.href = "/login";
+    });
+  };
+
   return (
     <aside className={`sidebar ${sidebarOpen ? "" : "close"}`}>
       {/* LOGO */}
@@ -44,8 +51,6 @@ const DBSidebar = ({
               console.log('Cambiando a overview, activeView actual:', activeView);
               setActiveView("overview");
             }}
-
-            style={{ cursor: 'pointer' }}
           >
             <BarChart3 size={20} />
             <span className="link_name">Resumen General</span>
@@ -58,10 +63,12 @@ const DBSidebar = ({
         {/* REPORTES SUBMENU */}
         <li className={openMenus.reportes ? "showMenu" : ""}>
           <div className="iocn-link">
-            <a onClick={() => {
-              console.log('Cambiando a list, activeView actual:', activeView);
-              setActiveView("list");
-            }} style={{ cursor: 'pointer' }}>
+            <a
+              onClick={() => {
+                console.log('Cambiando a list, activeView actual:', activeView);
+                setActiveView("list");
+              }}
+            >
               <Folder size={20} />
               <span className="link_name">Reportes</span>
             </a>
@@ -87,7 +94,6 @@ const DBSidebar = ({
               console.log('Cambiando a map, activeView actual:', activeView);
               setActiveView("map");
             }}
-            style={{ cursor: 'pointer' }}
           >
             <Map size={20} />
             <span className="link_name">Mapa Interactivo</span>
@@ -100,10 +106,12 @@ const DBSidebar = ({
         {/* ESTADISTICAS SUBMENU */}
         <li className={openMenus.stats ? "showMenu" : ""}>
           <div className="iocn-link">
-            <a onClick={() => {
-              console.log('Cambiando a stats, activeView actual:', activeView);
-              setActiveView("stats");
-            }} style={{ cursor: 'pointer' }}>
+            <a
+              onClick={() => {
+                console.log('Cambiando a stats, activeView actual:', activeView);
+                setActiveView("stats");
+              }}
+            >
               <LineChart size={20} />
               <span className="link_name">Estadísticas</span>
             </a>
@@ -124,7 +132,7 @@ const DBSidebar = ({
 
         {/* EXPORTAR CSV */}
         <li>
-          <a onClick={exportToCSV} style={{ cursor: 'pointer' }}>
+          <a onClick={exportToCSV}>
             <Download size={20} />
             <span className="link_name">Exportar CSV</span>
           </a>
@@ -145,16 +153,11 @@ const DBSidebar = ({
             <div className="job">Usuario</div>
           </div>
         </div>
-        <LogOut size={20}
-        style={{ cursor: "pointer"}}
-        onClick={() => {
-       // Elimina el token y el id de usuario
-            localStorage.removeItem("token");
-            localStorage.removeItem("userId");
-               // Redirige al login
-               window.location.href = "/login";
-        }}
-      />
+        <LogOut 
+          size={20}
+          onClick={handleLogout}
+          style={{ cursor: 'pointer' }}
+        />
       </div>
     </aside>
   );

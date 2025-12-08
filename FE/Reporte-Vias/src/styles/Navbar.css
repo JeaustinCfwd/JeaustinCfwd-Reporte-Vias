@@ -13,14 +13,6 @@
 }
 
 .sm-logo {
-  display: flex;
-  align-items: center;
-  user-select: none;
-}
-
-.sm-logo-img {
-  display: block;
-  height: 32px;
   width: auto;
   object-fit: contain;
 }

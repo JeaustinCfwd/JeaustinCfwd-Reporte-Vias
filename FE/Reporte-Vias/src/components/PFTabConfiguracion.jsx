@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Trash2 } from 'lucide-react';
+import { User, Lock, Settings, Trash2 } from 'lucide-react';
+import { logout } from "../services/fetch.js";
 import { deleteUser, updateUser } from '../services/fetch.js';
 import { useNavigate } from 'react-router-dom';
 import "../styles/Profile.css";
@@ -45,8 +46,7 @@ export const PFTabConfiguracion = () => {
         setLoading(true);
         try {
             await deleteUser(user.id);
-            localStorage.removeItem('user');
-            localStorage.removeItem('id_usuario');
+            logout();
             alert('Cuenta eliminada exitosamente');
             navigate('/login');
         } catch (error) {

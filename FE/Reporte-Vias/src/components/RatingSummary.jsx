@@ -34,8 +34,8 @@ const RatingSummary = ({ ratings, total }) => {
               <div 
                 className="rating-bar-fill" 
                 style={{ 
-                  width: `${percent}%`,
-                  backgroundColor: barColor
+                  '--bar-width': `${percent}%`,
+                  '--bar-color': barColor
                 }} 
               />
             </div>

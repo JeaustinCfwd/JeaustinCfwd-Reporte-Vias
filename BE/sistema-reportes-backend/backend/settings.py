@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -22,7 +23,17 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'api',
+    'cloudinary',
+    'cloudinary_storage',
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Middleware
 MIDDLEWARE = [
@@ -45,51 +56,52 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Django REST Framework - CONFIGURACIÓN PRINCIPAL
-# REST_FRAMEWORK = {
-#     # Autenticación: Solo JWT
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
+REST_FRAMEWORK = {
+    # Autenticación: Solo JWT
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-#     'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     
-#     # Formato de respuestas
-#     'DEFAULT_RENDERER_CLASSES': [
-#         'rest_framework.renderers.JSONRenderer',
-#     ],
-# }
+    # Formato de respuestas
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
 
-# SIMPLE_JWT = {
-#     # Duración del token de acceso (1 hora)
-#     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+SIMPLE_JWT = {
+    # Duración del token de acceso (1 hora)
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     
-#     # Duración del token de refresco (7 días)
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    # Duración del token de refresco (7 días)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     
-#     # Rotar refresh tokens (más seguro)
-#     'ROTATE_REFRESH_TOKENS': True,
+    # Rotar refresh tokens (más seguro)
+    'ROTATE_REFRESH_TOKENS': True,
     
-#     'BLACKLIST_AFTER_ROTATION': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     
-#     # Algoritmo de encriptación
-#     'ALGORITHM': 'HS256',
+    # Algoritmo de encriptación
+    'ALGORITHM': 'HS256',
     
-#     # Clave para firmar tokens
-#     'SIGNING_KEY': SECRET_KEY,
+    # Clave para firmar tokens
+    'SIGNING_KEY': SECRET_KEY,
     
-#     # Nombre del header de autorización
-#     'AUTH_HEADER_TYPES': ('Bearer',),
-#     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    # Nombre del header de autorización
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     
-#     # Claims del token
-#     'USER_ID_FIELD': 'id',
-#     'USER_ID_CLAIM': 'user_id',
-# }
+    # Claims del token
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
+
 
 # URLs y WSGI
 ROOT_URLCONF = 'backend.urls'
@@ -143,7 +155,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Clave primaria por defecto
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -34,12 +34,12 @@ const NavbarLayout = ({
                         const mid = Math.floor(arr.length / 2);
                         arr.splice(mid, 1);
                     }
-                    return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
+                    return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ '--prelayer-color': c }} />);
                 })()}
             </div>
             <header className="staggered-menu-header" aria-label="Main navigation header">
                 <div className="sm-logo" aria-label="Logo">
-                    <NavLink to="/" style={{ textDecoration: 'none' }}>
+                    <NavLink to="/" className="nav-logo-link">
                         <ShinyText text="ReporteVías CR" speed={3} />
                     </NavLink>
                 </div>
@@ -51,7 +51,7 @@ const NavbarLayout = ({
                     aria-controls="staggered-menu-panel"
                     onClick={toggleMenu}
                     type="button"
-                    style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
+                    style={accentColor ? { '--sm-accent': accentColor } : undefined}
                 >
                     <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
                         <span ref={textInnerRef} className="sm-toggle-textInner">
@@ -72,13 +72,9 @@ const NavbarLayout = ({
             <aside
                 id="staggered-menu-panel"
                 ref={panelRef}
-                className="staggered-menu-panel"
+                className={`staggered-menu-panel ${open ? 'panel-open' : 'panel-closed'} ${accentColor ? 'panel-accent' : ''}`}
                 data-position={position}
                 inert={!open ? "" : undefined}
-                style={{
-                    pointerEvents: open ? 'auto' : 'none',
-                    ...(accentColor ? { ['--sm-accent']: accentColor } : {})
-                }}
             >
                 <div className="sm-panel-inner">
                     <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
@@ -107,7 +103,7 @@ const NavbarLayout = ({
                             {userItems.map((s, i) => (
                                 <li key={s.label + i} className="sm-socials-item">
                                     {s.onClick ? (
-                                        <button onClick={s.onClick} className="sm-socials-link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}>
+                                        <button onClick={s.onClick} className="sm-socials-link sm-socials-button">
                                             {s.label}
                                         </button>
                                     ) : (

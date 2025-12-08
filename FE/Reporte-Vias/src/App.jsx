@@ -23,9 +23,10 @@ const AppContent = () => {
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('user');
-        localStorage.removeItem('id_usuario');
-    setUser(null);
+    import('./services/fetch').then(({ logout: logoutService }) => {
+      logoutService();
+      setUser(null);
+    });
   }, []);
 
   // No necesitas isAuthenticated si solo usas user

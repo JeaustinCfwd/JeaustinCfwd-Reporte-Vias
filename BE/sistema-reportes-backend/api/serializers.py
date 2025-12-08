@@ -37,7 +37,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class ImagenReporteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImagenReporte
-        fields = ['id', 'ruta_archivo', 'descripcion', 'fecha_subida']
+        fields = '__all__'
 
 class ReporteSerializer(serializers.ModelSerializer):
     imagenes = ImagenReporteSerializer(many=True, read_only=True)

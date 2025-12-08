@@ -202,7 +202,6 @@ const RegisterForm = () => {
               type="button" 
               onClick={handleNavigateToLogin}
               className="enlace-registro"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Iniciar sesión
             </button>

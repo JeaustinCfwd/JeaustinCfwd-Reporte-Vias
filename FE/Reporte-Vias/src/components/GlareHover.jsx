@@ -74,8 +74,8 @@ const GlareHover = ({
   return (
     <div
       className={`glare-hover ${playOnce ? 'glare-hover--play-once' : ''} ${className}`}
-      // Inyección de variables CSS memorizadas y estilos personalizados
-      style={{ ...vars, ...style }}
+      // Inyección de variables CSS memorizadas
+      style={vars}
     >
       {children}
     </div>

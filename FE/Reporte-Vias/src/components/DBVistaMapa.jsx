@@ -53,7 +53,6 @@ const DBVistaMapa = ({ filteredReports, statsByState }) => {
           maxZoom={18}
           maxBounds={[[8.0, -86.0], [11.5, -82.5]]}
           maxBoundsViscosity={1.0}
-          style={{ height: '500px', width: '100%' }}
           className="leaflet-map"
         >
           <TileLayer

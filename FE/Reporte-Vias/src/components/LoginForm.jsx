@@ -26,14 +26,30 @@ const LoginForm = () => {
     try {
       const peticion = await loginUser(username, password);
 
-      if (peticion.mensaje === "Inicio exitoso") {
-        // Usamos la función login del contexto (solo con user, sin token)
-        login(peticion.user || { username });
-        localStorage.setItem("id_usuario",peticion.id)
-        // Navegamos al dashboard después de un inicio de sesión exitoso
+      if (peticion.access && peticion.refresh) {
+        // Login exitoso con JWT tokens
+        login({ username });
+        // El token ya se guarda en la función loginUser
+        // Obtener el ID del usuario desde el token decodificado o hacer una petición adicional
+        try {
+          const tokenPayload = JSON.parse(atob(peticion.access.split('.')[1]));
+          localStorage.setItem("id_usuario", tokenPayload.user_id);
+        } catch (error) {
+          console.error('Error decoding token:', error);
+          // Si no podemos decodificar el token, hacemos una petición para obtener el user ID
+          const userResponse = await fetch('http://localhost:8000/api/usuarios/me/', {
+            headers: {
+              'Authorization': `Bearer ${peticion.access}`
+            }
+          });
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            localStorage.setItem("id_usuario", userData.id);
+          }
+        }
         navigate("/dashboard");
       } else {
-        setError(peticion.mensaje || "Error en el inicio de sesión");
+        setError("Error en el inicio de sesión: No se recibieron tokens");
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
@@ -60,7 +76,7 @@ const LoginForm = () => {
           <h1 className="titulo-login">Iniciar sesión</h1>
 
           {error && (
-            <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
+            <div className="error-message">
               {error}
             </div>
           )}

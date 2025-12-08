@@ -11,7 +11,7 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
-  animation: shine 5s linear infinite;
+  animation: shine var(--animation-duration, 5s) linear infinite;
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: 0.05em;

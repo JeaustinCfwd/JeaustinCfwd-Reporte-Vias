@@ -105,7 +105,6 @@ const RPUbicacion = ({ location, onLocationChange }) => {
      maxZoom={MAX_ZOOM}
      maxBounds={COSTA_RICA_BOUNDS}
      maxBoundsViscosity={1.0}
-     style={{ height: '600px', width: '100%' }}
      className="leaflet-map"
     >
      <ChangeMapView

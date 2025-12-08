@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../services/fetch';
 import { PFSidebar } from './PFSidebar.jsx';
 import { PFTabPerfil } from './PFTabPerfil.jsx';
 import { PFTabPassword } from './PFTabPassword.jsx';
@@ -12,8 +13,7 @@ const ProfileLayout = () => {
     const [usuario, setUsuario] = useState({});
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('id_usuario');
+        logout();
         navigate('/login');
     };
 
@@ -25,7 +25,14 @@ const ProfileLayout = () => {
                 return;
             }
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/usuario/${id_usuario}/`);
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`http://127.0.0.1:8000/api/usuario/${id_usuario}/`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                    credentials: 'include',
+                });
                 const data = await response.json();
                 setUsuario(data[0] || {});
             } catch (error) {

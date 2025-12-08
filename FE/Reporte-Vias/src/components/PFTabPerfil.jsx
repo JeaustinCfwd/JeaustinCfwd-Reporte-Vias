@@ -34,8 +34,10 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                 birthDate: storedUser.birthDate || '',
                 gender: storedUser.gender || 'male'
             });
-            const userPhoto = getUserPhoto(storedUser.id);
-            setPhotoPreview(userPhoto || '');
+            if (storedUser.id) {
+                const userPhoto = getUserPhoto(storedUser.id);
+                setPhotoPreview(userPhoto || '');
+            }
         }
     }, []);
 

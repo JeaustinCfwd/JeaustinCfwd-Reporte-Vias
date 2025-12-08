@@ -73,7 +73,7 @@ function Home() {
   useEffect(() => {
     const fetchEstadisticas = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('access_token');
         const res = await fetch('http://localhost:8000/api/crear-reporte/', {
           method: 'GET',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
@@ -101,7 +101,7 @@ function Home() {
     <div className="contenedor-inicio">
       {/* HERO SECTION */}
       <div className="seccion-hero">
-        <div id="lights" style={{ position: 'absolute', inset: '0px', zIndex: 0 }}>
+        <div id="lights" className="lights-container">
           <Hyperspeed />
         </div>
         <h2 className="titulo-principal">Transforma tu ciudad con cada reporte</h2>
@@ -178,7 +178,7 @@ function Home() {
                 </h2>
                 <ul className="lista-caracteristicas">
                   <li className="item-caracteristica">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon-spacing" style={{ color: '#ffffff' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon-spacing white-icon">
                       <path d="M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344"/>
                     </svg>
                     Vista de todos los reportes en tiempo real

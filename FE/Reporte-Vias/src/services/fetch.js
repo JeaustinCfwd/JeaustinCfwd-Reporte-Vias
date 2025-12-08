@@ -1,8 +1,8 @@
 const API_URL = 'http://localhost:8000/api/';
 
-// 1. Función de Login
+// 1. Función de Login con JWT
 export async function loginUser(email, password) {
-    const res = await fetch(API_URL + 'login/', {
+    const res = await fetch(API_URL + 'token/', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json' 
@@ -11,16 +11,57 @@ export async function loginUser(email, password) {
             username: email,
             password: password 
         }),
-        credentials: 'include',
     });
 
     if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.mensaje || 'Error de inicio de sesión');
+        throw new Error(errorData.detail || 'Error de inicio de sesión');
     }
     
     const data = await res.json();
+    // Guardar tokens en localStorage
+    localStorage.setItem('access_token', data.access);
+    localStorage.setItem('refresh_token', data.refresh);
     return data;
+}
+
+// Función para obtener el token de acceso
+export function getAccessToken() {
+    return localStorage.getItem('access_token');
+}
+
+// Función para refrescar el token
+export async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+        throw new Error('No refresh token available');
+    }
+
+    const res = await fetch(API_URL + 'token/refresh/', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ 
+            refresh: refreshToken 
+        }),
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to refresh token');
+    }
+    
+    const data = await res.json();
+    localStorage.setItem('access_token', data.access);
+    return data.access;
+}
+
+// Función para logout
+export function logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('id_usuario');
+    localStorage.removeItem('user');
 }
 
 // 2. Función de Registro de Usuario
@@ -180,8 +221,13 @@ export async function deleteUser(userId) {
 
 export async function getUserPhoto(userId) {
     try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${API_URL}usuarios/${userId}/foto/`, {
             credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
         });
 
         if (!res.ok) {
@@ -223,10 +269,12 @@ export async function obtenerDatosEstadisticos() {
 
 export async function postData(obj, endpoint) {
     try {
+        const token = localStorage.getItem('access_token');
         const peticion = await fetch(`http://127.0.0.1:8000/api/${endpoint}/`, {
             method: "POST",
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
             body: JSON.stringify(obj)
         });

@@ -257,6 +257,7 @@
   cursor: pointer;
   min-height: 70px;
   box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08);
+  overflow: visible !important; /* ← IMPORTANTE */
 }
 
 .sidebar.close .profile-details {
@@ -268,6 +269,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1; 
+  min-width: 0;
 }
 
 .sidebar.close .profile-details .profile-content {
@@ -294,6 +297,7 @@
 
 .sidebar .profile-details .name-job {
   transition: opacity var(--duration-normal) ease;
+    min-width: 0;
 }
 
 .sidebar.close .profile-details .name-job {
@@ -313,19 +317,34 @@
   font-size: 11px;
 }
 
-.sidebar .profile-details>svg {
-  color: var(--text-muted);
+/* ICONO DE LOGOUT - CORREGIDO */
+.sidebar .profile-details > svg {
+  color: #E5E7EB;
+  stroke: #E5E7EB !important;
+  fill: none !important;
   width: 20px;
   height: 20px;
+  min-width: 20px; /* ← IMPORTANTE */
+  min-height: 20px; /* ← IMPORTANTE */
   transition: color var(--duration-normal) ease;
   flex-shrink: 0;
+  cursor: pointer; /* ← AGREGADO */
+  margin-left: auto; /* ← AGREGADO para empujarlo a la derecha */
 }
 
-.sidebar .profile-details>svg:hover {
-  color: var(--text-primary);
+.sidebar .profile-details > svg * {
+  stroke: #FFFFFF !important;
+  fill: none !important;
+  stroke-width: 2 !important;
 }
 
-.sidebar.close .profile-details>svg {
+.sidebar .profile-details > svg:hover {
+  color: #FFFFFF;
+  stroke: #FFFFFF !important;
+  opacity: 1;
+}
+
+.sidebar.close .profile-details > svg {
   opacity: 0;
   pointer-events: none;
 }
@@ -342,9 +361,48 @@
   margin-top: 60px;
 }
 
-.sidebar.close~.dashboard-main {
+.sidebar.close ~ .dashboard-main {
   left: var(--sidebar-width-collapsed);
   width: calc(100% - var(--sidebar-width-collapsed));
+}
+
+/* ============================
+   FIX PARA ICONOS LUCIDE
+   ============================ */
+
+/* Forzar que todos los iconos lucide en el sidebar tengan stroke visible */
+.sidebar svg[class*="lucide"] {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Iconos en los links de navegación */
+.sidebar .nav-links li a svg {
+  stroke: var(--text-secondary) !important;
+  fill: none !important;
+}
+
+.sidebar .nav-links li a:hover svg {
+  stroke: var(--text-primary) !important;
+}
+
+/* Icono de logout específicamente */
+.sidebar .profile-details > svg.lucide-log-out {
+  stroke: var(--text-muted) !important;
+  fill: none !important;
+  color: var(--text-muted) !important;
+}
+
+.sidebar .profile-details > svg.lucide-log-out:hover {
+  stroke: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
+}
+
+/* Asegurar que el icono sea visible cuando el sidebar está colapsado */
+.sidebar.close .profile-details > svg.lucide-log-out {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Responsive */
@@ -367,7 +425,7 @@
     width: 100%;
   }
 
-  .sidebar.close~.dashboard-main {
+  .sidebar.close ~ .dashboard-main {
     left: 0;
     width: 100%;
   }

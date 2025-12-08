@@ -118,7 +118,7 @@ const ThreeDCarousel = ({
       <div className="carousel-container">
         <div
           className="carousel-wrapper"
-          style={{ height: `${cardHeight + 50}px` }}
+          style={{ '--carousel-height': `${cardHeight + 50}px` }}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
           onTouchStart={isMobileSwipe ? onTouchStart : undefined}
@@ -132,11 +132,11 @@ const ThreeDCarousel = ({
                 key={item.id || index}
                 className={`carousel-card ${getCardAnimationClass(index)}`}
               >
-                <div className="card-container" style={{ height: `${cardHeight}px` }}>
+                <div className="card-container" style={{ '--card-height': `${cardHeight}px` }}>
                   <div
                     className="card-image"
                     style={{
-                      backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      '--card-bg-image': item.imageUrl ? `url(${item.imageUrl})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     }}
                   >
                     <div className="card-image-overlay" />
