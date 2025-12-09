@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import { MapPinHouse } from 'lucide-react';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from './ToastContext';
 import { ChangeMapView, MapClickHandler, setupLeafletIcons } from './RPUtilidadesMapa';
 import { COSTA_RICA_BOUNDS, DEFAULT_ZOOM, MIN_ZOOM, MAX_ZOOM } from './RPConstantes';
 import 'leaflet/dist/leaflet.css';

@@ -74,9 +74,18 @@ function Home() {
     const fetchEstadisticas = async () => {
       try {
         const token = localStorage.getItem('access_token');
+        if (!token) {
+          console.log('Usuario no autenticado, omitiendo carga de estadísticas');
+          setLoading(false);
+          return;
+        }
+        console.log('Token encontrado:', token ? 'Sí' : 'No');
         const res = await fetch('http://localhost:8000/api/crear-reporte/', {
           method: 'GET',
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          },
         });
         if (res.ok) {
           const data = await res.json();

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/fetch.js';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from './ToastContext';
 import "../styles/Forms.css";
 
 const RegisterForm = () => {

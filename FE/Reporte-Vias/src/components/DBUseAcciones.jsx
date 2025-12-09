@@ -1,7 +1,7 @@
 // ==================== HOOK DE ACCIONES ====================
 
 import { useCallback } from 'react';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from './ToastContext';
 
 export const useAcciones = (reports, setReports, filteredReports) => {
     const { success, error: showError } = useToast();

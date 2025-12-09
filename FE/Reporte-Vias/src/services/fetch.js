@@ -246,9 +246,13 @@ export async function getUserPhoto(userId) {
 // 5. Otras funciones
 export async function obtenerDatosEstadisticos() {
     try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(API_URL + 'crear-reporte/', {
             method: 'GET',
-            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
         });
 
         if (!res.ok) {
@@ -290,8 +294,13 @@ export async function postData(obj, endpoint) {
 
 export async function getComentarios() {
     try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(API_URL + 'crear-comentario/', {
             method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
             credentials: 'include',
         });
 

@@ -24,6 +24,12 @@ const RatingBox = () => {
   const fetchReviews = async () => {
    try {
     const token = localStorage.getItem('access_token');
+    if (!token) {
+     console.log('Usuario no autenticado, omitiendo carga de comentarios');
+     setLoading(false);
+     return;
+    }
+    console.log('Token encontrado en RatingBox:', token ? 'Sí' : 'No');
     const response = await fetch('http://127.0.0.1:8000/api/crear-comentario/', {
      method: 'GET',
      headers: {

@@ -18,7 +18,11 @@ export const useReportes = () => {
             try {
                 const token = localStorage.getItem('access_token');
                 const res = await fetch('http://localhost:8000/api/crear-reporte/', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    },
                 });
 
                 if (res.status === 401) {

@@ -1,8 +1,8 @@
 import React, { createContext, useState, useCallback } from 'react';
 import Routing from './routes/Routing';
-import { ToastProvider } from './contexts/ToastContext';
+import { ToastProvider } from './components/ToastContext';
 import ToastContainer from './components/ToastContainer';
-import { useToast } from './contexts/ToastContext';
+import { useToast } from './components/ToastContext';
 // BrowserRouter removed
 
 export const AuthContext = createContext();

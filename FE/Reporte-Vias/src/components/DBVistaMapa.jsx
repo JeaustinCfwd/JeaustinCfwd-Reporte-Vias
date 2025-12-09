@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { obtenerDatosEstadisticos } from '@/services/fetch';
 
 // Configuración de Leaflet (puedes mover esto a un archivo separado si lo usas en otros lados)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,16 +15,23 @@ L.Icon.Default.mergeOptions({
 const createCustomIcon = (color) => {
   return L.divIcon({
     className: 'custom-marker',
-    html: `<div class="map-marker" style="background-color: ${color};"></div>`,
-    iconSize: [25, 25],
-    iconAnchor: [12, 12],
+    html: `<div style="background-color: ${color};"></div>`,
+    iconSize: [24, 24], // Tamaño del icono completo
+    iconAnchor: [12, 12], // Punto de anclaje (centro)
+    popupAnchor: [0, -12] // Donde aparece el popup relativo al icono
   });
 };
 
 const stateIcons = {
+  // Mapeo por string (legacy)
   nuevo: createCustomIcon('#FC8181'),
   en_revision: createCustomIcon('#5A67D8'),
-  atendido: createCustomIcon('#48BB78')
+  atendido: createCustomIcon('#48BB78'),
+
+  // Mapeo por ID (según API: 1=Nuevo, 2=En Revisión, 3=Atendido)
+  1: createCustomIcon('#FC8181'),
+  2: createCustomIcon('#5A67D8'),
+  3: createCustomIcon('#48BB78'),
 };
 
 const DBVistaMapa = ({ filteredReports, statsByState }) => {
@@ -33,6 +41,34 @@ const DBVistaMapa = ({ filteredReports, statsByState }) => {
     report.latitud >= 8.0 && report.latitud <= 11.5 &&
     report.longitud >= -86.0 && report.longitud <= -82.5
   );
+  const [cantidadNuevos, setCantidadNuevos] = useState(0)
+  const [cantidadRevisiones, setCantidadRevisiones] = useState(0)
+  const [cantidadAtendidos, setCantidadAtendidos] = useState(0)
+
+  useEffect(() => {
+    const traerDatos = async () => {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`http://127.0.0.1:8000/api/crear-reporte/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const datos = await response.json()
+
+      console.log(datos);
+
+      const filtroCantidadNuevos = datos.results.filter((dato) => dato.estado == 1)
+      const filtroCantidadRevisiones = datos.results.filter((dato) => dato.estado == 2)
+      const filtroCantidadAtendidos = datos.results.filter((dato) => dato.estado == 3)
+      setCantidadNuevos(filtroCantidadNuevos.length)
+      setCantidadRevisiones(filtroCantidadRevisiones.length)
+      setCantidadAtendidos(filtroCantidadAtendidos.length)
+    }
+    traerDatos()
+  }, [])
+
 
   return (
     <div className="map-content">
@@ -40,15 +76,15 @@ const DBVistaMapa = ({ filteredReports, statsByState }) => {
         <h3>Leyenda</h3>
         <div className="legend-item">
           <span className="legend-marker nuevo"></span>
-          <span>Nuevos ({statsByState.nuevo || 0})</span>
+          <span>Nuevos ({cantidadNuevos})</span>
         </div>
         <div className="legend-item">
           <span className="legend-marker revision"></span>
-          <span>En Revisión ({statsByState.en_revision || 0})</span>
+          <span>En Revisión ({cantidadRevisiones})</span>
         </div>
         <div className="legend-item">
           <span className="legend-marker atendido"></span>
-          <span>Atendidos ({statsByState.atendido || 0})</span>
+          <span>Atendidos ({cantidadAtendidos})</span>
         </div>
       </div>
 
@@ -68,20 +104,22 @@ const DBVistaMapa = ({ filteredReports, statsByState }) => {
           />
           {validReports.map(report => (
             <Marker
+
               key={report.id}
               position={[parseFloat(report.latitud), parseFloat(report.longitud)]}
-              icon={stateIcons[report.state] || stateIcons.nuevo}
+              icon={stateIcons[report.estado] || stateIcons[report.state] || stateIcons.nuevo}
+
             >
               <Popup>
-                <strong>{report.title || 'Sin título'}</strong><br />
-                {report.description || 'Sin descripción'}<br />
-                Estado: {report.state?.replace(/_/g, ' ') || 'Desconocido'}<br />
-                Categoría: {report.category?.replace(/_/g, ' ') || 'Sin categoría'}
+                <strong>{report.title || report.titulo || 'Sin título'}</strong><br />
+                {report.description || report.descripcion || 'Sin descripción'}<br />
+                Estado: {report.estado_nombre || report.state?.replace(/_/g, ' ') || 'Desconocido'}<br />
+                Categoría: {report.category?.replace(/_/g, ' ') || report.categoria || 'Sin categoría'}
               </Popup>
             </Marker>
           ))}
         </MapContainer>
-        
+
         {validReports.length === 0 && (
           <div className="no-reports-overlay">
             <div className="no-reports-message">

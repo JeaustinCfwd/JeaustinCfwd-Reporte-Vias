@@ -1,91 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { User, Mail, Camera } from 'lucide-react';
-import { updateUser, getUserPhoto } from '../services/fetch.js';
+import React from 'react';
+import PFFoto from './PFFoto';
+import PFCampo from './PFCampo';
+import { usePFFormulario } from './PFFormulario';
 import "../styles/Profile.css";
 
 export const PFTabPerfil = ({ usuarioActual }) => {
-    const [user, setUser] = useState(null);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        bio: '',
-        phone: '',
-        location: '',
-        website: '',
-        birthDate: '',
-        gender: 'male'
-    });
-    const [photoPreview, setPhotoPreview] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const {
+        user,
+        formData,
+        photoPreview,
+        loading,
+        error,
+        success,
+        handleInputChange,
+        handlePhotoChange,
+        handleRemovePhoto,
+        handleSubmit
+    } = usePFFormulario(usuarioActual);
 
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        if (storedUser) {
-            setUser(storedUser);
-            setFormData({
-                name: storedUser.name || '',
-                email: storedUser.email || '',
-                bio: storedUser.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
-                phone: storedUser.phone || '',
-                location: storedUser.location || '',
-                website: storedUser.website || '',
-                birthDate: storedUser.birthDate || '',
-                gender: storedUser.gender || 'male'
-            });
-            if (storedUser.id) {
-                const userPhoto = getUserPhoto(storedUser.id);
-                setPhotoPreview(userPhoto || '');
-            }
-        }
-    }, []);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        setError('');
-        setSuccess('');
-    };
-
-    const handlePhotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhotoPreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!user) return;
-
-        setLoading(true);
-        setError('');
-        setSuccess('');
-
-        const updateData = {
-            ...formData,
-            photo: photoPreview
-        };
-
-        try {
-            const updatedUser = await updateUser(user.id, updateData);
-            if (updatedUser) {
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-                setUser(updatedUser);
-                setSuccess('Perfil actualizado exitosamente');
-            } else {
-                setError('Error al actualizar perfil');
-            }
-        } catch (error) {
-            setError('Error al actualizar: ' + error.message);
-        }
-        setLoading(false);
-    };
+    const genderOptions = [
+        { value: 'male', label: 'Masculino' },
+        { value: 'female', label: 'Femenino' },
+        { value: 'other', label: 'Otro' },
+        { value: 'prefer-not-say', label: 'Prefiero no decir' }
+    ];
 
     return (
         <div className="profile-content">
@@ -97,195 +35,101 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                 {success && <div className="alert alert-success">{success}</div>}
 
                 {/* Foto de Perfil */}
-                <div className="form-row">
-                    <label className="form-label">Foto de Perfil</label>
-                    <div className="form-field">
-                        <div className="profile-photo-container">
-                            <div className="profile-photo-wrapper">
-                                {photoPreview ? (
-                                    <img src={photoPreview} alt="Profile" className="profile-photo" />
-                                ) : (
-                                    <div className="profile-photo-placeholder">
-                                        <User size={40} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="photo-actions">
-                                <label htmlFor="photo" className="photo-upload-btn">
-                                    <Camera size={18} />
-                                    {photoPreview ? 'Cambiar foto' : 'Subir foto'}
-                                </label>
-                                {photoPreview && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setPhotoPreview('')}
-                                        className="photo-remove-btn"
-                                    >
-                                        Eliminar foto
-                                    </button>
-                                )}
-                                <input
-                                    type="file"
-                                    id="photo"
-                                    name="photo"
-                                    accept="image/*"
-                                    onChange={handlePhotoChange}
-                                    className="photo-input-hidden"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <PFFoto 
+                    photoPreview={photoPreview}
+                    onPhotoChange={handlePhotoChange}
+                    onRemovePhoto={handleRemovePhoto}
+                />
 
                 <div className="form-section-divider">
                     <h2 className="form-section-title">Información Personal</h2>
                 </div>
 
                 {/* Nombre - Lado a lado */}
-                <div className="form-row-side-by-side">
-                    <div className="form-field form-field-display">
-                        <label className="form-label">Nombre Actual</label>
-                        <div className="display-value">
-                            {usuarioActual?.username || user?.name || 'No disponible'}
-                        </div>
-                    </div>
-                    <div className="form-field">
-                        <label htmlFor="name" className="form-label">Nuevo Nombre</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            required
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Nombre"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    sideBySide
+                    displayValue={usuarioActual?.username || user?.name || 'No disponible'}
+                />
 
                 {/* Email - Lado a lado */}
-                <div className="form-row-side-by-side">
-                    <div className="form-field form-field-display">
-                        <label className="form-label">Email Actual</label>
-                        <div className="display-value">
-                            {usuarioActual?.email || user?.email || 'No disponible'}
-                        </div>
-                    </div>
-                    <div className="form-field">
-                        <label htmlFor="email" className="form-label">Nuevo Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            required
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    sideBySide
+                    displayValue={usuarioActual?.email || user?.email || 'No disponible'}
+                />
 
                 <div className="form-section-divider">
                     <h2 className="form-section-title">Información Adicional</h2>
                 </div>
 
                 {/* Biografía */}
-                <div className="form-row">
-                    <label htmlFor="bio" className="form-label">Biografía</label>
-                    <div className="form-field">
-                        <textarea
-                            id="bio"
-                            name="bio"
-                            value={formData.bio}
-                            onChange={handleInputChange}
-                            rows={4}
-                            className="form-input"
-                            placeholder="Cuéntanos sobre ti..."
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Biografía"
+                    type="textarea"
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    rows={4}
+                    placeholder="Cuéntanos sobre ti..."
+                />
 
                 {/* Teléfono */}
-                <div className="form-row">
-                    <label htmlFor="phone" className="form-label">Teléfono</label>
-                    <div className="form-field">
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            placeholder="+1234567890"
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Teléfono"
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+1234567890"
+                />
 
                 {/* Ubicación */}
-                <div className="form-row">
-                    <label htmlFor="location" className="form-label">Ubicación</label>
-                    <div className="form-field">
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            value={formData.location}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            placeholder="Ciudad, País"
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Ubicación"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="Ciudad, País"
+                />
 
                 {/* Sitio Web */}
-                <div className="form-row">
-                    <label htmlFor="website" className="form-label">Sitio Web</label>
-                    <div className="form-field">
-                        <input
-                            type="url"
-                            id="website"
-                            name="website"
-                            value={formData.website}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            placeholder="https://tusitio.com"
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Sitio Web"
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleInputChange}
+                    placeholder="https://tusitio.com"
+                />
 
                 {/* Fecha de Nacimiento */}
-                <div className="form-row">
-                    <label htmlFor="birthDate" className="form-label">Fecha de Nacimiento</label>
-                    <div className="form-field">
-                        <input
-                            type="date"
-                            id="birthDate"
-                            name="birthDate"
-                            value={formData.birthDate}
-                            onChange={handleInputChange}
-                            className="form-input"
-                        />
-                    </div>
-                </div>
+                <PFCampo
+                    label="Fecha de Nacimiento"
+                    type="date"
+                    name="birthDate"
+                    value={formData.birthDate}
+                    onChange={handleInputChange}
+                />
 
                 {/* Género */}
-                <div className="form-row">
-                    <label htmlFor="gender" className="form-label">Género</label>
-                    <div className="form-field">
-                        <select
-                            id="gender"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleInputChange}
-                            className="form-input"
-                        >
-                            <option value="male">Masculino</option>
-                            <option value="female">Femenino</option>
-                            <option value="other">Otro</option>
-                            <option value="prefer-not-say">Prefiero no decir</option>
-                        </select>
-                    </div>
-                </div>
+                <PFCampo
+                    label="Género"
+                    type="select"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    options={genderOptions}
+                />
 
                 {/* Botones de Acción */}
                 <div className="form-actions">

@@ -93,7 +93,7 @@ class LoginUsuarioView(APIView):
 class ReporteCreateView(ListCreateAPIView):
     queryset = Reporte.objects.all().order_by('-fecha_creacion')
     serializer_class = ReporteSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 class ReporteDeleteView(APIView):
