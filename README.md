@@ -1,286 +1,155 @@
 # 🛣️ Sistema de Reportes de Vías
 
-Sistema web interactivo para la gestión y visualización de reportes sobre el estado de las vías públicas. Permite a los usuarios reportar problemas en las carreteras, visualizarlos en un mapa interactivo y gestionar su seguimiento mediante un dashboard administrativo.
+Sistema web interactivo para la gestión y visualización de reportes sobre el estado de las vías públicas. Permite a los usuarios reportar problemas en las carreteras, visualizarlos en un mapa interactivo y gestionar su seguimiento mediante un dashboard administrativo completo.
 
-## 📊 Diagrama de Base de Datos
+## 📊 Recursos del Proyecto
 
-Puedes ver el diagrama completo de la base de datos en:
-[Ver Diagrama en dbdiagram.io](https://dbdiagram.io/d/FullStack-ReporteVias-690cc7fb6735e11170983774)
-
-## 📋 Tablero de Progreso
-
-Sigue el progreso del proyecto en nuestro tablero de Trello:
-[Ver Tablero en Trello](https://trello.com/b/DGfEoNJR/fullstack-reportevias-cr)
+- **Diagrama de Base de Datos**: [Ver en dbdiagram.io](https://dbdiagram.io/d/FullStack-ReporteVias-690cc7fb6735e11170983774)
+- **Tablero de Trello**: [Ver en Trello](https://trello.com/b/DGfEoNJR/fullstack-reportevias-cr)
 
 ## 📁 Estructura del Proyecto
 
+El proyecto está organizado en una arquitectura monorepo separando claramente Frontend y Backend:
+
 ```
-Reporte-Vias/
-├── public/                  # Archivos estáticos (favicon, imágenes públicas)
-├── src/                     # Código fuente de la aplicación
-│   ├── assets/              # Imágenes y recursos estáticos
-│   ├── components/          # Componentes React reutilizables
-│   ├── contexts/            # Contextos para manejo de estado global
-│   ├── pages/               # Páginas principales de la aplicación
-│   ├── routes/              # Configuración de rutas y rutas privadas
-│   ├── services/            # Servicios y API clients
-│   ├── styles/              # Archivos CSS y estilos
-│   ├── App.jsx              # Componente raíz
-│   └── main.jsx             # Punto de entrada
-├── index.html               # Archivo HTML principal
-├── package.json             # Dependencias y scripts
-├── vite.config.js           # Configuración de Vite
-└── README.md                # Documentación del proyecto
+Fullstack/
+├── BE/                          # Backend
+│   └── sistema-reportes-backend/ # Proyecto Django REST Framework
+├── FE/                          # Frontend
+│   └── Reporte-Vias/            # Proyecto React + Vite
+│       ├── src/
+│       │   ├── components/      # Componentes Modulares
+│       │   │   ├── DB*.jsx      # Componentes del Dashboard (Sidebar, Vistas, Hooks)
+│       │   │   ├── PF*.jsx      # Componentes de Perfil de Usuario
+│       │   │   ├── RP*.jsx      # Componentes de Reportes
+│       │   │   └── ...
+│       │   ├── contexts/        # Contextos (Auth, Toast, etc.)
+│       │   ├── services/        # Servicios de API
+│       │   └── styles/          # Estilos globales y específicos
+└── README.md                    # Este archivo
 ```
 
 ## ✨ Características Principales
 
-### 🎯 Para Usuarios
-- **Creación de Reportes**: Formulario intuitivo para reportar problemas en las vías
-- **Geolocalización**: Selección de ubicación mediante mapa interactivo con Leaflet
-- **Categorización**: Clasificación de reportes por tipo (baches, señalización, iluminación, etc.)
-- **Sistema de Calificación**: Evaluación de la severidad del problema con estrellas
-- **Galería de Fotos**: Carga de hasta 3 imágenes por reporte
-- **Autenticación**: Sistema de registro e inicio de sesión
-- **Perfil de Usuario**: Gestión de información personal y cambio de contraseña
+### 🎨 Experiencia de Usuario (Frontend)
+- **Interfaz Moderna y Animada**: Efectos visuales con **GSAP** y renders 3D con **OGL/Three.js** (Hyperspeed, Prismas).
+- **Navbar Dinámico**: Navegación receptiva con efectos de glassmorphism y menú lateral animado.
+- **Gestión de Perfil Completa**:
+  - Edición de datos personales.
+  - Cambio de contraseña seguro.
+  - Gestión de foto de perfil.
+- **Sistema de Reportes**:
+  - Geolocalización precisa con **Leaflet**.
+  - Carga de evidencia fotográfica (Cloudinary).
+  - Categorización visual y sistema de rating por estrellas.
 
-### 📊 Dashboard Administrativo
-- **Resumen General**: Visualización de estadísticas clave con gráficos interactivos
-- **Lista de Reportes**: Tabla completa con filtros avanzados y gestión de estados
-- **Mapa Interactivo**: Visualización geográfica de todos los reportes con marcadores por estado
-- **Estadísticas Detalladas**: Métricas y análisis por categoría y estado
-- **Exportación CSV**: Descarga de datos para análisis externo
-- **Actualización en Tiempo Real**: Refresh automático cada 30 segundos
-- **Filtros Avanzados**: Por estado, categoría, fecha y búsqueda de texto
+### 📊 Dashboard Administrativo (Módulos DB*)
+Un panel de control robusto y modularizado para la gestión eficiente:
+- **Resumen en Tiempo Real**: Tarjetas de métricas con estilos aislados y gráficos de tendencias.
+- **Mapa de Calor y Marcadores**: Visualización geográfica del estado de las vías.
+- **Gestión de Datos**: Tablas interactivas con filtros avanzados (por estado, categoría, fecha, búsqueda).
+- **Hooks Personalizados**: Lógica separada en hooks (`DBUseEstadisticas`, `DBUseReportes`, `DBUseFiltros`) para mayor mantenibilidad.
 
-### 🎨 Interfaz de Usuario
-- **Diseño Moderno**: UI limpia y profesional con animaciones fluidas
-- **Efectos Visuales**: Animaciones con GSAP y efectos 3D
-- **Responsive**: Adaptable a dispositivos móviles, tablets y desktop
-- **Tema Oscuro/Claro**: Sidebar oscuro con contenido claro para mejor contraste
-- **Componentes Interactivos**: Carruseles 3D, efectos de hover y transiciones suaves
+### 🔐 Seguridad y Backend
+- **Autenticación JWT**: Tokens de acceso y refresco seguros.
+- **API RESTful**: Endpoints estructurados con Django REST Framework.
+- **Validaciones**: Múltiples capas de validación de datos tanto en cliente como en servidor.
 
 ## 🚀 Tecnologías Utilizadas
 
 ### Frontend
-- **React 18.2** - Biblioteca de UI
-- **Vite 7.1** - Build tool y dev server
-- **React Router DOM 6.28** - Navegación y rutas
-- **TailwindCSS 4.1** - Framework de estilos utility-first
+- **Core**: React 18.2, Vite 7.1
+- **Estilos**: TailwindCSS 3.4, CSS3, animaciones custom.
+- **Mapas**: Leaflet 1.9, React-Leaflet 4.2.
+- **Gráficos**: Chart.js 4.5, React-Chartjs-2 5.3.
+- **Visuales/3D**: OGL 1.0, Three.js 0.167, GSAP 3.13.
+- **Utilidades**: Lucide-React (Iconos), CLSX/Tailwind-Merge.
 
 ### Backend
-- **Django 5.2** - Framework de desarrollo web en Python
-- **Django REST Framework** - Para construir la API REST
-- **Django REST Simple JWT** - Autenticación con JWT
-- **MySQL** - Base de datos relacional
-- **Django CORS Headers** - Manejo de CORS para el frontend
+- **Framework**: Django 5.x
+- **API**: Django REST Framework.
+- **Auth**: Simple JWT.
+- **Base de Datos**: MySQL.
+- **CORS**: Django CORS Headers.
 
-### Visualización de Datos
-- **Chart.js 4.5** - Gráficos y estadísticas
-- **React-ChartJS-2 5.3** - Integración de Chart.js con React
-- **Leaflet 1.9** - Mapas interactivos
-- **React-Leaflet 4.2** - Componentes de Leaflet para React
+## 🔧 Instalación y Configuración
 
-### Seguridad
-- **JWT (JSON Web Tokens)** - Autenticación segura
-- **Validación de contraseñas** - Múltiples validadores integrados
-- **CSRF Protection** - Protección contra ataques CSRF
-- **CORS** - Configuración segura para peticiones cruzadas
+### Prerrequisitos
+- Node.js (v18+ recomendado)
+- Python 3.10+
+- MySQL Server
 
-### Herramientas de Desarrollo
-- **ESLint 9.35** - Linter de código
-- **PostCSS 8.5** - Procesador de CSS
-- **Autoprefixer 10.4** - Prefijos CSS automáticos
-- **Python 3.x** - Lenguaje de programación del backend
+### 1. Configuración del Backend
 
-## 📋 Requisitos Previos
+Navega al directorio del backend e instala las dependencias:
 
-- **Node.js** (versión 16 o superior)
-- **npm** o **yarn**
-
-## 🔧 Instalación
-
-1. **Clonar el repositorio**
 ```bash
-git clone https://github.com/JeaustinCfwd/Reporte-Vias.git
-cd Reporte-Vias
+cd Fullstack/BE/sistema-reportes-backend
+# Crea y activa tu entorno virtual
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# Linux/Mac
+source venv/bin/activate
+
+# Instalar dependencias
+pip install -r requirements.txt
 ```
 
-2. **Instalar dependencias**
+Configura las variables de entorno (`.env` en `sistema-reportes-backend/`):
+
+```env
+DB_NAME=nombre_db
+DB_USER=usuario
+DB_PASSWORD=password
+DB_HOST=localhost
+DB_PORT=3306
+SECRET_KEY=tu_secret_key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+Ejecuta las migraciones y crea un superusuario:
+
 ```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+### 2. Configuración del Frontend
+
+Navega al directorio del frontend:
+
+```bash
+cd Fullstack/FE/Reporte-Vias
 npm install
 ```
 
-3. **Configuración del entorno**
+Crea el archivo `.env` en la raíz de `Reporte-Vias`:
 
-   **Frontend**: Crea un archivo `.env` en la raíz del proyecto frontend con:
-   ```env
-   VITE_API_URL=http://localhost:8000/api  # URL de la API de Django
-   ```
+```env
+VITE_API_URL=http://localhost:8000/api
+```
 
-   **Backend**: Crea un archivo `.env` en la carpeta `sistema-reportes-backend` con:
-   ```env
-   # Configuración de la base de datos
-   DB_NAME=tu_base_de_datos
-   DB_USER=tu_usuario
-   DB_PASSWORD=tu_contraseña
-   DB_HOST=localhost
-   DB_PORT=3306
+Inicia el servidor de desarrollo:
 
-   # Configuración de Django
-   SECRET_KEY=tu_clave_secreta_aqui
-   DEBUG=True
-   ALLOWED_HOSTS=localhost,127.0.0.1
-   ```
-
-4. **Configuración de la base de datos**
-   - Asegúrate de tener MySQL instalado y en ejecución
-   - Crea una base de datos con el nombre especificado en las variables de entorno
-   - Ejecuta las migraciones:
-     ```bash
-     cd sistema-reportes-backend
-     python manage.py migrate
-     ```
-   - Crea un superusuario para acceder al panel de administración:
-     ```bash
-     python manage.py createsuperuser
-     ```
-
-## 🎮 Uso
-
-### Modo Desarrollo
-
-#### Frontend
-1. **Iniciar el servidor de desarrollo del frontend**
 ```bash
-# En la raíz del proyecto frontend
 npm run dev
 ```
-La aplicación estará disponible en `http://localhost:5173`
 
-#### Backend
-1. **Iniciar el servidor de desarrollo de Django**
-```bash
-# En la carpeta sistema-reportes-backend
-python manage.py runserver
-```
-La API estará disponible en `http://localhost:8000/api`
-El panel de administración estará en `http://localhost:8000/admin`
-
-
-### Comandos Disponibles
+## 🎮 Comandos Disponibles (Frontend)
 
 ```bash
-# Desarrollo
-npm run dev          # Inicia el servidor de desarrollo con Vite
-
-
-# Producción
-npm run build        # Construye la aplicación para producción
-npm run preview      # Preview de la build de producción
-
-# Calidad de Código
-npm run lint         # Ejecuta ESLint para verificar el código
+npm run dev          # Iniciar servidor de desarrollo
+npm run build        # Construir para producción
+npm run preview      # Previsualizar build
+npm run lint         # Verificar código con ESLint
 ```
 
-## 🎨 Características de la UI
+## 👥 Contribución y Estado
 
-### Componentes Destacados
+El proyecto se encuentra en desarrollo activo, enfocándose en la modularización de componentes y la mejora continua de la experiencia de usuario.
 
-- **Dashboard**: Panel administrativo completo con sidebar colapsable
-- **Gráficos Interactivos**: Visualización de datos con Chart.js
-- **Mapa con Leaflet**: Marcadores personalizados por estado de reporte
-- **Carruseles 3D**: Efectos visuales avanzados con OGL
-- **Sistema de Rating**: Calificación visual con estrellas
-- **Formularios Validados**: Validación en tiempo real
-- **Efectos de Hover**: Animaciones suaves con GSAP
-
-### Estados de Reportes
-
-- 🆕 **Nuevo**: Reporte recién creado (color rojo)
-- 🔍 **En Revisión**: Reporte siendo evaluado (color azul)
-- ✅ **Atendido**: Reporte resuelto (color verde)
-
-### Categorías de Reportes
-
-- Baches
-- Señalización
-- Iluminación
-- Limpieza
-- Vegetación
-- Drenaje
-- Otro
-
-## 🔐 Autenticación
-
-El sistema incluye:
-- Registro de usuarios con validación de email
-- Login con persistencia de sesión
-- Gestión de perfil de usuario
-- Cambio de contraseña
-- Carga de foto de perfil
-
-## 📊 Funcionalidades del Dashboard
-
-### Filtros Disponibles
-- **Por Estado**: Nuevos, En Revisión, Atendidos
-- **Por Categoría**: Todas las categorías de reportes
-- **Por Fecha**: Rango de fechas personalizado
-- **Búsqueda**: Por título o descripción
-
-### Vistas del Dashboard
-1. **Resumen General**: Cards de estadísticas + gráficos de tendencia
-2. **Lista de Reportes**: Tabla completa con acciones
-3. **Mapa Interactivo**: Visualización geográfica
-4. **Estadísticas Detalladas**: Métricas avanzadas
-
-## 🌐 Documentación de la API
-
-La documentación completa de la API está disponible en el repositorio del backend. Incluye todos los endpoints disponibles, parámetros requeridos, formatos de solicitud y respuesta, y códigos de estado HTTP.
-
-### Autenticación
-La API utiliza JWT (JSON Web Tokens) para la autenticación. Incluye el token en el encabezado `Authorization: Bearer <token>` para las rutas protegidas.
-
-### Estándares de Respuesta
-Todas las respuestas siguen un formato estándar:
-```json
-{
-  "success": true,
-  "data": {},
-  "message": "Mensaje descriptivo"
-}
-```
-
-### Manejo de Errores
-Los errores siguen un formato consistente:
-```json
-{
-  "success": false,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Mensaje de error descriptivo"
-  }
-}
-```
-GET    /reviews           # Obtener calificaciones
-POST   /reviews           # Crear calificación
-```
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request para sugerir mejoras o reportar problemas.
-
-## 📝 Licencia
-
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
-
-## 👥 Autores
-
-- **Jeaustin CU** - Desarrollo inicial
-
-## 🙏 Agradecimientos
-
-- React y Vite por las herramientas de desarrollo
-- Leaflet por los mapas interactivos
-- Chart.js por las visualizaciones de datos
-- La comunidad open source
+---
+**Desarrollado para la gestión de infraestructura vial en Costa Rica.**
