@@ -23,14 +23,14 @@ body {
 }
 
 .dashboard-wrapper {
-  background: #E4E9F7;
+  background: #2A2A2A !important;
   min-height: 100vh;
   flex: 1;
 }
 
 .dashboard-main {
   position: relative;
-  background: #E4E9F7;
+  background: #2A2A2A !important;
   min-height: calc(100vh - 60px - 250px);
   left: 260px;
   width: calc(100% - 260px);
@@ -85,14 +85,14 @@ body {
 .dashboard-title {
   font-size: 2.25rem;
   font-weight: 700;
-  color: #11101d;
+  color: #FFFFFF;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.75px;
 }
 
 .dashboard-subtitle {
   font-size: 0.9375rem;
-  color: #666666;
+  color: #FFFFFF;
   margin: 0;
   display: flex;
   align-items: center;
@@ -200,66 +200,121 @@ body {
    ============================ */
 
 .dashboard-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  background: #FFFFFF;
-  padding: 1.75rem;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   display: flex;
+  flex-direction: row;
+  gap: 32px;
+  /* Espacio entre tarjetas, ajusta según tu preferencia */
+  justify-content: center;
   align-items: center;
-  gap: 1.25rem;
-  transition: all 0.25s ease;
-  border: 1px solid #F0F0F0;
+  flex-wrap: wrap;
+  /* Permite que las tarjetas bajen si no caben */
+  margin-bottom: 3rem;
+  /* Agregar más espacio debajo de las tarjetas */
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: #E0E0E0;
+.stat-card-container {
+  width: 288px;
+  height: 160px;
+  border-radius: 20px;
+  padding: 24px;
+  background: #383838;
+  box-shadow:
+    -10px 30px 20px rgba(0, 0, 0, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: box-shadow 0.3s;
 }
 
-.stat-card.total {
-  border-left: 3px solid #667eea;
+.stat-card-container:hover {
+  box-shadow:
+    -10px 30px 30px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(0, 0, 0, 0.6),
+    0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-.stat-card.nuevo {
-  border-left: 3px solid #FC8181;
+.stat-card-highlight {
+  background: rgba(30, 30, 30, 0.95);
+  opacity: 1;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 2;
 }
 
-.stat-card.revision {
-  border-left: 3px solid #667eea;
+.stat-card-muted {
+  background: rgba(40, 40, 40, 0.9);
+  opacity: 0.5;
+  filter: brightness(0.8);
 }
 
-.stat-card.atendido {
-  border-left: 3px solid #48BB78;
+/* Efecto glassmorphism */
+.stat-card-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  z-index: 1;
 }
 
-.stat-icon {
-  font-size: 2.5rem;
-  opacity: 0.75;
+.stat-card-glass {
+  position: absolute;
+  width: 288px;
+  height: 160px;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  z-index: 2;
 }
 
-.stat-info h3 {
-  font-size: 0.8125rem;
-  color: #666666;
-  margin: 0 0 0.625rem 0;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.75px;
+.stat-card-ellipse {
+  position: absolute;
+  width: 195px;
+  height: 195px;
+  left: 60%;
+  top: 15%;
+  background: #8E63EE;
+  opacity: 0.8;
+  /* ¡Sube la opacidad! */
+  filter: blur(32px);
+  /* Menos blur para que se note más */
+  border-radius: 50%;
+  z-index: 0;
 }
 
-.stat-number {
-  font-size: 2.125rem;
-  font-weight: 700;
-  color: #333333;
-  margin: 0;
-  letter-spacing: -1px;
+/* Título */
+.stat-card-title {
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+  z-index: 2;
+}
+
+/* Valor principal */
+.stat-card-value {
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  z-index: 2;
+}
+
+/* Descripción secundaria */
+.stat-card-desc {
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  z-index: 2;
 }
 
 /* ============================
@@ -292,6 +347,328 @@ body {
 .chart-wrapper {
   height: 300px;
   position: relative;
+}
+
+/* ============================
+   CHART STYLE - CUSTOM DESIGN
+   ============================ */
+
+.chart-style {
+  width: 288px;
+  height: 160px;
+  background: #383838;
+  box-shadow: -10px 30px 20px rgba(184, 147, 255, 0.1);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glass effect overlay */
+.chart-style::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  z-index: 1;
+}
+
+/* Blur ellipse effect */
+.chart-style::after {
+  content: '';
+  position: absolute;
+  width: 195px;
+  height: 195px;
+  right: -30px;
+  top: -20px;
+  background: #E6B140;
+  opacity: 0.5;
+  filter: blur(50px);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* ======================
+   TARJETA: NUEVOS
+   ====================== */
+
+.stat-card-new {
+  background: #383838;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+
+  /* Drop-shadow sin glow */
+}
+
+/* Elipse amarilla (equivalente al blur de Figma) */
+.stat-card-new .stat-card-ellipse {
+  background: #e61a1a;
+  opacity: 0.8;
+  filter: blur(32px);
+  position: absolute;
+  width: 195px;
+  height: 195px;
+  top: 10px;
+  right: -30px;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* Capa glass encima del fondo */
+.stat-card-new .stat-card-bg {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  z-index: 1;
+}
+
+/* Ajusta icono real dentro del círculo - posicionado en esquina izquierda */
+.stat-card-new .stat-card-desc svg {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+}
+
+/* Títulos y textos - posicionados en esquina izquierda */
+.stat-card-new .stat-card-title {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  z-index: 3;
+  text-align: left;
+}
+
+/* Valores numéricos - posicionados en esquina izquierda */
+.stat-card-new .stat-card-value {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 3;
+  text-align: left;
+}
+
+/* ======================
+TARJETA: EN REVISIÓN
+===================== */
+
+.stat-card-review {
+  background: #383838;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+
+  /* Sombra sin glow */
+  box-shadow:
+    -10px 30px 20px rgba(0, 0, 0, 0.3),
+    10px 10px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Elipse turquesa (blur) */
+.stat-card-review .stat-card-ellipse {
+  position: absolute;
+  width: 195px;
+  height: 195px;
+  right: -20px;
+  top: 10px;
+
+  background: #03fcda;
+  opacity: 0.8;
+  filter: blur(32px);
+
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* Glass layer */
+.stat-card-review .stat-card-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  z-index: 1;
+}
+
+/* Capa extra de glass como tu diseño original */
+.stat-card-review .stat-card-glass {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  z-index: 2;
+}
+
+/* Icono - posicionado en esquina izquierda */
+.stat-card-review .stat-card-desc svg {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+}
+
+/* Título - posicionado en esquina izquierda */
+.stat-card-review .stat-card-title {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  z-index: 3;
+  text-align: left;
+}
+
+/* Valor numérico - posicionado en esquina izquierda */
+.stat-card-review .stat-card-value {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 3;
+  text-align: left;
+}
+
+/* === TARJETA: ATENDIDOS === */
+.stat-card-attended {
+  position: relative;
+  width: 288px;
+  height: 160px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Fondo base oscuro */
+.stat-card-attended .stat-card-bg {
+  position: absolute;
+  inset: 0;
+  background: #383838;
+  box-shadow: -10px 30px 20px rgba(184, 147, 255, 0.1);
+  border-radius: 20px;
+  z-index: 1;
+}
+
+/* Efecto de vidrio superior - sin blur en el área del icono */
+.stat-card-attended .stat-card-glass {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: none;
+  border-radius: 20px;
+  z-index: 3;
+}
+
+/* ELLIPSE — Glow amarillo */
+.stat-card-attended .stat-card-ellipse {
+  position: absolute;
+  width: 195px;
+  height: 195px;
+  top: 10px;
+  right: -10px;
+  background: #d9ff01;
+  opacity: 0.8;
+  filter: blur(32px);
+  z-index: 2;
+}
+
+/* Icono - posicionado en esquina izquierda - sin efectos de blur */
+.stat-card-attended .stat-card-desc svg {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  filter: none;
+  -webkit-filter: none;
+  backdrop-filter: none;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  filter: none;
+  -webkit-filter: none;
+  backdrop-filter: none;
+}
+
+/* Título - posicionado en esquina izquierda */
+.stat-card-attended .stat-card-title {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  z-index: 4;
+  text-align: left;
+}
+
+/* Valor numérico - posicionado en esquina izquierda */
+.stat-card-attended .stat-card-value {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 4;
+  text-align: left;
+}
+
+/* === TARJETA: TOTAL DE REPORTES (HIGHLIGHT) === */
+.stat-card-highlight {
+  position: relative;
+  width: 288px;
+  height: 160px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.stat-card-highlight .stat-card-desc svg {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+}
+
+.stat-card-highlight .stat-card-title {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  z-index: 3;
+  text-align: left;
+}
+
+.stat-card-highlight .stat-card-value {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 3;
+  text-align: left;
 }
 
 /* ============================
@@ -608,26 +985,122 @@ svg.lucide {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .stat-detail-card {
-  background: #FFFFFF;
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  border: 1px solid #F0F0F0;
+  background: #383838;
+  box-shadow: -10px 30px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+/* Glass effect overlay */
+.stat-detail-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(2px);
+  border-radius: 20px;
+  z-index: 1;
+}
+
+/* Blur ellipse effect */
+.stat-detail-card::after {
+  content: '';
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  top: 100%;
+  right: -100px;
+  transform: translateY(-50%);
+  background: #FF8C00;
+  opacity: 0.5;
+  filter: blur(60px);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* Blur ellipse effect para Reportes por Categoría */
+.stat-detail-card.category-chart::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 350px !important;
+  height: 350px !important;
+  top: 100% !important;
+  right: -100px !important;
+  transform: translateY(-50%) !important;
+  background: #00BFFF !important;
+  opacity: 0.5 !important;
+  filter: blur(60px) !important;
+  border-radius: 50% !important;
+  z-index: 0 !important;
+}
+
+/* Blur ellipse effect para Tendencia de Reportes */
+.stat-detail-card.trend-chart::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 380px !important;
+  height: 380px !important;
+  top: 100% !important;
+  right: -120px !important;
+  transform: translateY(-50%) !important;
+  background: #FF0000 !important;
+  opacity: 0.45 !important;
+  filter: blur(65px) !important;
+  border-radius: 50% !important;
+  z-index: 0 !important;
+}
+
+/* Blur ellipse effect para Distribución por Estado */
+.stat-detail-card.state-chart::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 360px !important;
+  height: 360px !important;
+  top: 100% !important;
+  right: -110px !important;
+  transform: translateY(-50%) !important;
+  background: #8B00FF !important;
+  opacity: 0.48 !important;
+  filter: blur(62px) !important;
+  border-radius: 50% !important;
+  z-index: 0 !important;
+}
+
+/* Asegurar que el contenido esté encima del efecto glass */
+.stat-detail-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.stat-detail-card h2 {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.0625rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.75rem;
+  letter-spacing: -0.25px;
+  position: relative;
+  z-index: 2;
 }
 
 .stat-detail-card h3 {
   margin: 0 0 1.25rem 0;
   font-size: 1.0625rem;
-  color: #333333;
+  color: #FFFFFF;
   font-weight: 700;
-  border-bottom: 2px solid #EFEFEF;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 0.75rem;
   letter-spacing: -0.25px;
+  position: relative;
+  z-index: 2;
 }
 
 .metric-row {
@@ -635,7 +1108,9 @@ svg.lucide {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .metric-row:last-child {
@@ -643,16 +1118,18 @@ svg.lucide {
 }
 
 .metric-row span {
-  color: #666666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9375rem;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
+  z-index: 2;
 }
 
 .metric-row strong {
-  color: #333333;
+  color: #FFFFFF;
   font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -715,6 +1192,20 @@ svg.lucide {
   color: #666666;
   font-size: 1.0625rem;
   font-weight: 500;
+}
+
+/* ============================
+   INLINE STYLES CLASSES
+   ============================ */
+
+.uploaded-image {
+  width: 250px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.logout-cursor {
+  cursor: pointer;
 }
 
 /* ============================

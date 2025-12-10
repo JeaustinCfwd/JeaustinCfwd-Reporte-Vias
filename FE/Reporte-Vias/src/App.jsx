@@ -3,7 +3,6 @@ import Routing from './routes/Routing';
 import { ToastProvider } from './components/ToastContext';
 import ToastContainer from './components/ToastContainer';
 import { useToast } from './components/ToastContext';
-// BrowserRouter removed
 
 export const AuthContext = createContext();
 

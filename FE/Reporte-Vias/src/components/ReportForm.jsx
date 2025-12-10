@@ -8,6 +8,8 @@ import RPCategoria from './RPCategoria';
 import RPUbicacion from './RPUbicacion';
 import RPBoton from './RPBoton';
 import { INITIAL_LOCATION } from './RPConstantes';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
 
 // ==========================
 // AUX: Cambiar centro del mapa
@@ -28,8 +30,8 @@ function MapClickHandler({ onLocationChange }) {
 
   useEffect(() => {
     const handleClick = (e) => {
-      const { latitud, longitud } = e.latlng;
-      onLocationChange({ latitud, longitud });
+      const { lat, lng } = e.latlng;
+      onLocationChange({ latitud: lat, longitud: lng });
     };
 
     map.on('click', handleClick);
@@ -40,7 +42,7 @@ function MapClickHandler({ onLocationChange }) {
 }
 
 // ==========================
-// Marcador Leaflet Default
+// Marcador por defecto Leaflet
 // ==========================
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -66,14 +68,20 @@ const ReportForm = () => {
   });
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+
+  // 🔥 NUEVO: URLs de Cloudinary
+  const [uploadedImages, setUploadedImages] = useState([]);
+
+  const addImageUrl = (url) => {
+    setUploadedImages((prev) => [...prev, url]);
+  };
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-
-
   // ==========================
-  // Animación del botón TRUCK
+  // Animación botón TRUCK
   // ==========================
   useEffect(() => {
     const button = document.querySelector('.truck-button');
@@ -86,7 +94,6 @@ const ReportForm = () => {
       if (!button.classList.contains('done')) {
         if (!button.classList.contains('animation')) {
           button.classList.add('animation');
-
           gsap.to(button, { '--box-s': 1, '--box-o': 1, duration: 0.3, delay: 0.5 });
           gsap.to(box, { x: 0, duration: 0.4, delay: 0.7 });
           gsap.to(button, { '--hx': -5, '--bx': 50, duration: 0.18, delay: 0.92 });
@@ -100,12 +107,11 @@ const ReportForm = () => {
             duration: 0.2,
             delay: 1.25,
             onComplete() {
-              gsap
-                .timeline({
-                  onComplete() {
-                    button.classList.add('done');
-                  },
-                })
+              gsap.timeline({
+                onComplete() {
+                  button.classList.add('done');
+                },
+              })
                 .to(truck, { x: 0, duration: 0.4 })
                 .to(truck, { x: 40, duration: 1 })
                 .to(truck, { x: 20, duration: 0.6 })
@@ -121,7 +127,6 @@ const ReportForm = () => {
         }
       } else {
         button.classList.remove('animation', 'done');
-
         gsap.set(truck, { x: 4 });
         gsap.set(button, {
           '--progress': 0,
@@ -132,7 +137,6 @@ const ReportForm = () => {
           '--truck-y': 0,
           '--truck-y-n': -26,
         });
-
         gsap.set(box, { x: -24, y: -6 });
       }
     };
@@ -142,12 +146,10 @@ const ReportForm = () => {
   }, []);
 
   // ==========================
-  // Manejo de imágenes
+  // Manejo de imágenes normales (si eliges del disco)
   // ==========================
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files).filter((file) =>
-      file.type.startsWith('image/')
-    );
+    const files = Array.from(e.target.files).filter((file) => file.type.startsWith('image/'));
     setSelectedFiles(files);
     setFormData((prev) => ({ ...prev, photos: files }));
   };
@@ -160,43 +162,27 @@ const ReportForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-
-
-
   // ==========================
   // SUBMIT DEL REPORTE
   // ==========================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitError('');
-    setSubmitSuccess(false);
 
-    const userId = localStorage.getItem('id_usuario');
-    if (!userId) {
-      showError('Inicia sesión de nuevo, usuario no encontrado.');
-      return;
-    }
-
-    if (!formData.category) {
-      showError('Debes seleccionar una categoría.');
-      return;
-    }
-
-    if (!formData.description.trim()) {
-      showError('La descripción no puede estar vacía.');
-      return;
-    }
+    if (!formData.category) return showError("Debes seleccionar una categoría.");
+    if (!formData.description.trim()) return showError("La descripción no puede estar vacía.");
 
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
+      const userId = localStorage.getItem("id_usuario");
+      const token = localStorage.getItem("access_token");
+
       const headers = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
-      // 1. CREAR EL REPORTE (sin imágenes por ahora)
+      // 🔥 SE INCLUYE LA URL DE CLOUDINARY AQUÍ
       const report = {
         titulo:
           formData.category.charAt(0).toUpperCase() +
@@ -207,102 +193,61 @@ const ReportForm = () => {
         estado: 1,
         usuario: parseInt(userId),
         categoria: formData.category,
+        url_imagen: uploadedImages.length > 0 ? uploadedImages[0] : null,
       };
 
-      const resReport = await fetch('http://localhost:8000/api/crear-reporte/', {
-        method: 'POST',
-        headers: headers,
+      const resReport = await fetch("http://localhost:8000/api/crear-reporte/", {
+        method: "POST",
+        headers,
         body: JSON.stringify(report),
       });
 
-      const dataReport = await resReport.json();
+      if (!resReport.ok) throw new Error("Error al crear reporte");
 
-      if (!resReport.ok) {
-        throw new Error(JSON.stringify(dataReport));
-      }
-
-      // 2. SUBIR LAS IMÁGENES (si hay)
-      if (selectedFiles.length > 0) {
-        const reporteId = dataReport.id;
-
-        for (const file of selectedFiles) {
-          const formDataImg = new FormData();
-          formDataImg.append('ruta_archivo', file);
-          formDataImg.append('reporte', reporteId);
-          formDataImg.append('descripcion', 'Imagen subida desde web');
-
-          const imgHeaders = {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          };
-
-          const resImg = await fetch('http://localhost:8000/api/crear-imagen/', {
-            method: 'POST',
-            headers: imgHeaders,
-            body: formDataImg,
-          });
-
-          const imgData = await resImg.json();
-          console.log('Respuesta Cloudinary:', imgData);
-
-          if (!resImg.ok) {
-            console.error('Error subiendo imagen', await resImg.text());
-            warning('El reporte se creó, pero algunas imágenes fallaron al subir.');
-          } else {
-            console.log('Imagen subida exitosamente a Cloudinary');
-          }
-        }
-      }
-
-      success('¡Reporte enviado exitosamente!');
+      success("¡Reporte enviado exitosamente!");
       setSubmitSuccess(true);
 
-      // Reset
       setFormData({
         photos: [],
         description: '',
         category: '',
         location: INITIAL_LOCATION,
       });
+      setUploadedImages([]);
       setSelectedFiles([]);
+
     } catch (err) {
+      showError("Error al enviar el reporte.");
       setSubmitError(err.message);
-      showError('Error al enviar el reporte.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // ==========================
-  // JSX
-  // ==========================
   return (
     <>
-      {/* Fondo Animado */}
       <div className="prism-background">
-        <Prism
-          animationType="hover"
-          timeScale={0.5}
-          height={3.5}
-          baseWidth={5.5}
-          scale={3.6}
-          hueShift={0}
-          colorFrequency={1}
-          noise={0}
-          glow={1}
-        />
+        <Prism animationType="hover" timeScale={0.5} height={3.5} baseWidth={5.5} scale={3.6} hueShift={0} colorFrequency={1} noise={0} glow={1} />
       </div>
 
       <div className="report-form-container">
         <h1 className="report-title">Reportar Problema Vial</h1>
-        <p className="report-subtitle">
-          Ayúdanos a mejorar la infraestructura de tu ciudad
-        </p>
+        <p className="report-subtitle">Ayúdanos a mejorar la infraestructura de tu ciudad</p>
 
         <form onSubmit={handleSubmit} className="report-form">
-          <RPFotos onFileChange={handleFileChange} selectedFiles={selectedFiles} />
+          <RPFotos
+            onFileChange={handleFileChange}
+            selectedFiles={selectedFiles}
+            addImageUrl={addImageUrl}
+          />
           <RPDescripcion value={formData.description} onChange={handleInputChange} />
           <RPCategoria value={formData.category} onChange={handleInputChange} />
-          <RPUbicacion location={formData.location} onLocationChange={(loc) => setFormData((prev) => ({ ...prev, location: loc }))} />
+          <RPUbicacion
+            location={formData.location}
+            onLocationChange={(loc) =>
+              setFormData((prev) => ({ ...prev, location: loc }))
+            }
+          />
           <RPBoton isSubmitting={isSubmitting} />
         </form>
 

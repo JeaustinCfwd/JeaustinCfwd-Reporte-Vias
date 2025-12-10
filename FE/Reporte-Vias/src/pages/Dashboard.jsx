@@ -19,7 +19,6 @@ import DBEncabezado from '../components/DBEncabezado';
 import DBVistaResumen from '../components/DBVistaResumen';
 import DBVistaLista from '../components/DBVistaLista';
 import DBVistaMapa from '../components/DBVistaMapa';
-import DBVistaEstadisticas from '../components/DBVistaEstadisticas';
 
 function Dashboard() {
   // ========== HOOKS PERSONALIZADOS ==========
@@ -121,10 +120,12 @@ function Dashboard() {
           <DBVistaResumen
             filteredReports={filteredReports}
             statsByState={statsByState}
+            statsByCategory={statsByCategory}
             timelineData={timelineData}
             stateData={stateData}
             categoryData={categoryData}
             CHART_OPTIONS={CHART_OPTIONS}
+            reports={reports}
           />
         )}
 
@@ -141,18 +142,6 @@ function Dashboard() {
           <DBVistaMapa
             filteredReports={filteredReports}
             statsByState={statsByState}
-          />
-        )}
-
-        {activeView === 'stats' && (
-          <DBVistaEstadisticas
-            reports={reports}
-            filteredReports={filteredReports}
-            statsByState={statsByState}
-            statsByCategory={statsByCategory}
-            stateData={stateData}
-            categoryData={categoryData}
-            CHART_OPTIONS={CHART_OPTIONS}
           />
         )}
       </main>

@@ -12,6 +12,47 @@ export const CHART_OPTIONS = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-        legend: { position: 'top' },
+        legend: {
+            position: 'top',
+            labels: {
+                color: '#FFFFFF',
+                font: {
+                    size: 12
+                }
+            }
+        },
+        tooltip: {
+            titleColor: '#FFFFFF',
+            bodyColor: '#FFFFFF',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderWidth: 1
+        }
+    },
+    scales: {
+        x: {
+            ticks: {
+                color: '#FFFFFF',
+                font: {
+                    size: 11
+                }
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+            }
+        },
+        y: {
+            ticks: {
+                color: '#FFFFFF',
+                font: {
+                    size: 11
+                }
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+            }
+        }
     }
 };

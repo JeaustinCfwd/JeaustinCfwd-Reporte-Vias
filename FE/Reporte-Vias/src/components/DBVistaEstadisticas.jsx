@@ -15,54 +15,87 @@ const DBVistaEstadisticas = ({
   return (
     <div className="stats-content">
       <div className="stats-grid">
-        <div className="stat-detail-card">
-          <h3>Métricas Generales</h3>
-          <div className="metric-row">
-            <span>Total de Reportes:</span>
-            <strong>{reports.length}</strong>
-          </div>
-          <div className="metric-row">
-            <span>Reportes Filtrados:</span>
-            <strong>{filteredReports.length}</strong>
-          </div>
-          <div className="metric-row">
-            <span>Tasa de Atención:</span>
-            <strong>
-              {reports.length > 0
-                ? ((statsByState.atendido || 0) / reports.length * 100).toFixed(1)
-                : 0}%
-            </strong>
-          </div>
-          <div className="metric-row">
-            <span>Pendientes:</span>
-            <strong>{(statsByState.nuevo || 0) + (statsByState.en_revision || 0)}</strong>
-          </div>
-        </div>
-
-        <div className="stat-detail-card">
-          <h3>Por Estado</h3>
-          <div className="metric-row">
-            <span><FcOpenedFolder /> Nuevos:</span>
-            <strong className="orange">{statsByState.nuevo || 0}</strong>
-          </div>
-          <div className="metric-row">
-            <span><GiMagnifyingGlass /> En Revisión:</span>
-            <strong className="blue">{statsByState.en_revision || 0}</strong>
-          </div>
-          <div className="metric-row">
-            <span><FcAbout /> Atendidos:</span>
-            <strong className="green">{statsByState.atendido || 0}</strong>
-          </div>
-        </div>
-
-        <div className="stat-detail-card">
-          <h3>Por Categoría</h3>
-          {Object.entries(statsByCategory).map(([cat, count]) => (
-            <div key={cat} className="metric-row">
-              <span>{cat}:</span>
-              <strong>{count}</strong>
+        {/* Métricas Generales */}
+        <div className="stat-card-container stat-card-purple">
+          <div className="stat-card-bg"></div>
+          <div className="stat-card-ellipse"></div>
+          <div className="stat-card-content">
+            <h3 className="stat-card-title">Métricas Generales</h3>
+            <div className="metric-row">
+              <span>Total de Reportes:</span>
+              <strong>{reports.length}</strong>
             </div>
-          ))}
+            <div className="metric-row">
+              <span>Reportes Filtrados:</span>
+              <strong>{filteredReports.length}</strong>
+            </div>
+            <div className="metric-row">
+              <span>Tasa de Atención:</span>
+              <strong>
+                {reports.length > 0
+                  ? ((statsByState.atendido || 0) / reports.length * 100).toFixed(1)
+                  : 0}%
+              </strong>
+            </div>
+            <div className="metric-row">
+              <span>Pendientes:</span>
+              <strong>{(statsByState.nuevo || 0) + (statsByState.en_revision || 0)}</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* Nuevos */}
+        <div className="stat-card-container stat-card-yellow">
+          <div className="stat-card-bg"></div>
+          <div className="stat-card-ellipse"></div>
+          <div className="stat-card-content">
+            <h3 className="stat-card-title">Nuevos</h3>
+            <div className="metric-row">
+              <span><FcOpenedFolder /> Nuevos:</span>
+              <strong className="orange">{statsByState.nuevo || 0}</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* En Revisión */}
+        <div className="stat-card-container stat-card-green">
+          <div className="stat-card-bg"></div>
+          <div className="stat-card-ellipse"></div>
+          <div className="stat-card-content">
+            <h3 className="stat-card-title">En Revisión</h3>
+            <div className="metric-row">
+              <span><GiMagnifyingGlass /> En Revisión:</span>
+              <strong className="blue">{statsByState.en_revision || 0}</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* Atendidos */}
+        <div className="stat-card-container stat-card-cyan">
+          <div className="stat-card-bg"></div>
+          <div className="stat-card-ellipse"></div>
+          <div className="stat-card-content">
+            <h3 className="stat-card-title">Atendidos</h3>
+            <div className="metric-row">
+              <span><FcAbout /> Atendidos:</span>
+              <strong className="green">{statsByState.atendido || 0}</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* Por Categoría */}
+        <div className="stat-card-container stat-card-muted">
+          <div className="stat-card-bg"></div>
+          <div className="stat-card-ellipse"></div>
+          <div className="stat-card-content">
+            <h3 className="stat-card-title">Por Categoría</h3>
+            {Object.entries(statsByCategory).map(([cat, count]) => (
+              <div key={cat} className="metric-row">
+                <span>{cat}:</span>
+                <strong>{count}</strong>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

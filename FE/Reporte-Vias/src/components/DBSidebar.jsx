@@ -5,7 +5,6 @@ import {
   BarChart3,
   Folder,
   Map,
-  LineChart,
   Download,
   User,
   LogOut,
@@ -103,33 +102,6 @@ const DBSidebar = ({
           </ul>
         </li>
 
-        {/* ESTADISTICAS SUBMENU */}
-        <li className={openMenus.stats ? "showMenu" : ""}>
-          <div className="iocn-link">
-            <a
-              onClick={() => {
-                console.log('Cambiando a stats, activeView actual:', activeView);
-                setActiveView("stats");
-              }}
-            >
-              <LineChart size={20} />
-              <span className="link_name">Estadísticas</span>
-            </a>
-            <ChevronDown
-              size={16}
-              className="arrow"
-              onClick={() => toggleMenu("stats")}
-            />
-          </div>
-
-          <ul className="sub-menu">
-            <li><a className="link_name">Estadísticas</a></li>
-            <li><a>Resumen</a></li>
-            <li><a>Categorías</a></li>
-            <li><a>Estados</a></li>
-          </ul>
-        </li>
-
         {/* EXPORTAR CSV */}
         <li>
           <a onClick={exportToCSV}>
@@ -156,7 +128,7 @@ const DBSidebar = ({
         <LogOut 
           size={20}
           onClick={handleLogout}
-          style={{ cursor: 'pointer' }}
+          className="logout-cursor"
         />
       </div>
     </aside>

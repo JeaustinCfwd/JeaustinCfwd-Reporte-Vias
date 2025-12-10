@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 from django.contrib.auth.models import AbstractUser
 
@@ -56,6 +57,7 @@ class Reporte(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     aprobado = models.BooleanField(default=False)
+    url_imagen = CloudinaryField('image', blank=True, null=True)
 
     class Meta:
         db_table = 'reporte'
@@ -68,7 +70,7 @@ class Reporte(models.Model):
 # 5. Modelo ImagenReporte
 class ImagenReporte(models.Model):
     reporte = models.ForeignKey(Reporte, on_delete=models.CASCADE, related_name='imagenes')
-    ruta_archivo = models.ImageField(upload_to='reportes/')
+    ruta_archivo = CloudinaryField('image')
     descripcion = models.CharField(max_length=255, blank=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)
 

@@ -94,6 +94,7 @@ class ReporteCreateView(ListCreateAPIView):
     queryset = Reporte.objects.all().order_by('-fecha_creacion')
     serializer_class = ReporteSerializer
     permission_classes = [AllowAny]
+    parser_classes = [MultiPartParser, FormParser]
 
 
 class ReporteDeleteView(APIView):
@@ -185,6 +186,7 @@ class ImagenReporteCreateView(ListCreateAPIView):
     queryset = ImagenReporte.objects.all()
     serializer_class = ImagenReporteSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
 
 # ==========================

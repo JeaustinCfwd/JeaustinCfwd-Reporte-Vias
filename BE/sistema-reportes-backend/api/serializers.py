@@ -35,19 +35,31 @@ class UsuarioSerializer(serializers.ModelSerializer):
         }
 
 class ImagenReporteSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+    
     class Meta:
         model = ImagenReporte
-        fields = '__all__'
+        fields = ['id', 'reporte', 'ruta_archivo', 'url', 'descripcion', 'fecha_subida']
+    
+    def get_url(self, obj):
+        if obj.ruta_archivo:
+            return obj.ruta_archivo.url
+        return None
 
 class ReporteSerializer(serializers.ModelSerializer):
-    imagenes = ImagenReporteSerializer(many=True, read_only=True)
     usuario_nombre = serializers.CharField(source='usuario.username', read_only=True)
     estado_nombre = serializers.CharField(source='estado.nombre', read_only=True)
+    url_imagen_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Reporte
         fields = '__all__'
         read_only_fields = ['fecha_creacion', 'fecha_actualizacion']
+    
+    def get_url_imagen_url(self, obj):
+        if obj.url_imagen:
+            return obj.url_imagen.url
+        return None
 
 class ComentarioSerializer(serializers.ModelSerializer):
     usuario_nombre = serializers.CharField(source='usuario.username', read_only=True)
