@@ -15,7 +15,8 @@ from .views import (
     ListUsersCreateView,
     UsuarioPorIdView,
     ComentarioDeleteView,
-    ReporteDeleteView
+    ReporteDeleteView,
+    UsuarioActualizarView
 )
 
 router = DefaultRouter()
@@ -45,6 +46,7 @@ urlpatterns = [
 
     # ===== USUARIO POR ID =====
     path('usuario/<int:id_usuario>/', UsuarioPorIdView.as_view(), name='usuario-por-id'),
+    path('actualizar-usuario/', UsuarioActualizarView.as_view(), name='actualizar-usuario'),
 
     # ===== ELIMINAR/EDITAR =====
     path('eliminar-comentario/<int:comentario_id>/', ComentarioDeleteView.as_view(), name='eliminar-comentario'),

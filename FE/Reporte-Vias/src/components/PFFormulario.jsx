@@ -13,15 +13,20 @@ export const usePFFormulario = (usuarioActual) => {
         birthDate: '',
         gender: 'male'
     });
+
     const [photoPreview, setPhotoPreview] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    // ================================
+    //    CARGAR DATOS DEL USUARIO
+    // ================================
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
         if (storedUser) {
             setUser(storedUser);
+
             setFormData({
                 name: storedUser.name || '',
                 email: storedUser.email || '',
@@ -32,6 +37,7 @@ export const usePFFormulario = (usuarioActual) => {
                 birthDate: storedUser.birthDate || '',
                 gender: storedUser.gender || 'male'
             });
+
             if (storedUser.id) {
                 const userPhoto = getUserPhoto(storedUser.id);
                 setPhotoPreview(userPhoto || '');
@@ -39,6 +45,9 @@ export const usePFFormulario = (usuarioActual) => {
         }
     }, []);
 
+    // ================================
+    //           INPUT NORMAL
+    // ================================
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -46,21 +55,26 @@ export const usePFFormulario = (usuarioActual) => {
         setSuccess('');
     };
 
-    const handlePhotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhotoPreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
+    // ================================
+    //   🔥 FOTO DESDE CLOUDINARY
+    //   (Recibe SOLO UNA URL)
+    // ================================
+    const handlePhotoChange = (url) => {
+        setPhotoPreview(url);
+        setError('');
+        setSuccess('');
     };
 
+    // ================================
+    //   ELIMINAR FOTO
+    // ================================
     const handleRemovePhoto = () => {
         setPhotoPreview('');
     };
 
+    // ================================
+    //   SUBMIT DEL FORMULARIO
+    // ================================
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!user) return;
@@ -76,6 +90,7 @@ export const usePFFormulario = (usuarioActual) => {
 
         try {
             const updatedUser = await updateUser(user.id, updateData);
+
             if (updatedUser) {
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 setUser(updatedUser);
@@ -86,6 +101,7 @@ export const usePFFormulario = (usuarioActual) => {
         } catch (error) {
             setError('Error al actualizar: ' + error.message);
         }
+
         setLoading(false);
     };
 
@@ -97,7 +113,7 @@ export const usePFFormulario = (usuarioActual) => {
         error,
         success,
         handleInputChange,
-        handlePhotoChange,
+        handlePhotoChange,   // <=== IMPORTANTE
         handleRemovePhoto,
         handleSubmit
     };

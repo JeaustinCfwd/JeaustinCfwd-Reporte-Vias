@@ -215,6 +215,27 @@ class UsuarioPorIdView(ListCreateAPIView):
     def get_queryset(self):
         id_usuario = self.kwargs["id_usuario"]
         return Usuario.objects.filter(id=id_usuario)
+       
+class UsuarioActualizarView(APIView):
+ def patch(self,request):
+  id_usuario = request.data.get("id_usuario")
+  imagen_perfil = request.data.get("img_perfil")
+  
+  if not id_usuario:
+    return Response({"error":"Debes proporcionar el id_usuario"},status=status.HTTP_400_BAD_REQUEST)
+  
+  try:
+    usuario = Usuario.objects.get(id=id_usuario)
+  except Usuario.DoesNotExist:
+    return Response({"error":"Usuario no encontrado"},status=status.HTTP_404_NOT_FOUND)
+  
+  if imagen_perfil:
+    usuario.imagen_perfil = imagen_perfil
+    usuario.save()
+    return Response({"mensaje":"Imagen de perfil actualizada exitosamente"},status=status.HTTP_200_OK)
+  else:
+    return Response({"error":"Debes proporcionar una imagen de perfil"},status=status.HTTP_400_BAD_REQUEST)
+  
 
 
 @api_view(['GET'])

@@ -36,7 +36,7 @@ class Usuario(AbstractUser):
      ("usuario", "Usuario"),
     )
     rol = models.CharField(max_length=50, choices=ROL_OPCIONES, default="usuario")
-
+    imagen_perfil = models.TextField(null=True,blank=True)
     class Meta:
         db_table = 'usuario'
         verbose_name_plural = 'Usuarios'

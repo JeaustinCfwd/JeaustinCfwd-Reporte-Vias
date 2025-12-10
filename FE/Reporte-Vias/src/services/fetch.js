@@ -316,3 +316,19 @@ export async function getComentarios() {
         throw error;
     }
 }
+
+
+export async function patchData(endpoint,obj) {
+ const peticion = await fetch(`http://localhost:8000/api/${endpoint}`,{
+    method: "PATCH",
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    },
+    body: JSON.stringify(obj)
+ })
+ const data = await peticion.json()
+ console.log(data);
+ return data
+ 
+}

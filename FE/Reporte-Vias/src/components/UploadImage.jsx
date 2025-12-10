@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const UploadImage = ({ setImgUrl }) => {
+const UploadImage = ({ setImgUrl,className = "file-input" }) => {
   const [imageUrl, setImageUrl] = useState("");
 
   const handleUpload = async (e) => {
@@ -30,17 +30,10 @@ const UploadImage = ({ setImgUrl }) => {
         id="photos"
         onChange={handleUpload}
         accept="image/*"
-        className="file-input"
+        className={`${className} photo-upload-btn`}
       />
 
-      {imageUrl && (
-        <img
-          src={imageUrl}
-          alt="uploaded"
-          className="uploaded-image"
-        />
-      )}
-    </div>
+      </div>
   );
 };
 
