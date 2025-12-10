@@ -653,39 +653,39 @@ textarea.form-input.resize-none {
     }
 
     .profile-sidebar {
-        width: 100%;
-        position: relative;
-        top: 0;
-        height: auto;
-        padding: 16px 0;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
+        width: 240px;
+        position: fixed;
+        left: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
+        padding: 100px 0 16px 0;
+        border-right: 1px solid var(--border-color);
+        z-index: 100;
     }
 
     .sidebar-nav {
-        flex-direction: row;
-        overflow-x: auto;
-        gap: 8px;
+        flex-direction: column;
+        gap: 4px;
         padding: 0 16px;
     }
 
     .sidebar-link {
-        white-space: nowrap;
-        padding: 8px 16px;
+        white-space: normal;
+        padding: 10px 12px;
         font-size: 0.875rem;
     }
 
     .sidebar-link.active {
-        border-right: none;
-        border-bottom: 2px solid var(--accent-primary);
+        border-right: 3px solid var(--accent-primary);
+        border-bottom: none;
     }
 
     .sidebar-category {
-        display: none;
+        display: block;
     }
 
     .profile-main {
-        margin-left: 0;
+        margin-left: 240px;
         padding: 16px;
     }
 
@@ -700,7 +700,6 @@ textarea.form-input.resize-none {
     .grid-cols-3 {
         grid-template-columns: 1fr;
     }
-
     .profile-photo-container {
         flex-direction: column;
         align-items: center;
