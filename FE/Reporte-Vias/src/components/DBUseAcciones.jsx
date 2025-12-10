@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 import { useToast } from './ToastContext';
 
-export const useAcciones = (reports, setReports, filteredReports) => {
+export const useAcciones = (reports, setReports, filteredReports, refreshReports) => {
     const { success, error: showError } = useToast();
 
     // Eliminar reporte
@@ -47,11 +47,16 @@ export const useAcciones = (reports, setReports, filteredReports) => {
                 String(report.id) === String(id) ? updatedReport : report
             ));
             success('Estado actualizado correctamente');
+            
+            // Actualizar los datos para reflejar los cambios en las gráficas
+            if (refreshReports) {
+                refreshReports();
+            }
         } catch (error) {
             console.error('Error updating report state:', error);
             showError('Error al actualizar el estado');
         }
-    }, [reports, success, showError, setReports]);
+    }, [reports, success, showError, setReports, refreshReports]);
 
     // Actualizar reporte completo
     const handleUpdateReport = useCallback(async (id, updates) => {

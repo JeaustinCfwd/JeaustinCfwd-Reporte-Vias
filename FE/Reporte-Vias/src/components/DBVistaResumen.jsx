@@ -13,6 +13,11 @@ const DBVistaResumen = ({
   CHART_OPTIONS,
   reports
 }) => {
+  // Debug logs para verificar datos
+  console.log('=== DBVistaResumen DEBUG ===');
+  console.log('statsByState:', statsByState);
+  console.log('Claves en statsByState:', Object.keys(statsByState));
+  
   return (
     <div className="overview-content">
 
@@ -38,7 +43,7 @@ const DBVistaResumen = ({
 
           <div className="stat-card-desc"><FcOpenedFolder /></div>
           <div className="stat-card-title">Nuevos</div>
-          <div className="stat-card-value">{statsByState.nuevo || 0}</div>
+          <div className="stat-card-value">{statsByState['Nuevo'] || statsByState.nuevo || 0}</div>
         </div>
 
         {/* === EN REVISIÓN (clase individual nueva) === */}
@@ -49,7 +54,23 @@ const DBVistaResumen = ({
 
           <div className="stat-card-desc"><GiMagnifyingGlass /></div>
           <div className="stat-card-title">En Revisión</div>
-          <div className="stat-card-value">{statsByState.en_revision || 0}</div>
+          <div className="stat-card-value">
+            {(() => {
+              const keys = Object.keys(statsByState);
+              console.log('Buscando estado de revisión en:', keys);
+              const revisionKeys = keys.filter(k => 
+                k.toLowerCase().includes('revis') || 
+                k.toLowerCase().includes('review') ||
+                k.toLowerCase().includes('en_revision') ||
+                k.toLowerCase().includes('proceso') ||
+                k.toLowerCase().includes('process') ||
+                k.toLowerCase().includes('pending') ||
+                k.toLowerCase().includes('pendiente')
+              );
+              console.log('Estados de revisión encontrados:', revisionKeys);
+              return revisionKeys.length > 0 ? statsByState[revisionKeys[0]] : 0;
+            })()}
+          </div>
         </div>
 
         {/* === ATENDIDOS (clase individual nueva) === */}
@@ -60,7 +81,18 @@ const DBVistaResumen = ({
 
           <div className="stat-card-desc"><FcAbout /></div>
           <div className="stat-card-title">Atendidos</div>
-          <div className="stat-card-value">{statsByState.atendido || 0}</div>
+          <div className="stat-card-value">
+            {(() => {
+              const keys = Object.keys(statsByState);
+              const attendedKeys = keys.filter(k => 
+                k.toLowerCase().includes('atend') || 
+                k.toLowerCase().includes('complet') ||
+                k.toLowerCase().includes('resuelto') ||
+                k.toLowerCase().includes('closed')
+              );
+              return attendedKeys.length > 0 ? statsByState[attendedKeys[0]] : 0;
+            })()}
+          </div>
         </div>
 
       </div>

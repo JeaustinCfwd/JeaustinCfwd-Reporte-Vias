@@ -22,7 +22,7 @@ import DBVistaMapa from '../components/DBVistaMapa';
 
 function Dashboard() {
   // ========== HOOKS PERSONALIZADOS ==========
-  const { reports, setReports, loading, error, filteredReports, setFilteredReports } = useReportes();
+  const { reports, setReports, loading, error, filteredReports, setFilteredReports, refreshReports } = useReportes();
 
   const {
     filterState,
@@ -52,7 +52,7 @@ function Dashboard() {
     handleUpdateState,
     handleUpdateReport,
     exportToCSV
-  } = useAcciones(reports, setReports, filteredReports);
+  } = useAcciones(reports, setReports, filteredReports, refreshReports);
 
   // ========== ESTADO LOCAL ==========
   const [activeView, setActiveView] = useState('overview');
