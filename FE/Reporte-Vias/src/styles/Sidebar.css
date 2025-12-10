@@ -7,8 +7,8 @@
   --primary: #4C8BF5;
   --primary-hover: #3B73CC;
 
-  --bg-sidebar: #0F101C;
-  --bg-sidebar-hover: #1C1D2B;
+  --bg-sidebar: #383838;
+  --bg-sidebar-hover: #4A4A4A;
   --bg-sidebar-active: #1B1C2A;
   --bg-content: #DCE1ED;
 
@@ -20,7 +20,7 @@
 
   --font-family: 'Inter', Arial, sans-serif;
 
-  --sidebar-width-expanded: 260px;
+  --sidebar-width-expanded: 300px;
   --sidebar-width-collapsed: 80px;
 
   --radius-md: 8px;
@@ -66,11 +66,13 @@
 .sidebar .logo-details svg {
   width: 32px;
   height: 32px;
-  background: var(--primary);
+  background: #000000;
   border-radius: var(--radius-md);
-  color: var(--text-primary);
+  color: #FFFFFF;
   padding: 6px;
   flex-shrink: 0;
+  stroke: #FFFFFF !important;
+  fill: none !important;
 }
 
 .sidebar .logo-details .logo_name {
@@ -107,7 +109,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  color: var(--text-secondary);
+  color: #FFFFFF;
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--duration-normal) ease;
@@ -140,6 +142,7 @@
 .sidebar .nav-links li a .link_name {
   white-space: nowrap;
   transition: opacity var(--duration-normal) ease;
+  color: #FFFFFF !important;
 }
 
 .sidebar.close .nav-links li a .link_name {
@@ -152,19 +155,34 @@
 .sidebar .nav-links li .iocn-link {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-normal) ease;
+  cursor: pointer;
+}
+
+.sidebar .nav-links li .iocn-link:hover {
+  background: var(--bg-sidebar-hover);
 }
 
 .sidebar.close .nav-links li .iocn-link {
   justify-content: center;
+  gap: 0;
+  padding: 14px 0;
 }
 
 .sidebar .nav-links li .iocn-link a {
-  flex: 1;
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .sidebar.close .nav-links li .iocn-link a {
   flex: none;
+  gap: 0;
 }
 
 /* Flecha del dropdown */
@@ -172,6 +190,11 @@
   width: 16px;
   height: 16px;
   transition: transform var(--duration-normal) ease;
+  margin-left: auto;
+  flex-shrink: 0;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
 .sidebar.close .nav-links li .iocn-link svg.arrow {
@@ -282,7 +305,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
-  background: var(--primary);
+  background: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -376,6 +399,15 @@
   fill: none !important;
 }
 
+/* Icono de dashboard específicamente - color blanco (máxima prioridad) */
+.sidebar svg.lucide-layout-dashboard,
+.sidebar .nav-links svg.lucide-layout-dashboard,
+.sidebar .nav-links li a svg.lucide-layout-dashboard {
+  stroke: #FFFFFF !important;
+  fill: none !important;
+  color: #FFFFFF !important;
+}
+
 /* Iconos en los links de navegación */
 .sidebar .nav-links li a svg {
   stroke: var(--text-secondary) !important;
@@ -429,4 +461,17 @@
     left: 0;
     width: 100%;
   }
+}
+
+/* Logo SVG - Forzar stroke blanco (máxima prioridad) */
+.sidebar .logo-details svg,
+.sidebar .logo-details svg *,
+.sidebar .logo-details svg path,
+.sidebar .logo-details svg g,
+.sidebar .logo-details svg circle,
+.sidebar .logo-details svg rect,
+.sidebar .logo-details svg line {
+  stroke: #FFFFFF !important;
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
 }
