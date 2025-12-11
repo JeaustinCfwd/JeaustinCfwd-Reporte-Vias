@@ -41,11 +41,29 @@ export const PFTabConfiguracion = () => {
     };
 
     const handleDeleteAccount = async () => {
-        if (!user || !window.confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esto es permanente.')) return;
+        // 1) Id preferido: el del objeto user en estado
+        let userId = user?.id;
+
+        // 2) Fallback: id_usuario almacenado en localStorage (se guarda al iniciar sesión)
+        if (!userId) {
+            const storedId = localStorage.getItem('id_usuario');
+            if (storedId) {
+                userId = parseInt(storedId, 10);
+            }
+        }
+
+        if (!userId) {
+            alert('No se encontró un usuario válido para eliminar. Inicia sesión nuevamente.');
+            return;
+        }
+
+        if (!window.confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esto es permanente.')) {
+            return;
+        }
 
         setLoading(true);
         try {
-            await deleteUser(user.id);
+            await deleteUser(userId);
             logout();
             alert('Cuenta eliminada exitosamente');
             navigate('/login');

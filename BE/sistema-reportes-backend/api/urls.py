@@ -16,7 +16,11 @@ from .views import (
     UsuarioPorIdView,
     ComentarioDeleteView,
     ReporteDeleteView,
-    UsuarioActualizarView
+    UsuarioActualizarView,
+    UsuarioFotoView,
+    UsuarioDeleteView,
+    CambiarContrasenaView,
+    UsuarioIDViewDos
 )
 
 router = DefaultRouter()
@@ -45,8 +49,12 @@ urlpatterns = [
     path('login/', LoginUsuarioView.as_view(), name='login'),
 
     # ===== USUARIO POR ID =====
-    path('usuario/<int:id_usuario>/', UsuarioPorIdView.as_view(), name='usuario-por-id'),
+    path('usuario/<int:id_usuario>/', UsuarioIDViewDos.as_view(), name='usuario-por-id'),
+    path('usuarios/<int:id_usuario>/foto/', UsuarioFotoView.as_view(), name='usuario-foto'),
+    path('usuarios/<int:id_usuario>/', UsuarioDeleteView.as_view(), name='usuario-delete'),
     path('actualizar-usuario/', UsuarioActualizarView.as_view(), name='actualizar-usuario'),
+    path('cambiar-contrasena/', CambiarContrasenaView.as_view(), name='cambiar-contrasena'),
+    path('usuario/actual/', obtener_usuario_actual, name='usuario-actual'),
 
     # ===== ELIMINAR/EDITAR =====
     path('eliminar-comentario/<int:comentario_id>/', ComentarioDeleteView.as_view(), name='eliminar-comentario'),

@@ -209,34 +209,123 @@ class ListUsersCreateView(ListCreateAPIView):
     permission_classes = [IsAdminUser]
 
 
-class UsuarioPorIdView(ListCreateAPIView):
-    serializer_class = UsuarioSerializer
+class UsuarioPorIdView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        id_usuario = self.kwargs["id_usuario"]
-        return Usuario.objects.filter(id=id_usuario)
-       
+    def get(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id=id_usuario)
+        serializer = UsuarioSerializer(usuario)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id=id_usuario)
+        if request.user.id != id_usuario and not request.user.is_staff:
+            return Response(
+                {"error": "No tienes permiso"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UsuarioIDViewDos(ListCreateAPIView):
+ serializer_class = UsuarioSerializer
+ 
+ def get_queryset(self):
+  id_usuario = self.kwargs["id_usuario"]
+  return Usuario.objects.filter(id=id_usuario)
+
+
+class UsuarioDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id=id_usuario)
+
+        # Solo el dueño de la cuenta o un admin/staff puede eliminar
+        if request.user.id != usuario.id and not request.user.is_staff:
+            return Response(
+                {"error": "No tienes permiso para eliminar este usuario"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        usuario.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CambiarContrasenaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        new_password = request.data.get("new_password")
+        
+        if not new_password:
+            return Response(
+                {"error": "Debes proporcionar la nueva contraseña"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Validar longitud de nueva contraseña
+        if len(new_password) < 6:
+            return Response(
+                {"error": "La nueva contraseña debe tener al menos 6 caracteres"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Cambiar contraseña sin verificar la actual
+        request.user.set_password(new_password)
+        request.user.save()
+        
+        return Response(
+            {"mensaje": "Contraseña cambiada exitosamente"},
+            status=status.HTTP_200_OK
+        )
+
 class UsuarioActualizarView(APIView):
- def patch(self,request):
-  id_usuario = request.data.get("id_usuario")
-  imagen_perfil = request.data.get("img_perfil")
-  
-  if not id_usuario:
-    return Response({"error":"Debes proporcionar el id_usuario"},status=status.HTTP_400_BAD_REQUEST)
-  
-  try:
-    usuario = Usuario.objects.get(id=id_usuario)
-  except Usuario.DoesNotExist:
-    return Response({"error":"Usuario no encontrado"},status=status.HTTP_404_NOT_FOUND)
-  
-  if imagen_perfil:
-    usuario.imagen_perfil = imagen_perfil
-    usuario.save()
-    return Response({"mensaje":"Imagen de perfil actualizada exitosamente"},status=status.HTTP_200_OK)
-  else:
-    return Response({"error":"Debes proporcionar una imagen de perfil"},status=status.HTTP_400_BAD_REQUEST)
-  
+    def patch(self, request):
+        id_usuario = request.data.get("id_usuario")
+        imagen_perfil = request.data.get("img_perfil")
 
+        if not id_usuario:
+            return Response(
+                {"error": "Debes proporcionar el id_usuario"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            usuario = Usuario.objects.get(id=id_usuario)
+        except Usuario.DoesNotExist:
+            return Response(
+                {"error": "Usuario no encontrado"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if imagen_perfil:
+            usuario.imagen_perfil = imagen_perfil
+            usuario.save()
+            return Response(
+                {"mensaje": "Imagen de perfil actualizada exitosamente"},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {"error": "Debes proporcionar una imagen de perfil"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class UsuarioFotoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id=id_usuario)
+        foto = getattr(usuario, "imagen_perfil", None)
+        return Response({"foto": foto}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

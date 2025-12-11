@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Eye, EyeOff } from 'lucide-react';
-import { updateUser } from '../services/fetch.js';
+import { changePassword } from '../services/fetch.js';
 import "../styles/Profile.css";
 
 export const PFTabPassword = () => {
@@ -28,7 +28,7 @@ export const PFTabPassword = () => {
 
         // Validaciones
         if (formData.newPassword.length < 6) {
-            setError('La contraseña debe tener al menos 6 caracteres');
+            setError('La nueva contraseña debe tener al menos 6 caracteres');
             return;
         }
 
@@ -37,22 +37,11 @@ export const PFTabPassword = () => {
             return;
         }
 
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        if (!user) {
-            setError('Usuario no encontrado');
-            return;
-        }
-
         setLoading(true);
         try {
-            const updatedUser = await updateUser(user.id, { password: formData.newPassword });
-            if (updatedUser) {
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-                setSuccess('Contraseña actualizada exitosamente');
-                setFormData({ newPassword: '', confirmPassword: '' });
-            } else {
-                setError('Error al actualizar la contraseña');
-            }
+            await changePassword(formData.newPassword);
+            setSuccess('Contraseña actualizada exitosamente');
+            setFormData({ newPassword: '', confirmPassword: '' });
         } catch (error) {
             setError('Error al actualizar: ' + error.message);
         }

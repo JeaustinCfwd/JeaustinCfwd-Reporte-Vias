@@ -35,8 +35,21 @@ class Usuario(AbstractUser):
      ("admin", "Administrador"),
      ("usuario", "Usuario"),
     )
-    rol = models.CharField(max_length=50, choices=ROL_OPCIONES, default="usuario")
-    imagen_perfil = models.TextField(null=True,blank=True)
+    rol = models.CharField(max_length=10, choices=ROL_OPCIONES, default="usuario")
+    imagen_perfil = models.TextField(null=True, blank=True)
+    preferences = models.JSONField(null=True, blank=True, default=dict)
+
+    # === CAMPOS NUEVOS PARA EL PERFIL ===
+    bio = models.TextField(max_length=500, blank=True, default="")
+    phone = models.CharField(max_length=20, blank=True, default="")
+    location = models.CharField(max_length=100, blank=True, default="")
+    birth_date = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=20, choices=[
+        ('male', 'Masculino'),
+        ('female', 'Femenino'),
+        ('other', 'Otro'),
+        ('prefer-not-say', 'Prefiero no decir')
+    ], default='prefer-not-say', blank=True)
     class Meta:
         db_table = 'usuario'
         verbose_name_plural = 'Usuarios'
@@ -57,7 +70,7 @@ class Reporte(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     aprobado = models.BooleanField(default=False)
-    url_imagen = CloudinaryField('image', blank=True, null=True)
+    url_imagen = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'reporte'

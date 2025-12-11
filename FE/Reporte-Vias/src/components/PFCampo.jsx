@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const PFCampo = ({ 
     label, 
@@ -13,6 +13,23 @@ const PFCampo = ({
     displayValue = null,
     sideBySide = false
 }) => {
+ const [usuario,setUsuario] = useState([])
+
+ useEffect(()=>{
+  const traerUsuario = async()=>{
+   const peticion = await fetch(`http://localhost:8000/api/usuario/${localStorage.getItem('id_usuario')}`,{
+    method: 'GET',
+    headers:{
+     'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    },
+    credentials: 'include'
+   })
+   const data = await peticion.json()
+   console.log(data);
+   setUsuario(data.results[0])
+  }
+  traerUsuario()
+ },[])
     const renderInput = () => {
         if (type === 'textarea') {
             return (
@@ -69,7 +86,7 @@ const PFCampo = ({
                 <div className="form-field form-field-display">
                     <label className="form-label">{label} Actual</label>
                     <div className="display-value">
-                        {displayValue}
+                        {usuario.username || 'Sin nombre'}
                     </div>
                 </div>
                 <div className="form-field">

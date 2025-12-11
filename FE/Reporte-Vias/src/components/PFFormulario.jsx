@@ -22,26 +22,52 @@ export const usePFFormulario = (usuarioActual) => {
     //    CARGAR DATOS DEL USUARIO
     // ================================
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        if (storedUser) {
-            setUser(storedUser);
+        async function cargarUsuario() {
+            // 1) Preferir el usuario recibido por props (desde ProfileLayout)
+            if (usuarioActual && usuarioActual.id) {
+                setUser(usuarioActual);
 
-            setFormData({
-                name: storedUser.name || '',
-                email: storedUser.email || '',
-                bio: storedUser.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
-                phone: storedUser.phone || '',
-                location: storedUser.location || '',
-                birthDate: storedUser.birthDate || '',
-                gender: storedUser.gender || 'male'
-            });
+                setFormData({
+                    name: usuarioActual.name || usuarioActual.username || '',
+                    email: usuarioActual.email || '',
+                    bio: usuarioActual.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
+                    phone: usuarioActual.phone || '',
+                    location: usuarioActual.location || '',
+                    birthDate: usuarioActual.birthDate || '',
+                    gender: usuarioActual.gender || 'male'
+                });
 
-            if (storedUser.id) {
-                const userPhoto = getUserPhoto(storedUser.id);
-                setPhotoPreview(userPhoto || '');
+                if (usuarioActual.id) {
+                    const userPhoto = await getUserPhoto(usuarioActual.id);
+                    setPhotoPreview(userPhoto || '');
+                }
+                return;
+            }
+
+            // 2) Como fallback, usar lo que haya en localStorage
+            const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+            if (storedUser) {
+                setUser(storedUser);
+
+                setFormData({
+                    name: storedUser.name || storedUser.username || '',
+                    email: storedUser.email || '',
+                    bio: storedUser.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
+                    phone: storedUser.phone || '',
+                    location: storedUser.location || '',
+                    birthDate: storedUser.birthDate || '',
+                    gender: storedUser.gender || 'male'
+                });
+
+                if (storedUser.id) {
+                    const userPhoto = await getUserPhoto(storedUser.id);
+                    setPhotoPreview(userPhoto || '');
+                }
             }
         }
-    }, []);
+
+        cargarUsuario();
+    }, [usuarioActual]);
 
     // ================================
     //           INPUT NORMAL

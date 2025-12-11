@@ -78,11 +78,14 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
                 String(report.id) === String(id) ? { ...report, ...updatedReport } : report
             ));
             success('Reporte actualizado correctamente');
+            if(refreshReports) {
+             await refreshReports();
+            }
         } catch (error) {
             console.error('Error updating report:', error);
             showError('Error al actualizar el reporte');
         }
-    }, [reports, success, showError, setReports]);
+    }, [reports, success, showError, setReports, refreshReports]);
 
     // Exportar a CSV
     const exportToCSV = useCallback(() => {

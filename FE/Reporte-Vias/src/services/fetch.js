@@ -171,24 +171,25 @@ export async function deleteReview(comentarioId) {
 // 4. Funciones de usuarios
 export async function updateUser(userId, userData) {
     try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${API_URL}usuario/${userId}/`, { 
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
             body: JSON.stringify(userData),
             credentials: 'include',
         });
 
         if (!res.ok) {
-            let errorData;
+            // Intentamos leer JSON una sola vez; si falla, lanzamos un error genérico
             try {
-                errorData = await res.json();
+                const errorData = await res.json();
+                throw new Error(errorData.mensaje || 'Error al actualizar usuario');
             } catch {
-                const errorText = await res.text();
-                throw new Error(errorText || 'Error al actualizar usuario');
+                throw new Error('Error al actualizar usuario');
             }
-            throw new Error(errorData.mensaje || 'Error al actualizar usuario');
         }
 
         const updatedUser = await res.json();
@@ -202,8 +203,13 @@ export async function updateUser(userId, userData) {
 
 export async function deleteUser(userId) {
     try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${API_URL}usuarios/${userId}/`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
             credentials: 'include',
         });
 
@@ -211,10 +217,42 @@ export async function deleteUser(userId) {
             throw new Error(`Error eliminando usuario: ${res.status}`);
         }
 
+        // Si el backend devuelve 204 No Content, no hay body que parsear
+        if (res.status === 204) {
+            return null;
+        }
+
         return res.json();
 
     } catch (error) {
         console.error('Error eliminando usuario:', error);
+        throw error;
+    }
+}
+
+export async function changePassword(newPassword) {
+    try {
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(`${API_URL}cambiar-contrasena/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                new_password: newPassword,
+            }),
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || `Error cambiando contraseña: ${res.status}`);
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error('Error cambiando contraseña:', error);
         throw error;
     }
 }

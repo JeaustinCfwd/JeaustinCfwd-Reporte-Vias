@@ -25,16 +25,17 @@ const ProfileLayout = () => {
                 return;
             }
             try {
-                const token = localStorage.getItem('access_token');
                 const response = await fetch(`http://127.0.0.1:8000/api/usuario/${id_usuario}/`, {
                     headers: {
                         'Content-Type': 'application/json',
-                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        "Authorization": `Bearer ${localStorage.getItem('access_token')}`
                     },
                     credentials: 'include',
                 });
                 const data = await response.json();
-                setUsuario(data[0] || {});
+                // El endpoint /api/usuario/<id>/ ahora devuelve un SOLO objeto,
+                // no una lista. Guardamos el objeto directamente.
+                setUsuario(data || {});
             } catch (error) {
                 console.error('Error al cargar usuario:', error);
             }
