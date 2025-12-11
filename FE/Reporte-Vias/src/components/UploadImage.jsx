@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Camera } from "lucide-react";
 
-const UploadImage = ({ setImgUrl,className = "file-input" }) => {
+const UploadImage = ({ setImgUrl, className = "file-input" }) => {
   const [imageUrl, setImageUrl] = useState("");
+  const inputRef = useRef(null);
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -23,14 +25,30 @@ const UploadImage = ({ setImgUrl,className = "file-input" }) => {
     setImgUrl(uploadRes.secure_url);
   };
 
+  const handleButtonClick = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
   return (
     <div>
+      <button
+        type="button"
+        className={className}
+        onClick={handleButtonClick}
+      >
+        <Camera size={18} />
+        {imageUrl ? "Cambiar foto" : "Subir foto"}
+      </button>
+
       <input
+        ref={inputRef}
         type="file"
         id="photos"
         onChange={handleUpload}
         accept="image/*"
-        className={className}
+        style={{ display: "none" }}
       />
 
       {imageUrl && (

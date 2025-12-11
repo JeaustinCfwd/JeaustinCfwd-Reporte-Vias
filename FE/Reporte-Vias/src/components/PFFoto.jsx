@@ -42,10 +42,8 @@ const PFFoto = ({ photoPreview, onPhotoChange, onRemovePhoto }) => {
                     </div>
 
                     <div className="photo-actions">
-                        <label htmlFor="photos" className="photo-upload-btn">
-                            <Camera size={18} />
-                            {photoPreview ? 'Cambiar foto' : 'Subir foto'}
-                        </label>
+                        {/* Input de archivo estilizado como botón principal */}
+                        <UploadImage setImgUrl={onPhotoChange} className="photo-upload-btn" />
 
                         {photoPreview && (
                             <button
@@ -56,9 +54,6 @@ const PFFoto = ({ photoPreview, onPhotoChange, onRemovePhoto }) => {
                                 Eliminar foto
                             </button>
                         )}
-
-                        {/* 🔥 Envia la URL correcta */}
-                        <UploadImage setImgUrl={onPhotoChange} className="" />
                     </div>
 
                 </div>
