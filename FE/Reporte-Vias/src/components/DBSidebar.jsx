@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/Sidebar.css";
+
 import {
   LayoutDashboard,
   BarChart3,
