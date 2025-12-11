@@ -116,7 +116,7 @@ const DBSidebar = ({
 
       {/* PERFIL */}
       <div className="profile-details">
-        <div className="profile-content">
+        <div className="sidebar-profile-content">
           <div className="profile-avatar">
             <User size={18} />
           </div>
@@ -125,7 +125,7 @@ const DBSidebar = ({
             <div className="job">Usuario</div>
           </div>
         </div>
-        <LogOut 
+        <LogOut
           size={20}
           onClick={handleLogout}
           className="logout-cursor"

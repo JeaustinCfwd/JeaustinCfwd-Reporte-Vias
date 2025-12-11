@@ -42,6 +42,11 @@ const PFFoto = ({ photoPreview, onPhotoChange, onRemovePhoto }) => {
                     </div>
 
                     <div className="photo-actions">
+                        <label htmlFor="photos" className="photo-upload-btn">
+                            <Camera size={18} />
+                            {photoPreview ? 'Cambiar foto' : 'Subir foto'}
+                        </label>
+
                         {photoPreview && (
                             <button
                                 type="button"

@@ -30,10 +30,17 @@ const UploadImage = ({ setImgUrl,className = "file-input" }) => {
         id="photos"
         onChange={handleUpload}
         accept="image/*"
-        className={`${className} photo-upload-btn`}
+        className={className}
       />
 
-      </div>
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt="uploaded"
+          className="uploaded-image"
+        />
+      )}
+    </div>
   );
 };
 

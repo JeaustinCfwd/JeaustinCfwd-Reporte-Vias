@@ -35,7 +35,7 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                 {success && <div className="alert alert-success">{success}</div>}
 
                 {/* Foto de Perfil */}
-                <PFFoto 
+                <PFFoto
                     photoPreview={photoPreview}
                     onPhotoChange={handlePhotoChange}
                     onRemovePhoto={handleRemovePhoto}
@@ -102,15 +102,7 @@ export const PFTabPerfil = ({ usuarioActual }) => {
                     placeholder="Ciudad, País"
                 />
 
-                {/* Sitio Web */}
-                <PFCampo
-                    label="Sitio Web"
-                    type="url"
-                    name="website"
-                    value={formData.website}
-                    onChange={handleInputChange}
-                    placeholder="https://tusitio.com"
-                />
+
 
                 {/* Fecha de Nacimiento */}
                 <PFCampo

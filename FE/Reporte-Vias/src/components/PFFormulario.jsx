@@ -9,7 +9,6 @@ export const usePFFormulario = (usuarioActual) => {
         bio: '',
         phone: '',
         location: '',
-        website: '',
         birthDate: '',
         gender: 'male'
     });
@@ -33,7 +32,6 @@ export const usePFFormulario = (usuarioActual) => {
                 bio: storedUser.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
                 phone: storedUser.phone || '',
                 location: storedUser.location || '',
-                website: storedUser.website || '',
                 birthDate: storedUser.birthDate || '',
                 gender: storedUser.gender || 'male'
             });
