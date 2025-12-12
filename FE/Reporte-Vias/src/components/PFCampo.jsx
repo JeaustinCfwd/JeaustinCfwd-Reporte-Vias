@@ -1,55 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { fetchWithAuth } from '../services/fetch'; // ← agregado exactamente como pediste
+import React from 'react';
 
-const PFCampo = ({ 
-    label, 
-    type = 'text', 
-    name, 
-    value, 
-    onChange, 
-    placeholder, 
+// Este componente ya no trae datos por su cuenta.
+const PFCampo = ({
+    label,
+    type = 'text',
+    name,
+    value,
+    onChange,
+    placeholder,
     required = false,
     options = null,
     rows = null,
-    displayValue = null,
+    displayValue = null, // Este valor ahora será el texto a mostrar directamente.
     sideBySide = false
 }) => {
-
-    const [usuario, setUsuario] = useState([]);
-
-    useEffect(() => {
-        const traerUsuario = async () => {
-            try {
-
-                // ============================
-                //    SE CAMBIÓ SOLO ESTA PARTE
-                // ============================
-                const peticion = await fetchWithAuth(
-                    `http://localhost:8000/api/usuario/${localStorage.getItem('id_usuario')}`
-                );
-                // ============================
-
-                if (!peticion.ok) {
-                    const errorData = await peticion.json().catch(() => ({}));
-                    console.error("Error en la petición de usuario:", errorData);
-                    return;
-                }
-
-                const data = await peticion.json();
-
-                if (data && data.id) {
-                    setUsuario(data);
-                } else {
-                    console.error("No se encontraron datos de usuario en la respuesta:", data);
-                }
-
-            } catch (error) {
-                console.error("Error al traer los datos del usuario:", error.message);
-            }
-        };
-
-        traerUsuario();
-    }, []);
 
     const renderInput = () => {
         if (type === 'textarea') {
@@ -57,7 +21,7 @@ const PFCampo = ({
                 <textarea
                     id={name}
                     name={name}
-                    value={value}
+                    value={value || ''}
                     onChange={onChange}
                     rows={rows}
                     className="form-input"
@@ -72,12 +36,12 @@ const PFCampo = ({
                 <select
                     id={name}
                     name={name}
-                    value={value}
+                    value={value || ''}
                     onChange={onChange}
                     className="form-input"
                     required={required}
                 >
-                    {options.map(option => (
+                    {options?.map(option => (
                         <option key={option.value} value={option.value}>
                             {option.label}
                         </option>
@@ -91,7 +55,7 @@ const PFCampo = ({
                 type={type}
                 id={name}
                 name={name}
-                value={value}
+                value={value || ''}
                 onChange={onChange}
                 className="form-input"
                 placeholder={placeholder}
@@ -101,13 +65,14 @@ const PFCampo = ({
         );
     };
 
-    if (sideBySide && displayValue) {
+    if (sideBySide) {
         return (
             <div className="form-row-side-by-side">
                 <div className="form-field form-field-display">
                     <label className="form-label">{label} Actual</label>
+
                     <div className="display-value">
-                        {usuario[displayValue] ? usuario[displayValue] : 'Sin datos'}
+                        {displayValue || 'Sin datos'}
                     </div>
                 </div>
 

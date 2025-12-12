@@ -215,15 +215,9 @@ export async function deleteReview(comentarioId) {
 // 4. Funciones de usuarios
 export async function updateUser(userId, userData) {
     try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(`${API_URL}usuario/${userId}/`, { 
+        const res = await fetchWithAuth(`${API_URL}usuario/${userId}/`, { 
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
             body: JSON.stringify(userData),
-            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -247,14 +241,8 @@ export async function updateUser(userId, userData) {
 
 export async function deleteUser(userId) {
     try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(`${API_URL}usuarios/${userId}/`, {
+        const res = await fetchWithAuth(`${API_URL}usuarios/${userId}/`, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -276,14 +264,8 @@ export async function deleteUser(userId) {
 
 export async function changePassword(newPassword) {
     try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(`${API_URL}cambiar-contrasena/`, {
+        const res = await fetchWithAuth(`${API_URL}cambiar-contrasena/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            credentials: 'include',
             body: JSON.stringify({
                 new_password: newPassword,
             }),
@@ -303,14 +285,7 @@ export async function changePassword(newPassword) {
 
 export async function getUserPhoto(userId) {
     try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(`${API_URL}usuarios/${userId}/foto/`, {
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-        });
+        const res = await fetchWithAuth(`${API_URL}usuarios/${userId}/foto/`);
 
         if (!res.ok) {
             throw new Error(`Error obteniendo foto: ${res.status}`);
@@ -328,12 +303,10 @@ export async function getUserPhoto(userId) {
 // 5. Otras funciones
 export async function obtenerDatosEstadisticos() {
     try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(API_URL + 'crear-reporte/', {
+        const res = await fetchWithAuth(API_URL + 'crear-reporte/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
         });
 
@@ -355,13 +328,8 @@ export async function obtenerDatosEstadisticos() {
 
 export async function postData(obj, endpoint) {
     try {
-        const token = localStorage.getItem('access_token');
-        const peticion = await fetch(`http://127.0.0.1:8000/api/${endpoint}/`, {
+        const peticion = await fetchWithAuth(`http://127.0.0.1:8000/api/${endpoint}/`, {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
             body: JSON.stringify(obj)
         });
 
@@ -376,15 +344,7 @@ export async function postData(obj, endpoint) {
 
 export async function getComentarios() {
     try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(API_URL + 'crear-comentario/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            credentials: 'include',
-        });
+        const res = await fetchWithAuth(API_URL + 'crear-comentario/');
 
         if (!res.ok) {
             throw new Error(`Error obteniendo comentarios: ${res.status}`);
@@ -399,18 +359,12 @@ export async function getComentarios() {
     }
 }
 
-
 export async function patchData(endpoint,obj) {
- const peticion = await fetch(`http://localhost:8000/api/${endpoint}`,{
+ const peticion = await fetchWithAuth(`http://localhost:8000/api/${endpoint}`,{
     method: "PATCH",
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-    },
     body: JSON.stringify(obj)
  })
  const data = await peticion.json()
  console.log(data);
  return data
- 
 }

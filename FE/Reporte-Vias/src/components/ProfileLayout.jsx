@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../services/fetch';
 import { logout } from '../services/fetch';
 import { PFSidebar } from './PFSidebar.jsx';
 import { PFTabPerfil } from './PFTabPerfil.jsx';
@@ -25,13 +26,7 @@ const ProfileLayout = () => {
                 return;
             }
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/usuario/${id_usuario}/`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": `Bearer ${localStorage.getItem('access_token')}`
-                    },
-                    credentials: 'include',
-                });
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/usuario/${id_usuario}/`);
                 const data = await response.json();
                 // El endpoint /api/usuario/<id>/ ahora devuelve un SOLO objeto,
                 // no una lista. Guardamos el objeto directamente.
