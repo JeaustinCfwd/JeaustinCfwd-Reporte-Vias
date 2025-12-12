@@ -1,5 +1,49 @@
 const API_URL = 'http://localhost:8000/api/';
 
+// Nueva función fetch con manejo de autenticación y refresco de token
+export async function fetchWithAuth(URL, options = {}) {
+    try {
+
+        let token = getAccessToken();
+        const newOptions = { ...options };
+
+        if (!newOptions.headers) {
+            newOptions.headers = {};
+        }
+
+        if (token) {
+            newOptions.headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        if (!newOptions.headers['Content-Type']) {
+            newOptions.headers['Content-Type'] = 'application/json';
+        }
+
+        newOptions.credentials = 'include';
+
+        let res = await fetch(URL, newOptions);
+
+        // Si el token expiró
+        if (res.status === 401) {
+            const newToken = await refreshAccessToken();
+            newOptions.headers['Authorization'] = `Bearer ${newToken}`;
+            res = await fetch(URL, newOptions);
+        }
+
+        if (!res.ok) {
+            throw new Error(`Request failed with status ${res.status}`);
+        }
+
+        return res;
+
+    } catch (refreshError) {
+        console.error("Fallo al refrescar el token o reintentar la petición:", refreshError);
+        logout();
+        window.location.href = '/login';
+        throw new Error('La sesión ha expirado. Por favor, inicia sesión de nuevo.');
+    }
+}
+
 // 1. Función de Login con JWT
 export async function loginUser(email, password) {
     const res = await fetch(API_URL + 'token/', {

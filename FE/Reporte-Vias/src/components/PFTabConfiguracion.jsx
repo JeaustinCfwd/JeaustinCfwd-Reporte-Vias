@@ -20,7 +20,13 @@ export const PFTabConfiguracion = () => {
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
         if (storedUser) {
             setUser(storedUser);
-            setPreferences(storedUser.preferences || preferences);
+            // SOLUCIÓN: Fusionar las preferencias por defecto con las guardadas.
+            // Esto asegura que el estado 'preferences' siempre tenga todas las claves
+            // (notifications, darkMode, language, timezone), evitando el warning.
+            setPreferences(prevPreferences => ({
+                ...prevPreferences, // Empezamos con el estado inicial completo
+                ...(storedUser.preferences || {}) // Sobrescribimos con lo que venga de localStorage
+            }));
         }
     }, []);
 

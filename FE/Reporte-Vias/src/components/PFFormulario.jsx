@@ -23,55 +23,37 @@ export const usePFFormulario = (usuarioActual) => {
     // ================================
     useEffect(() => {
         async function cargarUsuario() {
-            // 1) Preferir el usuario recibido por props (desde ProfileLayout)
-            if (usuarioActual && usuarioActual.id) {
-                setUser(usuarioActual);
+            // Usaremos 'usuarioActual' si existe, si no, intentaremos desde localStorage.
+            const userSource = (usuarioActual && usuarioActual.id) 
+                ? usuarioActual 
+                : JSON.parse(localStorage.getItem('user') || 'null');
 
+            if (userSource) {
+                setUser(userSource);
+
+                // 1. SOLUCIÓN: Asegurarnos de que ningún valor sea null o undefined.
+                // Si un valor no existe en userSource, el `|| ''` lo inicializa como string vacío.
                 setFormData({
-                    name: usuarioActual.name || usuarioActual.username || '',
-                    email: usuarioActual.email || '',
-                    bio: usuarioActual.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
-                    phone: usuarioActual.phone || '',
-                    location: usuarioActual.location || '',
-                    birthDate: usuarioActual.birthDate || '',
-                    gender: usuarioActual.gender || 'male'
+                    username: userSource.username || '',
+                    email: userSource.email || '',
+                    bio: userSource.bio || '',
+                    phone: userSource.phone || '',
+                    location: userSource.location || '',
+                    birth_date: userSource.birth_date || '',
+                    gender: userSource.gender || ''
                 });
 
-                if (usuarioActual.id) {
-                    const userPhoto = await getUserPhoto(usuarioActual.id);
-                    setPhotoPreview(userPhoto || '');
-                }
-                return;
-            }
-
-            // 2) Como fallback, usar lo que haya en localStorage
-            const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-            if (storedUser) {
-                setUser(storedUser);
-
-                setFormData({
-                    name: storedUser.name || storedUser.username || '',
-                    email: storedUser.email || '',
-                    bio: storedUser.bio || 'Hola, me encanta programar y aprender cosas nuevas.',
-                    phone: storedUser.phone || '',
-                    location: storedUser.location || '',
-                    birthDate: storedUser.birthDate || '',
-                    gender: storedUser.gender || 'male'
-                });
-
-                if (storedUser.id) {
-                    const userPhoto = await getUserPhoto(storedUser.id);
+                // Cargar la foto del perfil si no se ha cargado antes.
+                if (userSource.id && !photoPreview) {
+                    const userPhoto = await getUserPhoto(userSource.id);
                     setPhotoPreview(userPhoto || '');
                 }
             }
         }
 
         cargarUsuario();
-    }, [usuarioActual]);
+    }, [usuarioActual]); // El efecto se ejecuta cuando 'usuarioActual' cambia.
 
-    // ================================
-    //           INPUT NORMAL
-    // ================================
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -80,7 +62,7 @@ export const usePFFormulario = (usuarioActual) => {
     };
 
     // ================================
-    //   🔥 FOTO DESDE CLOUDINARY
+    //   FOTO DESDE CLOUDINARY
     //   (Recibe SOLO UNA URL)
     // ================================
     const handlePhotoChange = (url) => {
@@ -101,7 +83,15 @@ export const usePFFormulario = (usuarioActual) => {
     // ================================
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!user) return;
+        
+        // 1. Obtiene el ID directamente desde localStorage.
+        const userId = localStorage.getItem('id_usuario');
+
+        // 2. Si no hay ID, detiene la ejecución y muestra un error.
+        if (!userId) {
+            setError("No se pudo encontrar el ID del usuario para actualizar.");
+            return;
+        }
 
         setLoading(true);
         setError('');
@@ -113,17 +103,19 @@ export const usePFFormulario = (usuarioActual) => {
         };
 
         try {
-            const updatedUser = await updateUser(user.id, updateData);
+            // 3. Usa el ID correcto para la llamada a la API.
+            const updatedUser = await updateUser(userId, updateData);
 
             if (updatedUser) {
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 setUser(updatedUser);
                 setSuccess('Perfil actualizado exitosamente');
             } else {
-                setError('Error al actualizar perfil');
+                setError('Error al actualizar el perfil. La respuesta no fue la esperada.');
             }
         } catch (error) {
-            setError('Error al actualizar: ' + error.message);
+            console.error("Error en handleSubmit:", error);
+            setError('Error al conectar con el servidor: ' + error.message);
         }
 
         setLoading(false);
