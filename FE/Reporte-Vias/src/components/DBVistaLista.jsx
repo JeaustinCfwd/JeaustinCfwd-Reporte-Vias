@@ -1,3 +1,4 @@
+import { ToggleRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { RiDeleteBin5Line } from "react-icons/ri";
 
@@ -25,6 +26,7 @@ const DBVistaLista = ({
 }) => {
   const [editando, setEditando] = useState({ id: null, campo: null });
   const [valorEditado, setValorEditado] = useState('');
+  const [reportesExpandidos, setReportesExpandidos] = useState(new Set());
 
   const activarEdicion = (id, campo, valorActual) => {
     setEditando({ id, campo });
@@ -42,6 +44,18 @@ const DBVistaLista = ({
   const cancelarEdicion = () => {
     setEditando({ id: null, campo: null });
     setValorEditado('');
+  };
+
+  const toggleReporte = (id) => {
+    setReportesExpandidos(prev => {
+      const nuevo = new Set(prev);
+      if (nuevo.has(id)) {
+        nuevo.delete(id);
+      } else {
+        nuevo.add(id);
+      }
+      return nuevo;
+    });
   };
 
   // Mapear estado ID a nombre
@@ -70,6 +84,7 @@ const DBVistaLista = ({
         <table className="reports-table">
           <thead>
             <tr>
+              <th></th>  {/* Para el botón de expandir */}
               <th>ID</th>
               <th>Título</th>
               <th>Descripción</th>
@@ -81,104 +96,135 @@ const DBVistaLista = ({
           </thead>
           <tbody>
             {filteredReports.map(report => (
-              <tr key={report.id}>
-                <td>{report.id}</td>
-
-                {/* Título editable */}
-                <td onDoubleClick={() => activarEdicion(report.id, 'titulo', report.titulo)}>
-                  {editando.id === report.id && editando.campo === 'titulo' ? (
-                    <input
-                      value={valorEditado}
-                      onChange={(e) => setValorEditado(e.target.value)}
-                      onBlur={guardarEdicion}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') guardarEdicion();
-                        if (e.key === 'Escape') cancelarEdicion();
-                      }}
-                      autoFocus
-                      className="edit-input"
-                    />
-                  ) : (
-                    <span title="Doble clic para editar">{report.titulo || '-'}</span>
-                  )}
-                </td>
-
-                {/* Descripción editable */}
-                <td onDoubleClick={() => activarEdicion(report.id, 'descripcion', report.descripcion)}>
-                  {editando.id === report.id && editando.campo === 'descripcion' ? (
-                    <input
-                      value={valorEditado}
-                      onChange={(e) => setValorEditado(e.target.value)}
-                      onBlur={guardarEdicion}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') guardarEdicion();
-                        if (e.key === 'Escape') cancelarEdicion();
-                      }}
-                      autoFocus
-                      className="edit-input"
-                    />
-                  ) : (
-                    <span title="Doble clic para editar">{report.descripcion || '-'}</span>
-                  )}
-                </td>
-
-                {/* Estado con dropdown */}
-                <td>
-                  <select
-                    value={getEstadoNombre(report.estado)}
-                    onChange={(e) => handleUpdateState(report.id, getEstadoId(e.target.value))}
-                    className="state-select"
-                  >
-                    <option value="nuevo">Nuevo</option>
-                    <option value="en_revision">En Revisión</option>
-                    <option value="atendido">Atendido</option>
-                  </select>
-                </td>
-
-                {/* Categoría editable */}
-                <td onDoubleClick={() => activarEdicion(report.id, 'categoria', report.categoria)}>
-                  {editando.id === report.id && editando.campo === 'categoria' ? (
-                    <select
-                      value={valorEditado}
-                      onChange={(e) => setValorEditado(e.target.value)}
-                      onBlur={guardarEdicion}
-                      autoFocus
-                      className="edit-select"
+              <React.Fragment key={report.id}>
+                <tr>
+                  <td>
+                    <button
+                      onClick={() => toggleReporte(report.id)}
+                      className='accordion-toggle'
                     >
-                      {categories.map(cat => (
-                        <option key={cat.value} value={cat.value}>{cat.label}</option>
-                      ))}
+                      {reportesExpandidos.has(report.id) ? '^' : 'v'}
+                    </button>
+                  </td>
+                  <td>{report.id}</td>
+
+                  {/* Título editable */}
+                  <td onDoubleClick={() => activarEdicion(report.id, 'titulo', report.titulo)}>
+                    {editando.id === report.id && editando.campo === 'titulo' ? (
+                      <input
+                        value={valorEditado}
+                        onChange={(e) => setValorEditado(e.target.value)}
+                        onBlur={guardarEdicion}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') guardarEdicion();
+                          if (e.key === 'Escape') cancelarEdicion();
+                        }}
+                        autoFocus
+                        className="edit-input"
+                      />
+                    ) : (
+                      <span title="Doble clic para editar">{report.titulo || '-'}</span>
+                    )}
+                  </td>
+
+                  {/* Descripción editable */}
+                  <td onDoubleClick={() => activarEdicion(report.id, 'descripcion', report.descripcion)}>
+                    {editando.id === report.id && editando.campo === 'descripcion' ? (
+                      <input
+                        value={valorEditado}
+                        onChange={(e) => setValorEditado(e.target.value)}
+                        onBlur={guardarEdicion}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') guardarEdicion();
+                          if (e.key === 'Escape') cancelarEdicion();
+                        }}
+                        autoFocus
+                        className="edit-input"
+                      />
+                    ) : (
+                      <span title="Doble clic para editar">{report.descripcion || '-'}</span>
+                    )}
+                  </td>
+
+                  {/* Estado con dropdown */}
+                  <td>
+                    <select
+                      value={getEstadoNombre(report.estado)}
+                      onChange={(e) => handleUpdateState(report.id, getEstadoId(e.target.value))}
+                      className="state-select"
+                    >
+                      <option value="nuevo">Nuevo</option>
+                      <option value="en_revision">En Revisión</option>
+                      <option value="atendido">Atendido</option>
                     </select>
-                  ) : (
-                    <span title="Doble clic para editar">
-                      {categories.find(c => c.value === report.categoria)?.label || report.categoria || '-'}
-                    </span>
-                  )}
-                </td>
+                  </td>
 
-                {/* Fecha */}
-                <td>
-                  {report.fecha_creacion
-                    ? new Date(report.fecha_creacion).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })
-                    : '-'
-                  }
-                </td>
+                  {/* Categoría editable */}
+                  <td onDoubleClick={() => activarEdicion(report.id, 'categoria', report.categoria)}>
+                    {editando.id === report.id && editando.campo === 'categoria' ? (
+                      <select
+                        value={valorEditado}
+                        onChange={(e) => setValorEditado(e.target.value)}
+                        onBlur={guardarEdicion}
+                        autoFocus
+                        className="edit-select"
+                      >
+                        {categories.map(cat => (
+                          <option key={cat.value} value={cat.value}>{cat.label}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span title="Doble clic para editar">
+                        {categories.find(c => c.value === report.categoria)?.label || report.categoria || '-'}
+                      </span>
+                    )}
+                  </td>
 
-                {/* Acciones */}
-                <td>
-                  <button
-                    onClick={() => handleDeleteReport(report.id)}
-                    className="delete-btn-small"
-                    title="Eliminar"
-                  >
-                    <RiDeleteBin5Line />
-                  </button>
-                </td>
-              </tr>
+                  {/* Fecha */}
+                  <td>
+                    {report.fecha_creacion
+                      ? new Date(report.fecha_creacion).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                      : '-'
+                    }
+                  </td>
+
+                  {/* Acciones */}
+                  <td>
+                    <button
+                      onClick={() => handleDeleteReport(report.id)}
+                      className="delete-btn-small"
+                      title="Eliminar"
+                    >
+                      <RiDeleteBin5Line />
+                    </button>
+                  </td>
+                </tr>
+                {/* Fila expandible con imágenes */}
+                {reportesExpandidos.has(report.id) && (
+                  <tr className="accordion-content">
+                    <td colSpan="8">
+                      <div className="images-container">
+                        {report.imagenes && report.imagenes.length > 0 ? (
+                          report.imagenes.map((imagen, index) => (
+                            <img
+                              key={index}
+                              src={imagen.url || imagen}
+                              alt={`Imagen ${index + 1} del reporte ${report.id}`}
+                              className="report-image"
+                            />
+                          ))
+                        ) : (
+                          <p>No hay imágenes disponibles para este reporte</p>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

@@ -1983,3 +1983,84 @@ svg.lucide {
   }
 }
 
+
+/* ============================
+   ACCORDION STYLES
+   ============================ */
+
+/* Botón toggle del acordeón */
+.accordion-toggle {
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accordion-toggle:hover {
+  color: #8E63EE;
+  transform: scale(1.1);
+}
+
+/* Fila expandible con imágenes */
+.accordion-content td {
+  padding: 1.5rem !important;
+  background: #FAFAFA;
+  border-top: none !important;
+}
+
+/* Contenedor de imágenes */
+.images-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.images-container p {
+  color: #999999;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Estilos de las imágenes del reporte */
+.report-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.report-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+}
+
+/* Botón de eliminar pequeño */
+.delete-btn-small {
+  background: transparent;
+  border: none;
+  color: #FF4444;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn-small:hover {
+  color: #CC0000;
+  transform: scale(1.1);
+}
