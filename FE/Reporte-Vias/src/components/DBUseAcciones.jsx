@@ -47,7 +47,7 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
                 String(report.id) === String(id) ? updatedReport : report
             ));
             success('Estado actualizado correctamente');
-            
+
             // Actualizar los datos para reflejar los cambios en las gráficas
             if (refreshReports) {
                 refreshReports();
@@ -78,8 +78,8 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
                 String(report.id) === String(id) ? { ...report, ...updatedReport } : report
             ));
             success('Reporte actualizado correctamente');
-            if(refreshReports) {
-             await refreshReports();
+            if (refreshReports) {
+                await refreshReports();
             }
         } catch (error) {
             console.error('Error updating report:', error);
@@ -94,12 +94,12 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
             const rows = filteredReports.map(r => [
                 r.id,
                 r.titulo || '',
-                r.description || '',
-                r.state || '',
-                r.category || '',
+                r.descripcion || '',
+                r.estado || '',
+                r.categoria || '',
                 r.latitud || '',
                 r.longitud || '',
-                r.timestamp ? new Date(r.timestamp).toLocaleString('es-ES') : ''
+                r.fecha_creacion ? new Date(r.fecha_creacion).toLocaleString('es-ES') : ''
             ]);
 
             const csvContent = [

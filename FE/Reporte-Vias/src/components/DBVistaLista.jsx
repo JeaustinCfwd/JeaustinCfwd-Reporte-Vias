@@ -1,4 +1,4 @@
-import { ToggleRight } from 'lucide-react';
+import { ToggleRight, CircleChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 import { RiDeleteBin5Line } from "react-icons/ri";
 
@@ -103,7 +103,10 @@ const DBVistaLista = ({
            onClick={() => toggleReporte(report.id)}
            className='accordion-toggle'
           >
-           {reportesExpandidos.has(report.id) ? '^' : 'v'}
+           <CircleChevronUp
+            className={reportesExpandidos.has(report.id) ? 'chevron-up' : 'chevron-down'}
+            size={20}
+           />
           </button>
          </td>
          <td>{report.id}</td>

@@ -1992,9 +1992,7 @@ svg.lucide {
 .accordion-toggle {
   background: transparent;
   border: none;
-  color: #667eea;
-  font-size: 1.2rem;
-  font-weight: bold;
+  color: #666666;
   cursor: pointer;
   padding: 0.5rem;
   transition: all 0.3s ease;
@@ -2004,7 +2002,7 @@ svg.lucide {
 }
 
 .accordion-toggle:hover {
-  color: #8E63EE;
+  color: #333333;
   transform: scale(1.1);
 }
 
@@ -2043,7 +2041,7 @@ svg.lucide {
 
 .report-image:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* Botón de eliminar pequeño */
@@ -2063,4 +2061,15 @@ svg.lucide {
 .delete-btn-small:hover {
   color: #CC0000;
   transform: scale(1.1);
+}
+
+/* Rotación del chevron */
+.chevron-down {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+.chevron-up {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
 }
