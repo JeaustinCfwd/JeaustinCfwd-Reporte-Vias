@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { updateUser, getUserPhoto } from '../services/fetch.js';
+import { updateUser, getUserPhoto, patchData } from '../services/fetch.js';
 
 export const usePFFormulario = (usuarioActual) => {
     const [user, setUser] = useState(null);
@@ -24,8 +24,8 @@ export const usePFFormulario = (usuarioActual) => {
     useEffect(() => {
         async function cargarUsuario() {
             // Usaremos 'usuarioActual' si existe, si no, intentaremos desde localStorage.
-            const userSource = (usuarioActual && usuarioActual.id) 
-                ? usuarioActual 
+            const userSource = (usuarioActual && usuarioActual.id)
+                ? usuarioActual
                 : JSON.parse(localStorage.getItem('user') || 'null');
 
             if (userSource) {
@@ -74,8 +74,25 @@ export const usePFFormulario = (usuarioActual) => {
     // ================================
     //   ELIMINAR FOTO
     // ================================
-    const handleRemovePhoto = () => {
-        setPhotoPreview('');
+    const handleRemovePhoto = async () => {
+        try {
+            const userId = localStorage.getItem('id_usuario');
+            if (!userId) return;
+
+            // Intentamos usar updateUser (el mismo del formulario) y enviar 'imagen_perfil: null'
+            // Enviamos también el resto de la data por si es un PUT que requiere todo
+            await updateUser(userId, {
+                ...formData,
+                imagen_perfil: null
+            });
+
+            // Luego limpiamos el estado local
+            setPhotoPreview('');
+            setSuccess('Foto de perfil eliminada exitosamente');
+        } catch (error) {
+            console.error("Error al eliminar la foto de perfil:", error);
+            setError('Error al eliminar la foto de perfil: ' + error.message);
+        }
     };
 
     // ================================
@@ -83,7 +100,7 @@ export const usePFFormulario = (usuarioActual) => {
     // ================================
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // 1. Obtiene el ID directamente desde localStorage.
         const userId = localStorage.getItem('id_usuario');
 
@@ -99,7 +116,7 @@ export const usePFFormulario = (usuarioActual) => {
 
         const updateData = {
             ...formData,
-            photo: photoPreview
+            imagen_perfil: photoPreview
         };
 
         try {

@@ -51,7 +51,7 @@ const ProfileLayout = () => {
             <main className="profile-main">
                 {activeSection === 'edit' && <PFTabPerfil usuarioActual={usuario} />}
                 {activeSection === 'password' && <PFTabPassword />}
-                {activeSection === 'settings' && <PFTabConfiguracion />}
+                {activeSection === 'settings' && <PFTabConfiguracion usuarioActual={usuario} />}
             </main>
         </div>
     );

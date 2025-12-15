@@ -2,45 +2,57 @@ const API_URL = 'http://localhost:8000/api/';
 
 // Nueva función fetch con manejo de autenticación y refresco de token
 export async function fetchWithAuth(URL, options = {}) {
+    let token = getAccessToken();
+    const newOptions = { ...options };
+
+    if (!newOptions.headers) {
+        newOptions.headers = {};
+    }
+
+    if (token) {
+        newOptions.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (!newOptions.headers['Content-Type']) {
+        newOptions.headers['Content-Type'] = 'application/json';
+    }
+
+    newOptions.credentials = 'include';
+
     try {
-
-        let token = getAccessToken();
-        const newOptions = { ...options };
-
-        if (!newOptions.headers) {
-            newOptions.headers = {};
-        }
-
-        if (token) {
-            newOptions.headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        if (!newOptions.headers['Content-Type']) {
-            newOptions.headers['Content-Type'] = 'application/json';
-        }
-
-        newOptions.credentials = 'include';
-
         let res = await fetch(URL, newOptions);
 
         // Si el token expiró
         if (res.status === 401) {
-            const newToken = await refreshAccessToken();
-            newOptions.headers['Authorization'] = `Bearer ${newToken}`;
-            res = await fetch(URL, newOptions);
+            try {
+                const newToken = await refreshAccessToken();
+                newOptions.headers['Authorization'] = `Bearer ${newToken}`;
+                res = await fetch(URL, newOptions);
+            } catch (refreshError) {
+                console.error("Fallo al refrescar el token:", refreshError);
+                logout();
+                window.location.href = '/login';
+                throw new Error('La sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            }
         }
 
         if (!res.ok) {
-            throw new Error(`Request failed with status ${res.status}`);
+            // Intentamos obtener el mensaje de error del backend
+            let errorMessage = `Request failed with status ${res.status}`;
+            try {
+                const errorData = await res.json();
+                errorMessage = errorData.detail || errorData.message || errorData.error || JSON.stringify(errorData);
+            } catch (e) {
+                // Si no es JSON, nos quedamos con el status
+            }
+            throw new Error(errorMessage);
         }
 
         return res;
 
-    } catch (refreshError) {
-        console.error("Fallo al refrescar el token o reintentar la petición:", refreshError);
-        logout();
-        window.location.href = '/login';
-        throw new Error('La sesión ha expirado. Por favor, inicia sesión de nuevo.');
+    } catch (error) {
+        // Solo re-lanzamos el error para que lo maneje el componente
+        throw error;
     }
 }
 
@@ -48,12 +60,12 @@ export async function fetchWithAuth(URL, options = {}) {
 export async function loginUser(email, password) {
     const res = await fetch(API_URL + 'token/', {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
+        headers: {
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
             username: email,
-            password: password 
+            password: password
         }),
     });
 
@@ -61,7 +73,7 @@ export async function loginUser(email, password) {
         const errorData = await res.json();
         throw new Error(errorData.detail || 'Error de inicio de sesión');
     }
-    
+
     const data = await res.json();
     // Guardar tokens en localStorage
     localStorage.setItem('access_token', data.access);
@@ -83,18 +95,18 @@ export async function refreshAccessToken() {
 
     const res = await fetch(API_URL + 'token/refresh/', {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
+        headers: {
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-            refresh: refreshToken 
+        body: JSON.stringify({
+            refresh: refreshToken
         }),
     });
 
     if (!res.ok) {
         throw new Error('Failed to refresh token');
     }
-    
+
     const data = await res.json();
     localStorage.setItem('access_token', data.access);
     return data.access;
@@ -112,13 +124,13 @@ export function logout() {
 export async function registerUser(userData) {
     const res = await fetch(API_URL + 'crear-user/', {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
+        headers: {
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(userData),
         credentials: 'include',
     });
-    
+
     if (!res.ok) {
         const errorData = await res.json();
         console.error("Error en registerUser:", errorData);
@@ -182,7 +194,7 @@ export async function postReview(reviewData) {
 export async function deleteReview(comentarioId) {
     try {
         const usuarioId = localStorage.getItem('id_usuario');
-        
+
         if (!usuarioId) {
             throw new Error('Debes estar autenticado para eliminar comentarios');
         }
@@ -215,7 +227,7 @@ export async function deleteReview(comentarioId) {
 // 4. Funciones de usuarios
 export async function updateUser(userId, userData) {
     try {
-        const res = await fetchWithAuth(`${API_URL}usuario/${userId}/`, { 
+        const res = await fetchWithAuth(`${API_URL}usuario/${userId}/`, {
             method: 'PUT',
             body: JSON.stringify(userData),
         });
@@ -359,12 +371,12 @@ export async function getComentarios() {
     }
 }
 
-export async function patchData(endpoint,obj) {
- const peticion = await fetchWithAuth(`http://localhost:8000/api/${endpoint}`,{
-    method: "PATCH",
-    body: JSON.stringify(obj)
- })
- const data = await peticion.json()
- console.log(data);
- return data
+export async function patchData(endpoint, obj) {
+    const peticion = await fetchWithAuth(`http://localhost:8000/api/${endpoint}`, {
+        method: "PATCH",
+        body: JSON.stringify(obj)
+    })
+    const data = await peticion.json()
+    console.log(data);
+    return data
 }

@@ -15,6 +15,8 @@ class RolSerializer(serializers.ModelSerializer):
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    imagen_perfil = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    
     class Meta:
         model = Usuario
         fields = [
@@ -29,6 +31,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'date_joined',
             'last_login',
             'preferences',
+            'imagen_perfil',
             'bio',
             'phone',
             'location',
@@ -39,6 +42,18 @@ class UsuarioSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+    
+    def update(self, instance, validated_data):
+        # Manejar la eliminación de imagen_perfil
+        imagen_perfil = validated_data.get('imagen_perfil')
+        if imagen_perfil is None and 'imagen_perfil' in validated_data:
+            # Si imagen_perfil se establece explícitamente en None, eliminar la imagen anterior
+            if instance.imagen_perfil:
+                # TODO: Agregar lógica para eliminar imagen de Cloudinary si es necesario
+                # Por ahora, solo establecer el campo en null
+                pass
+        
+        return super().update(instance, validated_data)
 
 
 class ImagenReporteSerializer(serializers.ModelSerializer):
