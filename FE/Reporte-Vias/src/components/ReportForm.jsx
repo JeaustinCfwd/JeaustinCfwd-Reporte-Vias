@@ -10,6 +10,7 @@ import RPBoton from './RPBoton';
 import { INITIAL_LOCATION } from './RPConstantes';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
+import gsap from "gsap";
 
 // ==========================
 // AUX: Cambiar centro del mapa
@@ -68,8 +69,6 @@ const ReportForm = () => {
  });
 
  const [selectedFiles, setSelectedFiles] = useState([]);
-
- // 🔥 NUEVO: URLs de Cloudinary
  const [uploadedImages, setUploadedImages] = useState([]);
 
  const addImageUrl = (url) => {
@@ -163,7 +162,7 @@ const ReportForm = () => {
  };
 
  // ==========================
- // SUBMIT DEL REPORTE
+ // SUBMIT DEL REPORTE - CORREGIDO
  // ==========================
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -175,55 +174,79 @@ const ReportForm = () => {
 
   try {
    const userId = localStorage.getItem("id_usuario");
+   const token = localStorage.getItem("access_token"); // 🔑 Obtener token (con el nombre correcto)
 
-   const report = {
-    titulo:
-     formData.category.charAt(0).toUpperCase() +
-     formData.category.slice(1).replace(/_/g, " "),
+   // Verificar que el usuario esté autenticado
+   if (!token) {
+    showError("Debes iniciar sesión para crear un reporte.");
+    setIsSubmitting(false);
+    return;
+   }
+
+   // ✅ Construir datos del reporte - Sin especificar estado
+   const reportData = {
+    titulo: formData.category.charAt(0).toUpperCase() + formData.category.slice(1).replace(/_/g, " "),
     descripcion: formData.description,
     latitud: parseFloat(formData.location.latitud.toFixed(6)),
     longitud: parseFloat(formData.location.longitud.toFixed(6)),
-    estado: 1,
     usuario: parseInt(userId),
     categoria: formData.category,
     url_imagen: uploadedImages.length > 0 ? uploadedImages[0] : null,
    };
-
-   // =============== FORM DATA ===============
+   
    const formDataToSend = new FormData();
-
-   Object.keys(report).forEach((key) => {
-    if (report[key] !== null) {
-     formDataToSend.append(key, report[key]);
+   
+   // Agregar todos los campos excepto estado
+   Object.keys(reportData).forEach((key) => {
+    if (reportData[key] !== null) {
+     formDataToSend.append(key, reportData[key]);
     }
    });
-
-   // Si agregó imágenes desde el disco
+   
+   // Agregar archivos si existen
    selectedFiles.forEach((file) => {
     formDataToSend.append("photos", file);
    });
-
-   const resReport = await fetch("http://localhost:8000/api/crear-reporte/", {
+   
+   const response = await fetch("http://localhost:8000/api/crear-reporte/", {
     method: "POST",
-    body: formDataToSend, // ❗ No headers JSON
+    headers: {
+     'Authorization': `Bearer ${token}`, // 🔑 Enviar token
+    },
+    body: formDataToSend,
    });
-
-   if (!resReport.ok) throw new Error("Error al crear reporte");
-
-   success("¡Reporte enviado exitosamente!");
-
-   setFormData({
-    photos: [],
-    description: "",
-    category: "",
-    location: INITIAL_LOCATION,
-   });
-
-   setUploadedImages([]);
-   setSelectedFiles([]);
+   
+   if (response.ok) {
+    success("¡Reporte enviado exitosamente!");
+    
+    // Resetear formulario
+    setFormData({
+     photos: [],
+     description: "",
+     category: "",
+     location: INITIAL_LOCATION,
+    });
+    
+    setUploadedImages([]);
+    setSelectedFiles([]);
+   } else {
+    const errorData = await response.json().catch(() => ({}));
+    console.error("Error response:", response.status, response.statusText);
+    console.error("Error data:", errorData);
+    
+    // Mostrar mensaje de error específico
+    if (errorData.estado) {
+     showError(`Error en estado: ${errorData.estado[0]}`);
+    } else if (errorData.usuario) {
+     showError(`Error en usuario: ${errorData.usuario[0]}`);
+    } else {
+     showError("Error al enviar el reporte. Verifica los datos.");
+    }
+   }
 
   } catch (err) {
-   showError("Error al enviar el reporte.");
+   console.error("Error en handleSubmit:", err);
+   showError("Error de conexión al enviar el reporte.");
    setSubmitError(err.message);
   } finally {
    setIsSubmitting(false);

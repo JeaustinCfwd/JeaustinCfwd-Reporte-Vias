@@ -24,7 +24,7 @@ from .serializers import (
 # ==========================
 
 class CreateAdminUser(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # Solo para registro inicial
 
     def post(self, request):
         data = request.data
@@ -46,7 +46,7 @@ class CreateAdminUser(APIView):
 
 
 class CreateUser(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # Solo para registro
 
     def post(self, request):
         data = request.data
@@ -72,7 +72,7 @@ class CreateUser(APIView):
 # ==========================
 
 class LoginUsuarioView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # Permite login sin estar autenticado
 
     def post(self, request):
         nombre_usuario = request.data.get("username")
@@ -87,22 +87,40 @@ class LoginUsuarioView(APIView):
 
 
 # ==========================
-#         REPORTES
+#         REPORTES - CON AUTENTICACIÓN REQUERIDA
 # ==========================
 
 class ReporteCreateView(ListCreateAPIView):
     queryset = Reporte.objects.all().order_by('-fecha_creacion')
     serializer_class = ReporteSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
     parser_classes = [MultiPartParser, FormParser]
+
+    def perform_create(self, serializer):
+        # Asignar estado por defecto si no viene en el request
+        estado_default = Estado.objects.first()
+        
+        if not estado_default:
+            # Si no hay ningún estado, crear uno por defecto
+            estado_default = Estado.objects.create(nombre="Pendiente")
+        
+        serializer.save(estado=estado_default)
 
 
 class ReporteDeleteView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def delete(self, request, reporte_id):
         try:
             reporte = Reporte.objects.get(id=reporte_id)
+            
+            # Solo el dueño del reporte o admin puede eliminar
+            if reporte.usuario != request.user and request.user.rol != "admin":
+                return Response(
+                    {"error": "No tienes permiso para eliminar este reporte"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
             reporte.delete()
             return Response(
                 {"mensaje": "Reporte eliminado exitosamente"},
@@ -116,10 +134,17 @@ class ReporteDeleteView(APIView):
 
 
 class ReporteUpdateView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def put(self, request, reporte_id):
         reporte = get_object_or_404(Reporte, id=reporte_id)
+        
+        # Solo el dueño del reporte o admin puede editar
+        if reporte.usuario != request.user and request.user.rol != "admin":
+            return Response(
+                {"error": "No tienes permiso para editar este reporte"},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         serializer = ReporteSerializer(reporte, data=request.data, partial=True)
 
@@ -137,34 +162,27 @@ class ReporteUpdateView(APIView):
 class EstadoCreateView(ListCreateAPIView):
     queryset = Estado.objects.all()
     serializer_class = EstadoSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]  # Solo admin
 
 
 # ==========================
-#       COMENTARIOS
+#       COMENTARIOS - CON AUTENTICACIÓN REQUERIDA
 # ==========================
 
 class ComentarioCreateView(ListCreateAPIView):
     queryset = Comentario.objects.all().order_by('-fecha_creacion')
     serializer_class = ComentarioSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
 
 class ComentarioDeleteView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def delete(self, request, comentario_id):
         comentario = get_object_or_404(Comentario, id=comentario_id)
 
-        usuario_id = request.data.get('usuario_id') or request.query_params.get('usuario_id')
-
-        if not usuario_id:
-            return Response(
-                {"error": "Debes proporcionar el usuario_id"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if comentario.usuario.id != int(usuario_id):
+        # Solo el dueño del comentario o admin puede eliminar
+        if comentario.usuario != request.user and request.user.rol != "admin":
             return Response(
                 {"error": "No tienes permiso para eliminar este comentario"},
                 status=status.HTTP_403_FORBIDDEN
@@ -185,7 +203,7 @@ class ComentarioDeleteView(APIView):
 class ImagenReporteCreateView(ListCreateAPIView):
     queryset = ImagenReporte.objects.all()
     serializer_class = ImagenReporteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
     parser_classes = [MultiPartParser, FormParser]
 
 
@@ -196,7 +214,7 @@ class ImagenReporteCreateView(ListCreateAPIView):
 class RolCreateView(ListCreateAPIView):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    permission_classes = [IsAdminRole]
+    permission_classes = [IsAdminRole]  # Solo admin
 
 
 # ==========================
@@ -206,20 +224,29 @@ class RolCreateView(ListCreateAPIView):
 class ListUsersCreateView(ListCreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]  # Solo admin
 
 
 class UsuarioPorIdView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def get(self, request, id_usuario):
+        # Solo puede ver su propio perfil o admin puede ver cualquiera
+        if request.user.id != id_usuario and request.user.rol != "admin":
+            return Response(
+                {"error": "No tienes permiso para ver este perfil"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
         usuario = get_object_or_404(Usuario, id=id_usuario)
         serializer = UsuarioSerializer(usuario)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id_usuario):
         usuario = get_object_or_404(Usuario, id=id_usuario)
-        if request.user.id != id_usuario and not request.user.is_staff:
+        
+        # Solo puede editar su propio perfil o admin puede editar cualquiera
+        if request.user.id != id_usuario and request.user.rol != "admin":
             return Response(
                 {"error": "No tienes permiso"},
                 status=status.HTTP_403_FORBIDDEN,
@@ -233,22 +260,29 @@ class UsuarioPorIdView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UsuarioIDViewDos(ListCreateAPIView):
- serializer_class = UsuarioSerializer
- 
- def get_queryset(self):
-  id_usuario = self.kwargs["id_usuario"]
-  return Usuario.objects.filter(id=id_usuario)
+    serializer_class = UsuarioSerializer
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
+    
+    def get_queryset(self):
+        id_usuario = self.kwargs["id_usuario"]
+        
+        # Solo puede ver su propio perfil o admin puede ver cualquiera
+        if self.request.user.id != id_usuario and self.request.user.rol != "admin":
+            return Usuario.objects.none()
+        
+        return Usuario.objects.filter(id=id_usuario)
 
 
 class UsuarioDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def delete(self, request, id_usuario):
         usuario = get_object_or_404(Usuario, id=id_usuario)
 
-        # Solo el dueño de la cuenta o un admin/staff puede eliminar
-        if request.user.id != usuario.id and not request.user.is_staff:
+        # Solo el dueño de la cuenta o admin puede eliminar
+        if request.user.id != usuario.id and request.user.rol != "admin":
             return Response(
                 {"error": "No tienes permiso para eliminar este usuario"},
                 status=status.HTTP_403_FORBIDDEN,
@@ -258,8 +292,9 @@ class UsuarioDeleteView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class CambiarContrasenaView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def post(self, request):
         new_password = request.data.get("new_password")
@@ -277,7 +312,7 @@ class CambiarContrasenaView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
-        # Cambiar contraseña sin verificar la actual
+        # Cambiar contraseña del usuario autenticado
         request.user.set_password(new_password)
         request.user.save()
         
@@ -286,7 +321,10 @@ class CambiarContrasenaView(APIView):
             status=status.HTTP_200_OK
         )
 
+
 class UsuarioActualizarView(APIView):
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
+    
     def patch(self, request):
         id_usuario = request.data.get("id_usuario")
         imagen_perfil = request.data.get("img_perfil")
@@ -295,6 +333,13 @@ class UsuarioActualizarView(APIView):
             return Response(
                 {"error": "Debes proporcionar el id_usuario"},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Solo puede actualizar su propio perfil o admin puede actualizar cualquiera
+        if request.user.id != int(id_usuario) and request.user.rol != "admin":
+            return Response(
+                {"error": "No tienes permiso para actualizar este perfil"},
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
@@ -320,15 +365,23 @@ class UsuarioActualizarView(APIView):
 
 
 class UsuarioFotoView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # ✅ REQUIERE LOGIN
 
     def get(self, request, id_usuario):
+        # Solo puede ver foto de su propio perfil o admin puede ver cualquiera
+        if request.user.id != id_usuario and request.user.rol != "admin":
+            return Response(
+                {"error": "No tienes permiso"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
         usuario = get_object_or_404(Usuario, id=id_usuario)
         foto = getattr(usuario, "imagen_perfil", None)
         return Response({"foto": foto}, status=status.HTTP_200_OK)
 
+
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])  # ✅ REQUIERE LOGIN
 def obtener_usuario_actual(request):
     serializer = UsuarioSerializer(request.user)
     return Response(serializer.data)

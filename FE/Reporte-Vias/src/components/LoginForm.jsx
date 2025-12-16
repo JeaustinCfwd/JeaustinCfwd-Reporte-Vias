@@ -29,8 +29,12 @@ const LoginForm = () => {
       if (peticion.access && peticion.refresh) {
         // Login exitoso con JWT tokens
         login({ username });
-        // El token ya se guarda en la función loginUser
-        // Obtener el ID del usuario desde el token decodificado o hacer una petición adicional
+        
+        // ✅ Los tokens ya se guardan en la función loginUser como:
+        // - access_token
+        // - refresh_token
+        
+        // Obtener el ID del usuario desde el token decodificado
         try {
           const tokenPayload = JSON.parse(atob(peticion.access.split('.')[1]));
           localStorage.setItem("id_usuario", tokenPayload.user_id);
@@ -53,7 +57,7 @@ const LoginForm = () => {
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
-      setError("Error al conectar con el servidor");
+      setError(error.message || "Error al conectar con el servidor");
     } finally {
       setIsLoading(false);
     }
