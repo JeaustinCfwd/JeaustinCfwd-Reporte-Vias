@@ -577,7 +577,7 @@ const Hyperspeed = ({
         }
 
         if (this.options.isHyper) {
-          console.log(this.options.isHyper);
+          // Hyper mode enabled
         }
       }
 

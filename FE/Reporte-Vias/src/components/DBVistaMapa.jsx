@@ -57,8 +57,6 @@ const DBVistaMapa = ({ filteredReports, statsByState }) => {
       });
       const datos = await response.json()
 
-      console.log(datos);
-
       const filtroCantidadNuevos = datos.results.filter((dato) => dato.estado == 1)
       const filtroCantidadRevisiones = datos.results.filter((dato) => dato.estado == 2)
       const filtroCantidadAtendidos = datos.results.filter((dato) => dato.estado == 3)

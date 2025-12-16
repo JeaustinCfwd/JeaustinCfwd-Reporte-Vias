@@ -17,7 +17,6 @@ const PFFoto = ({ photoPreview, onPhotoChange, onRemovePhoto }) => {
         };
 
         const peticion = await patchData('actualizar-usuario/', cambiarFoto);
-        console.log('Foto actualizada:', peticion);
     };
 
     useEffect(() => {

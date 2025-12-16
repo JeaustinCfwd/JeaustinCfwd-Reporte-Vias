@@ -13,6 +13,8 @@ import Register from '../pages/Register';
 import ReportCreate from '../pages/ReportCreate';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
+import AdminDashboard from '../pages/AdminDashboard';
+import NotFound404 from '../pages/NotFound404';
 
 import PrivateRoute from './PrivateRoute';
 
@@ -24,6 +26,17 @@ const MainLayout = () => (
       <Outlet />
     </main>
     <Footer />
+  </div>
+);
+
+// Layout para página 404 (SIN Footer)
+const NotFoundLayout = () => (
+  <div className="flex flex-col min-h-screen">
+    <Navbar />
+    <main className="flex-1 main-content">
+      <Outlet />
+    </main>
+    {/* Footer eliminado para 404 */}
   </div>
 );
 
@@ -68,6 +81,20 @@ const router = createBrowserRouter(
       element: <ProfileLayout />,
       children: [
         { index: true, element: <PrivateRoute><Profile /></PrivateRoute> },
+      ],
+    },
+    {
+      path: '/admin-dashboard',
+      element: <DashboardLayout />,
+      children: [
+        { index: true, element: <PrivateRoute><AdminDashboard /></PrivateRoute> },
+      ],
+    },
+    {
+      path: '/404',
+      element: <NotFoundLayout />,
+      children: [
+        { index: true, element: <NotFound404 /> },
       ],
     },
     {

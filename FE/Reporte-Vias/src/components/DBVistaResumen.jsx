@@ -13,11 +13,6 @@ const DBVistaResumen = ({
   CHART_OPTIONS,
   reports
 }) => {
-  // Debug logs para verificar datos
-  console.log('=== DBVistaResumen DEBUG ===');
-  console.log('statsByState:', statsByState);
-  console.log('Claves en statsByState:', Object.keys(statsByState));
-  
   return (
     <div className="overview-content">
 
@@ -57,7 +52,6 @@ const DBVistaResumen = ({
           <div className="stat-card-value">
             {(() => {
               const keys = Object.keys(statsByState);
-              console.log('Buscando estado de revisión en:', keys);
               const revisionKeys = keys.filter(k => 
                 k.toLowerCase().includes('revis') || 
                 k.toLowerCase().includes('review') ||
@@ -67,7 +61,6 @@ const DBVistaResumen = ({
                 k.toLowerCase().includes('pending') ||
                 k.toLowerCase().includes('pendiente')
               );
-              console.log('Estados de revisión encontrados:', revisionKeys);
               return revisionKeys.length > 0 ? statsByState[revisionKeys[0]] : 0;
             })()}
           </div>

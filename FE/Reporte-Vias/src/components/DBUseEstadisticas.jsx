@@ -4,16 +4,8 @@ import { useMemo } from 'react';
 import { STATE_COLORS, CATEGORY_PALETTE } from './DBConstantes';
 
 export const useEstadisticas = (filteredReports, reports) => {
-    // Debug: Log para ver la estructura de los datos
-    console.log('=== DEBUG ESTADÍSTICAS ===');
-    console.log('filteredReports:', filteredReports);
-    console.log('reports:', reports);
-    console.log('Cantidad de reportes filtrados:', filteredReports.length);
-    console.log('Cantidad total de reportes:', reports.length);
-    
     // Si no hay datos reales, usar datos de prueba para que las gráficas muestren algo
     const useMockData = filteredReports.length === 0;
-    console.log('Usando datos de prueba:', useMockData);
     
     let dataToUse = filteredReports;
     
@@ -73,15 +65,7 @@ export const useEstadisticas = (filteredReports, reports) => {
     }
     
     if (dataToUse.length > 0) {
-        console.log('Estructura del primer reporte:', dataToUse[0]);
-        console.log('Campos disponibles:', Object.keys(dataToUse[0]));
-        
-        // Mostrar valores específicos para debugging
         const firstReport = dataToUse[0];
-        console.log('Valores del primer reporte:');
-        console.log('- Estado:', firstReport.estado_nombre || firstReport.state || firstReport.estado || firstReport.status);
-        console.log('- Categoría:', firstReport.category || firstReport.categoria || firstReport.tipo);
-        console.log('- Fecha:', firstReport.fecha_creacion || firstReport.timestamp || firstReport.fecha || firstReport.date || firstReport.created_at);
     }
     
     // Estadísticas por estado
@@ -115,11 +99,6 @@ export const useEstadisticas = (filteredReports, reports) => {
         });
         return Array.from(cats);
     }, [dataToUse]);
-
-    // Debug logs
-    console.log('statsByState:', statsByState);
-    console.log('statsByCategory:', statsByCategory);
-    console.log('categories:', categories);
 
     // Datos para gráfico de estados (dinámico)
     const stateData = useMemo(() => {
@@ -186,8 +165,6 @@ export const useEstadisticas = (filteredReports, reports) => {
                 return reportDate === date;
             }).length;
         });
-
-        console.log('Timeline counts:', counts);
 
         return {
             labels: last7Days.map(d => new Date(d).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })),

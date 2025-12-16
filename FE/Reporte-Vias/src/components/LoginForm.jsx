@@ -47,7 +47,7 @@ const LoginForm = () => {
             localStorage.setItem("id_usuario", userData.id);
           }
         }
-        navigate("/dashboard");
+        navigate("/home");
       } else {
         setError("Error en el inicio de sesión: No se recibieron tokens");
       }

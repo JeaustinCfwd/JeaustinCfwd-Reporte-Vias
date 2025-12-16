@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   LayoutDashboard,
   BarChart3,
@@ -8,8 +7,10 @@ import {
   Download,
   User,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Settings
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const DBSidebar = ({
   sidebarOpen,
@@ -19,12 +20,23 @@ const DBSidebar = ({
   exportToCSV,
 }) => {
   const [openMenus, setOpenMenus] = useState({});
+  const navigate = useNavigate();
 
   const toggleMenu = (menu) => {
     setOpenMenus((prev) => ({
       ...prev,
       [menu]: !prev[menu],
     }));
+  };
+
+  const handleAdminAccess = () => {
+    const currentUser = localStorage.getItem('username') || 'guest';
+    
+    if (currentUser === 'Jeaustin') {
+      navigate('/admin-dashboard');
+    } else {
+      navigate('/yeti404');
+    }
   };
 
   const handleLogout = () => {
@@ -47,7 +59,6 @@ const DBSidebar = ({
         <li>
           <a
             onClick={() => {
-              console.log('Cambiando a overview, activeView actual:', activeView);
               setActiveView("overview");
             }}
           >
@@ -64,7 +75,6 @@ const DBSidebar = ({
           <div className="iocn-link">
             <a
               onClick={() => {
-                console.log('Cambiando a list, activeView actual:', activeView);
                 setActiveView("list");
               }}
             >
@@ -90,7 +100,6 @@ const DBSidebar = ({
         <li>
           <a
             onClick={() => {
-              console.log('Cambiando a map, activeView actual:', activeView);
               setActiveView("map");
             }}
           >

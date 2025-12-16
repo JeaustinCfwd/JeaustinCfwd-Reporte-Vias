@@ -1,6 +1,8 @@
-import { ToggleRight, CircleChevronUp } from 'lucide-react';
+import { ToggleRight, CircleChevronUp, Settings, HatGlasses } from 'lucide-react';
 import React, { useState } from 'react';
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const categories = [
  { value: 'bache', label: 'Bache' },
@@ -24,6 +26,9 @@ const DBVistaLista = ({
  handleDeleteReport,
  handleUpdateReport
 }) => {
+ const navigate = useNavigate();
+ const { esAdmin } = useAuth();
+ console.log('DBVistaLista - esAdmin:', esAdmin);
  const [editando, setEditando] = useState({ id: null, campo: null });
  const [valorEditado, setValorEditado] = useState('');
  const [reportesExpandidos, setReportesExpandidos] = useState(new Set());
@@ -78,6 +83,26 @@ const DBVistaLista = ({
   return estados[estadoNombre] || 1;
  };
 
+ const handleAdminAccess = () => {
+  console.log('HatGlasses clickeado!');
+  
+  // Obtener usuario directamente de localStorage
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : {};
+  const currentUser = user.username || 'guest';
+  
+  console.log('Usuario desde localStorage:', user);
+  console.log('Username actual:', currentUser);
+  
+  if (currentUser.trim().toLowerCase() === 'jeaustin') {
+    console.log('Es Jeaustin, redirigiendo a admin-dashboard...');
+    navigate('/admin-dashboard');
+  } else {
+    console.log('No es Jeaustin, redirigiendo a /404...');
+    navigate('/404');
+  }
+};
+
  return (
   <div className="list-content">
    <div className="reports-table-container">
@@ -88,7 +113,15 @@ const DBVistaLista = ({
        <th>ID</th>
        <th>Título</th>
        <th>Descripción</th>
-       <th>Estado</th>
+       <th>
+        Estado
+        <HatGlasses
+          size={16}
+          onClick={handleAdminAccess}
+          style={{ cursor: 'pointer', marginLeft: '8px' }}
+          title="Panel Admin"
+        />
+       </th>
        <th>Categoría</th>
        <th>Fecha</th>
        <th>Acciones</th>
@@ -151,15 +184,18 @@ const DBVistaLista = ({
 
          {/* Estado con dropdown */}
          <td>
-          <select
-           value={getEstadoNombre(report.estado)}
-           onChange={(e) => handleUpdateState(report.id, getEstadoId(e.target.value))}
-           className="state-select"
-          >
-           <option value="nuevo">Nuevo</option>
-           <option value="en_revision">En Revisión</option>
-           <option value="atendido">Atendido</option>
-          </select>
+          <div className="estado-container">
+           <select
+            value={getEstadoNombre(report.estado)}
+            onChange={(e) => handleUpdateState(report.id, getEstadoId(e.target.value))}
+            className="state-select"
+            disabled={!esAdmin}
+           >
+            <option value="nuevo">Nuevo</option>
+            <option value="en_revision">En Revisión</option>
+            <option value="atendido">Atendido</option>
+           </select>
+          </div>
          </td>
 
          {/* Categoría editable */}

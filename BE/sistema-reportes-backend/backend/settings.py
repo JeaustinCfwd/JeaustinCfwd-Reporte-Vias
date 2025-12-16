@@ -61,14 +61,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    
+
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    
+
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    
+
     # Formato de respuestas
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -78,25 +78,25 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     # Duración del token de acceso (1 hora)
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-    
+
     # Duración del token de refresco (7 días)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    
+
     # Rotar refresh tokens (más seguro)
     'ROTATE_REFRESH_TOKENS': True,
-    
+
     'BLACKLIST_AFTER_ROTATION': True,
-    
+
     # Algoritmo de encriptación
     'ALGORITHM': 'HS256',
-    
+
     # Clave para firmar tokens
     'SIGNING_KEY': SECRET_KEY,
-    
+
     # Nombre del header de autorización
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    
+
     # Claims del token
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
@@ -133,8 +133,12 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='3306'),
+        'TEST': {
+            'NAME': 'test_sistema_reportes',  
+        },
     }
 }
+
 
 # Validación de contraseñas
 AUTH_PASSWORD_VALIDATORS = [
