@@ -23,16 +23,20 @@ export const usePFFormulario = (usuarioActual) => {
     // ================================
     useEffect(() => {
         async function cargarUsuario() {
-            // Usaremos 'usuarioActual' si existe, si no, intentaremos desde localStorage.
-            const userSource = (usuarioActual && usuarioActual.id)
-                ? usuarioActual
-                : JSON.parse(localStorage.getItem('user') || 'null');
+            const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+            let userSource = null;
+            if (usuarioActual && usuarioActual.id) {
+                userSource = storedUser && storedUser.id === usuarioActual.id
+                    ? { ...usuarioActual, ...storedUser }
+                    : usuarioActual;
+            } else {
+                userSource = storedUser;
+            }
 
             if (userSource) {
                 setUser(userSource);
 
-                // 1. SOLUCIÓN: Asegurarnos de que ningún valor sea null o undefined.
-                // Si un valor no existe en userSource, el `|| ''` lo inicializa como string vacío.
                 setFormData({
                     username: userSource.username || '',
                     email: userSource.email || '',
@@ -43,7 +47,6 @@ export const usePFFormulario = (usuarioActual) => {
                     gender: userSource.gender || ''
                 });
 
-                // Cargar la foto del perfil si no se ha cargado antes.
                 if (userSource.id && !photoPreview) {
                     const userPhoto = await getUserPhoto(userSource.id);
                     setPhotoPreview(userPhoto || '');
@@ -52,7 +55,7 @@ export const usePFFormulario = (usuarioActual) => {
         }
 
         cargarUsuario();
-    }, [usuarioActual]); // El efecto se ejecuta cuando 'usuarioActual' cambia.
+    }, [usuarioActual, photoPreview]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

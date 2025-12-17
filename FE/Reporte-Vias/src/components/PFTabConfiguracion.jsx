@@ -35,7 +35,8 @@ const generateUserCSV = (userData) => {
 
 // Función para descargar el CSV
 const downloadCSV = (csvContent, filename) => {
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     
@@ -60,8 +61,16 @@ export const PFTabConfiguracion = ({ usuarioActual }) => {
  });
 
  useEffect(() => {
-    // Usar los datos completos de usuarioActual si existen, si no, localStorage
-    const userData = usuarioActual && usuarioActual.id ? usuarioActual : JSON.parse(localStorage.getItem('user') || 'null');
+    const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+    let userData = null;
+    if (usuarioActual && usuarioActual.id) {
+        userData = storedUser && storedUser.id === usuarioActual.id
+            ? { ...usuarioActual, ...storedUser }
+            : usuarioActual;
+    } else {
+        userData = storedUser;
+    }
     
     if (userData) {
         setUser(userData);
