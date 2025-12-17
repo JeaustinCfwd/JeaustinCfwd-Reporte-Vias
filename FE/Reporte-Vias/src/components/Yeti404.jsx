@@ -42,79 +42,112 @@ const Yeti404 = () => {
         const lettersFrontDark = "#051d2c";
         const lettersStrokeLight = "#265D85";
         const lettersStrokeDark = "#031219";
-
         const mouthShape1 = "M149 115.7c-4.6 3.7-6.6 9.8-5 15.6.1.5.3 1.1.5 1.6.6 1.5 2.4 2.3 3.9 1.7l11.2-4.4 11.2-4.4c1.5-.6 2.3-2.4 1.7-3.9-.2-.5-.4-1-.7-1.5-2.8-5.2-8.4-8.3-14.1-7.9-3.7.2-5.9 1.1-8.7 3.2z";
         const mouthShape2 = "M161.2 118.9c0 2.2-1.8 4-4 4s-4-1.8-4-4c0-1 .4-2 1.1-2.7.7-.8 1.8-1.3 2.9-1.3 2.2 0 4 1.7 4 4z";
         const mouthShape4 = "M149.2 116.7c-4.6 3.7-6.7 8.8-5.2 14.6.1.3.1.5.2.8.6 1.5 2.4 2.3 3.9 1.7l11.2-4.4 11.2-4.4c1.5-.6 2.3-2.4 1.7-3.9-.1-.3-.2-.5-.4-.7-2.8-5.2-8.2-7.2-14-6.9-3.6.2-5.9 1.1-8.6 3.2z";
 
+        // Funciones auxiliares para evitar advertencias de GSAP target not found
+        const safeGsapSet = (selector, props) => {
+          if (Array.isArray(selector)) {
+            const filtered = selector.filter(sel =>
+              sel.startsWith('#')
+                ? document.querySelector(sel)
+                : document.querySelectorAll(sel).length > 0
+            );
+            if (filtered.length > 0) gsap.set(filtered, props);
+          } else {
+            if (selector.startsWith('#')) {
+              if (document.querySelector(selector)) gsap.set(selector, props);
+            } else {
+              if (document.querySelectorAll(selector).length > 0) gsap.set(selector, props);
+            }
+          }
+        };
+
+        const safeGsapTo = (selector, props, position) => {
+          if (Array.isArray(selector)) {
+            const filtered = selector.filter(sel =>
+              sel.startsWith('#')
+                ? document.querySelector(sel)
+                : document.querySelectorAll(sel).length > 0
+            );
+            if (filtered.length > 0) gsap.to(filtered, props, position);
+          } else {
+            if (selector.startsWith('#')) {
+              if (document.querySelector(selector)) gsap.to(selector, props, position);
+            } else {
+              if (document.querySelectorAll(selector).length > 0) gsap.to(selector, props, position);
+            }
+          }
+        };
+
         const goDark = () => {
-          gsap.set('#light', { visibility: "hidden" });
-          gsap.set('.lettersSide', { fill: lettersSideDark, stroke: lettersStrokeDark });
-          gsap.set('.lettersFront', { fill: lettersFrontDark, stroke: lettersStrokeDark });
-          gsap.set('#lettersShadow', { opacity: 0.05 });
-          gsap.set('.hlFur', { fill: furDarkColor });
-          gsap.set('.hlSkin', { fill: skinDarkColor });
-          gsap.set('#four04', { visibility: 'visible' });
+          safeGsapSet('#light', { visibility: "hidden" });
+          safeGsapSet('.lettersSide', { fill: lettersSideDark, stroke: lettersStrokeDark });
+          safeGsapSet('.lettersFront', { fill: lettersFrontDark, stroke: lettersStrokeDark });
+          safeGsapSet('#lettersShadow', { opacity: 0.05 });
+          safeGsapSet('.hlFur', { fill: furDarkColor });
+          safeGsapSet('.hlSkin', { fill: skinDarkColor });
+          safeGsapSet('#four04', { visibility: 'visible' });
         };
 
         const goLight = () => {
-          gsap.set('#light', { visibility: "visible" });
-          gsap.set('.lettersSide', { fill: lettersSideLight, stroke: lettersStrokeLight });
-          gsap.set('.lettersFront', { fill: lettersFrontLight, stroke: lettersStrokeLight });
-          gsap.set('#lettersShadow', { opacity: 0.2 });
-          gsap.set('.hlFur', { fill: furLightColor });
-          gsap.set('.hlSkin', { fill: skinLightColor });
-          gsap.set('#four04', { visibility: 'visible' });
+          safeGsapSet('#light', { visibility: "visible" });
+          safeGsapSet('.lettersSide', { fill: lettersSideLight, stroke: lettersStrokeLight });
+          safeGsapSet('.lettersFront', { fill: lettersFrontLight, stroke: lettersStrokeLight });
+          safeGsapSet('#lettersShadow', { opacity: 0.2 });
+          safeGsapSet('.hlFur', { fill: furLightColor });
+          safeGsapSet('.hlSkin', { fill: skinLightColor });
+          safeGsapSet('#four04', { visibility: 'visible' });
         };
 
         // Timelines
         chatterTLRef.current = gsap.timeline({ paused: true, repeat: -1, yoyo: true });
         chatterTLRef.current
-          .to(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape4, duration: 0.1 }, "0")
-          .to('#chin', { y: 1.5, duration: 0.1 }, "0");
+          .add(() => safeGsapTo(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape4, duration: 0.1 }, "0"), "0")
+          .add(() => safeGsapTo('#chin', { y: 1.5, duration: 0.1 }, "0"), "0");
 
         yetiTLRef.current = gsap.timeline({ paused: true, repeat: -1 });
         yetiTLRef.current
           .add(() => chatterTLRef.current.play(), "0")
-          // Parpadeos
-          .to(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "2.5")
-          .to(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "2.575")
-          .to(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "2.65")
-          .to(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "2.725")
-          .to(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "2.8")
-          .to(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "2.875")
+          // Parpadeos y animaciones usando safeGsapTo
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "2.5"), "2.5")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "2.575"), "2.575")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "2.65"), "2.65")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "2.725"), "2.725")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "2.8"), "2.8")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "2.875"), "2.875")
           // Luces
           .add(goLight, "3.2")
-          .add(goDark, "3.5") // Ralentizado para un parpadeo más suave
-          .add(goLight, "3.8") // Ralentizado para un parpadeo más suave
+          .add(goDark, "3.5")
+          .add(goLight, "3.8")
           .add(() => {
             chatterTLRef.current.pause();
-            gsap.to(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape1, duration: 0.1 });
+            safeGsapTo(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape1, duration: 0.1 });
           }, "3.2")
-          .to(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape2, duration: 0.25 }, "5")
-          .to('#tooth1', { y: -5, duration: 0.1 }, "5")
-          .to('#armR', { x: 10, y: 30, rotation: 10, transformOrigin: "bottom center", duration: 0.5 }, "4")
-          .to(['#eyeL', '#eyeR'], { scaleX: 1.4, scaleY: 1.4, transformOrigin: "center center", duration: 0.25 }, "5")
+          .add(() => safeGsapTo(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape2, duration: 0.25 }, "5"), "5")
+          .add(() => safeGsapTo('#tooth1', { y: -5, duration: 0.1 }, "5"), "5")
+          .add(() => safeGsapTo('#armR', { x: 10, y: 30, rotation: 10, transformOrigin: "bottom center", duration: 0.5 }, "4"), "4")
+          .add(() => safeGsapTo(['#eyeL', '#eyeR'], { scaleX: 1.4, scaleY: 1.4, transformOrigin: "center center", duration: 0.25 }, "5"), "5")
           // Más luces
           .add(goDark, "8")
-          .add(goLight, "8.5") // Simplificado a un solo parpadeo
-          .add(goDark, "9")   // Apagado antes de la siguiente animación
-          .to(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape1, duration: 0.25 }, "9")
-          .to('#tooth1', { y: 0, duration: 0.1 }, "9")
-          .to('#armR', { x: 0, y: 0, rotation: 0, transformOrigin: "bottom center", duration: 0.5 }, "9")
-          .to(['#eyeL', '#eyeR'], { scaleX: 1, scaleY: 1, transformOrigin: "center center", duration: 0.25 }, "9")
+          .add(goLight, "8.5")
+          .add(goDark, "9")
+          .add(() => safeGsapTo(['#mouthBG', '#mouthPath', '#mouthOutline'], { morphSVG: mouthShape1, duration: 0.25 }, "9"), "9")
+          .add(() => safeGsapTo('#tooth1', { y: 0, duration: 0.1 }, "9"), "9")
+          .add(() => safeGsapTo('#armR', { x: 0, y: 0, rotation: 0, transformOrigin: "bottom center", duration: 0.5 }, "9"), "9")
+          .add(() => safeGsapTo(['#eyeL', '#eyeR'], { scaleX: 1, scaleY: 1, transformOrigin: "center center", duration: 0.25 }, "9"), "9")
           .add(() => chatterTLRef.current.play(), "9.25")
           // Último parpadeo
-          .to(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "11.5")
-          .to(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "11.575")
-          .to(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "11.65")
-          .to(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "11.725")
-          .to(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "11.8")
-          .to(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "11.875");
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "11.5"), "11.5")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "11.575"), "11.575")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "11.65"), "11.65")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "11.725"), "11.725")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 7, duration: 0.075 }, "11.8"), "11.8")
+          .add(() => safeGsapTo(['#armL', '#flashlightFront'], { x: 0, duration: 0.075 }, "11.875"), "11.875");
 
         goDark();
         yetiTLRef.current.play();
-
       } catch (error) {
         console.error('Error animaciones:', error);
       }
@@ -126,15 +159,12 @@ const Yeti404 = () => {
       if (yetiTLRef.current) yetiTLRef.current.kill();
       if (chatterTLRef.current) chatterTLRef.current.kill();
     };
-
   }, []);
 
   return (
     <div className="contenedor-yeti404">
-
       {/* Contenedor visual para agrupar Yeti y Luz */}
       <div className="yeti-visual">
-
         {/* SVG del Yeti */}
         <svg id="yetiSVG" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 600 470">
           <linearGradient id="flashlightGrad" x1="126.5842" x2="90.5842" y1="176.5625" y2="213.5625" gradientUnits="userSpaceOnUse">
@@ -221,7 +251,6 @@ const Yeti404 = () => {
               <path fill="#67B1E0" d="M219.6 160.1c-1.5-6.2-3.2-13.2-5.1-21.1-2.8 2.1-5.6 4.5-8.3 7.4-2-1.8-4.1-3.7-6.2-5.7-2.4 3.6-4.6 7.7-6.7 12.1-3-1.9-6-3.9-9.2-6-1.4 2.9-2.7 6-4 9.2-4.7-.6-9.4-1.1-14.2-1.7 5.4 8 10.3 15.2 14.7 21.5" />
               <path fill="none" stroke="#265D85" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M219.6 160.1c-1.5-6.2-3.2-13.2-5.1-21.1-2.8 2.1-5.6 4.5-8.3 7.4-2-1.8-4.1-3.7-6.2-5.7-2.4 3.6-4.6 7.7-6.7 12.1-3-1.9-6-3.9-9.2-6-1.4 2.9-2.7 6-4 9.2-4.7-.6-9.4-1.1-14.2-1.7 5.4 8 10.3 15.2 14.7 21.5" />
             </g>
-
             <g id="armL">
               <path fill="#67B1E0" d="M50.9 156.7c-12 35.8-7.8 69.6 8.3 101.9 12.1 22.7 37 14.1 39.5-11.8v-65l-47.8-25.1z" />
               <path fill="none" stroke="#265D85" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M50.9 156.7c-12 35.8-7.8 69.6 8.3 101.9 10 22.3 37.3 15.1 39.5-11.8v-65l-47.8-25.1z" />
@@ -244,8 +273,6 @@ const Yeti404 = () => {
               <path d="M197.2 161.5l-12.6-14.2c-1.8-2.1-1.6-5.2.4-7.1 2.1-1.8 5.2-1.6 7.1.4l15.9 17.9-3.7 3.3c-2.1 2-5.2 1.8-7.1-.3z" />
             </g>
           </g>
-
-
           <g id="blanket">
             <path d="M1.2 271.4C6.6 262 13 253.1 22.4 248c10.3-5.5 22.5-5.5 33.7-8.8 21.8-6.5 37.5-25.2 50.3-43.9 5.5-8 10.9-16.4 18.3-22.7 13.1-11.2 31.3-14.8 48.6-15 4.9 0 9.9.1 14.5-1.7 3.6-1.5 6.5-4.1 9.3-6.9 10.1-10.2 17.9-22.8 29-32 7.9-6.6 18.7-14.7 29.5-13.7 13.9 1.2 25 5.8 38.5-1.5 28.1-15.2 27.8-60.6 56.2-75.1 16.2-8.3 36.9-3.6 52.6-12.7 5.4-3.2 9.8-7.7 13.9-12.5h128.5l-350.8 209L1.3 363l-.1-91.6z" opacity=".1" />
             <path fill="#09334F" d="M0 281.6c5.3-9.2 11.5-17.9 20.7-22.8 10.3-5.5 22.5-5.5 33.7-8.8 21.8-6.5 37.5-25.2 50.3-43.9 5.5-8 10.9-16.4 18.3-22.7 13.1-11.2 31.3-14.8 48.6-15 4.9 0 9.9.1 14.5-1.7 3.6-1.5 6.5-4.1 9.3-6.9 10.1-10.2 17.9-22.8 29-32 7.9-6.6 18.7-14.7 29.5-13.7 13.9 1.2 25 5.8 38.5-1.5 28.1-15.2 27.8-60.6 56.2-75.1 16.2-8.3 36.9-3.6 52.6-12.7C411 19.1 417.1 8.4 424.9.3H700v570H0V281.6z" />
@@ -258,9 +285,6 @@ const Yeti404 = () => {
             <path d="M255.9 114.7S349 145.6 412 176c2.1 1 4.6.6 6.2-1 2.8-2.7 1.9-7.5-1.7-9-23.3-9.6-94.3-38.6-131.1-50.4-.1.1-10.2 1.9-29.5-.9z" opacity=".03" />
             <path d="M356.6 34.9l152.1 49.3c2.2.7 4.5.6 6.7-.2 8.7-3.4 8.2-15.9-.7-18.6l-121-36.8-37.1 6.3z" opacity=".03" />
           </g>
-
-
-
           <g id="flashlightFront">
             <path fill="#1A1A1A" d="M83.9 181.4l4.6 26.4 34.6-33.6-24.5-6.2c-8.9-2.6-16.6 3.9-14.7 13.4z" />
             <path fill="#333" d="M91.9 167.8l20.5 7.4-.5 1.2-21.4-8.2c.5-.2 1-.3 1.4-.4z" />
@@ -270,16 +294,16 @@ const Yeti404 = () => {
           </g>
         </svg>
 
-        {/* SVG de la Luz (sin estilos inline que molesten) */}
+        {/* SVG de la Luz */}
         <svg id="lightSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 470">
           <filter id="white-glow">
-            <feFlood result="flood" floodColor="#ffffff" floodOpacity=".6"></feFlood>
-            <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
-            <feMorphology in="mask" result="dilated" operator="dilate" radius="3"></feMorphology>
-            <feGaussianBlur in="dilated" result="blurred" stdDeviation="8"></feGaussianBlur>
+            <feFlood result="flood" floodColor="#ffffff" floodOpacity=".6" />
+            <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in" />
+            <feMorphology in="mask" result="dilated" operator="dilate" radius="3" />
+            <feGaussianBlur in="dilated" result="blurred" stdDeviation="8" />
             <feMerge>
-              <feMergeNode in="blurred"></feMergeNode>
-              <feMergeNode in="SourceGraphic"></feMergeNode>
+              <feMergeNode in="blurred" />
+              <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
           <g id="light" style={{ visibility: 'hidden' }} transform="translate(122.2, 177.4)">
@@ -300,15 +324,13 @@ const Yeti404 = () => {
             <path className="lettersFront" stroke="#265D85" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2.5" fill="#67B1E0" d="M543.3 453.7l20.1 2.9-6 38.6-20-2.8-6.5 42.1-47.4-6.5 6.5-42.3-81.1-11.4 5.4-36.2 82.2-102.8 63.8 9.9-17 108.5zm-37.7-62.8c.2-1 .4-1.9.6-2.8l.6-2.7c.2-.9.4-1.7.6-2.6.2-.8.4-1.7.5-2.5l-1.2-.2c-.8 1.4-1.6 2.7-2.5 4.1s-1.7 2.7-2.5 4c-.8 1.3-1.7 2.7-2.5 4-.9 1.3-1.7 2.6-2.6 4-.9 1.3-1.7 2.6-2.6 3.9-.9 1.3-1.8 2.6-2.7 4s-1.8 2.7-2.7 4-1.8 2.7-2.7 4L463.6 442l32.3 4.7 3.3-21.6c.1-.8.3-1.6.4-2.5.1-.8.3-1.7.4-2.6.1-.9.3-1.8.5-2.7.2-.9.3-1.9.5-2.9s.4-1.9.5-2.9c.2-1 .4-2 .6-2.9l.6-3 .6-3 .6-3 .6-3c.2-1 .4-2 .6-2.9.1-.8.3-1.8.5-2.8" />
           </g>
         </svg>
-
       </div>
 
-      {/* Contenido de texto, ahora hermano del contenedor visual */}
+      {/* Contenido de texto */}
       <div className="contenido">
         <h3>¿Hola?? ¿Hay alguien ahí?!?</h3>
         <p>Sabemos que da miedo, pero la página que intentas encontrar no existe. Quizás solo fue un mal sueño de <span>enlace</span>?</p>
       </div>
-
     </div>
   );
 };

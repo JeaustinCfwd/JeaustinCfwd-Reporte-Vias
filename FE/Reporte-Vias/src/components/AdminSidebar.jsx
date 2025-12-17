@@ -7,7 +7,7 @@ import {
   LogOut 
 } from 'lucide-react';
 
-export const AdminSidebar = ({ vistaActiva, setVistaActiva }) => {
+export const AdminSidebar = ({ activeView, setActiveView, onLogout }) => {
   const menuItems = [
     {
       id: 'reportes',
@@ -31,49 +31,42 @@ export const AdminSidebar = ({ vistaActiva, setVistaActiva }) => {
     }
   ];
 
-  const handleLogout = () => {
-    import('../services/fetch').then(({ logout }) => {
-      logout();
-      window.location.href = '/login';
-    });
-  };
-
   return (
-    <aside className="sidebar">
-      <div className="logo-details">
-        <BarChart3 size={24} />
-        <span className="logo_name">Panel Admin</span>
+    <aside className="admin-sidebar">
+      <div className="admin-sidebar-logo">
+        <div className="admin-sidebar-logo-icon">
+          <BarChart3 size={24} />
+        </div>
+        <span className="admin-sidebar-logo-text">Panel Admin</span>
       </div>
 
-      <ul className="nav-links">
+      <ul className="admin-sidebar-nav">
         {menuItems.map(item => (
-          <li key={item.id}>
+          <li key={item.id} className="admin-sidebar-nav-item">
             <a
               href="#"
-              className={vistaActiva === item.id ? 'active' : ''}
+              className={`admin-sidebar-nav-link ${activeView === item.id ? 'active' : ''}`}
               onClick={(e) => {
                 e.preventDefault();
-                setVistaActiva(item.id);
+                setActiveView(item.id);
               }}
             >
-              <item.icon size={20} />
-              <span className="link_name">{item.label}</span>
+              <item.icon size={20} className="admin-sidebar-nav-icon" />
+              <span className="admin-sidebar-nav-text">{item.label}</span>
             </a>
-            <ul className="sub-menu blank">
-              <li><a className="link_name">{item.label}</a></li>
-            </ul>
           </li>
         ))}
       </ul>
 
-      <div className="profile-details">
-        <div className="profile-content">
-          <LogOut
-            size={20}
-            onClick={handleLogout}
-            className="logout-cursor"
-          />
-        </div>
+      <div className="admin-sidebar-profile">
+        <a href="#" className="admin-sidebar-profile-link" onClick={(e) => { e.preventDefault(); onLogout(); }}>
+          <div className="admin-sidebar-profile-avatar">
+            <LogOut size={20} />
+          </div>
+          <div className="admin-sidebar-profile-info">
+            <div className="admin-sidebar-profile-name">Cerrar Sesión</div>
+          </div>
+        </a>
       </div>
     </aside>
   );

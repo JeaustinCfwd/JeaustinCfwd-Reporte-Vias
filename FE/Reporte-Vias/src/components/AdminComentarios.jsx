@@ -92,8 +92,8 @@ const AdminComentarios = () => {
 
   if (loading) {
     return (
-      <div className="overview-content">
-        <h2 className="dashboard-title">Moderación de Comentarios</h2>
+      <div className="admin-card">
+        <h2 className="admin-card-title">Moderación de Comentarios</h2>
         <div className="loading-spinner">
           <div className="spinner"></div>
           <p>Cargando comentarios...</p>
@@ -103,82 +103,80 @@ const AdminComentarios = () => {
   }
 
   return (
-    <div className="overview-content">
-      <div className="admin-header">
-        <h2 className="dashboard-title">Moderación de Comentarios</h2>
-        <p className="dashboard-subtitle">
+    <div className="admin-card">
+      <div className="admin-card-header">
+        <h2 className="admin-card-title">Moderación de Comentarios</h2>
+        <p className="admin-card-subtitle">
           Revisa y gestiona los comentarios de los reportes
         </p>
       </div>
 
       {/* Filtros y búsqueda */}
-      <div className="admin-filters">
-        <div className="search-container">
-          <Search size={20} className="search-icon" />
-          <input
-            type="text"
-            placeholder="Buscar comentarios..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
-        
-        <div className="filter-container">
-          <Filter size={20} className="filter-icon" />
-          <select
-            value={filterEstado}
-            onChange={(e) => setFilterEstado(e.target.value)}
-            className="filter-select"
-          >
-            <option value="todos">Todos los estados</option>
-            <option value="pendiente">Pendientes</option>
-            <option value="aprobado">Aprobados</option>
-            <option value="rechazado">Rechazados</option>
-          </select>
+      <div className="admin-form-group">
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ flex: 1 }}>
+            <label className="admin-form-label">Buscar comentarios</label>
+            <div style={{ position: 'relative' }}>
+              <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+              <input
+                type="text"
+                placeholder="Buscar comentarios..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="admin-form-input"
+                style={{ paddingLeft: '2.5rem' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label className="admin-form-label">Filtrar por estado</label>
+            <select
+              value={filterEstado}
+              onChange={(e) => setFilterEstado(e.target.value)}
+              className="admin-form-select"
+            >
+              <option value="todos">Todos los estados</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="aprobado">Aprobados</option>
+              <option value="rechazado">Rechazados</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Estadísticas */}
-      <div className="admin-stats">
-        <div className="stat-card">
-          <div className="stat-icon">
+      <div className="admin-stats-grid">
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
             <MessageSquare size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{comentarios.length}</h3>
-            <p>Total Comentarios</p>
-          </div>
+          <div className="admin-stat-value">{comentarios.length}</div>
+          <div className="admin-stat-label">Total Comentarios</div>
         </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon pending">
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
             <Clock size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{comentarios.filter(c => c.estado === 'pendiente').length}</h3>
-            <p>Pendientes</p>
-          </div>
+          <div className="admin-stat-value">{comentarios.filter(c => c.estado === 'pendiente').length}</div>
+          <div className="admin-stat-label">Pendientes</div>
         </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon approved">
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
             <CheckCircle size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{comentarios.filter(c => c.estado === 'aprobado').length}</h3>
-            <p>Aprobados</p>
-          </div>
+          <div className="admin-stat-value">{comentarios.filter(c => c.estado === 'aprobado').length}</div>
+          <div className="admin-stat-label">Aprobados</div>
         </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon rejected">
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
             <AlertCircle size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{comentarios.filter(c => c.estado === 'rechazado').length}</h3>
-            <p>Rechazados</p>
-          </div>
+          <div className="admin-stat-value">{comentarios.filter(c => c.estado === 'rechazado').length}</div>
+          <div className="admin-stat-label">Rechazados</div>
         </div>
       </div>
 

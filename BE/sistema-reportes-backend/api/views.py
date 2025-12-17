@@ -154,6 +154,9 @@ class ReporteUpdateView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self, request, reporte_id):
+        return self.put(request, reporte_id)
+
 
 # ==========================
 #         ESTADOS

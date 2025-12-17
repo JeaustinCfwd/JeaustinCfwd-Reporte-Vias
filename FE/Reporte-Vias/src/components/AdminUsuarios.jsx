@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Search, Filter, Edit, Trash2, Shield, User } from 'lucide-react';
+import { Users, Search, Filter, Edit, Trash2, Shield, User, Users2, CheckCircle } from 'lucide-react';
 
 const AdminUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -74,8 +74,8 @@ const AdminUsuarios = () => {
 
   if (loading) {
     return (
-      <div className="overview-content">
-        <h2 className="dashboard-title">Gestión de Usuarios</h2>
+      <div className="admin-card">
+        <h2 className="admin-card-title">Gestión de Usuarios</h2>
         <div className="loading-spinner">
           <div className="spinner"></div>
           <p>Cargando usuarios...</p>
@@ -85,81 +85,79 @@ const AdminUsuarios = () => {
   }
 
   return (
-    <div className="overview-content">
-      <div className="admin-header">
-        <h2 className="dashboard-title">Gestión de Usuarios</h2>
-        <p className="dashboard-subtitle">
+    <div className="admin-card">
+      <div className="admin-card-header">
+        <h2 className="admin-card-title">Gestión de Usuarios</h2>
+        <p className="admin-card-subtitle">
           Administra los usuarios del sistema y sus permisos
         </p>
       </div>
 
       {/* Filtros y búsqueda */}
-      <div className="admin-filters">
-        <div className="search-container">
-          <Search size={20} className="search-icon" />
-          <input
-            type="text"
-            placeholder="Buscar usuarios..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
-        
-        <div className="filter-container">
-          <Filter size={20} className="filter-icon" />
-          <select
-            value={filterRol}
-            onChange={(e) => setFilterRol(e.target.value)}
-            className="filter-select"
-          >
-            <option value="todos">Todos los roles</option>
-            <option value="admin">Administradores</option>
-            <option value="usuario">Usuarios</option>
-          </select>
+      <div className="admin-form-group">
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ flex: 1 }}>
+            <label className="admin-form-label">Buscar usuarios</label>
+            <div style={{ position: 'relative' }}>
+              <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+              <input
+                type="text"
+                placeholder="Buscar usuarios..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="admin-form-input"
+                style={{ paddingLeft: '2.5rem' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label className="admin-form-label">Filtrar por rol</label>
+            <select
+              value={filterRol}
+              onChange={(e) => setFilterRol(e.target.value)}
+              className="admin-form-select"
+            >
+              <option value="todos">Todos los roles</option>
+              <option value="admin">Administradores</option>
+              <option value="usuario">Usuarios</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Estadísticas */}
-      <div className="admin-stats">
-        <div className="stat-card">
-          <div className="stat-icon">
-            <Users size={24} />
+      <div className="admin-stats-grid">
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <Users2 size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{usuarios.length}</h3>
-            <p>Total Usuarios</p>
-          </div>
+          <div className="admin-stat-value">{usuarios.length}</div>
+          <div className="admin-stat-label">Total Usuarios</div>
         </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon admin">
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
             <Shield size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{usuarios.filter(u => u.rol === 'admin').length}</h3>
-            <p>Administradores</p>
-          </div>
+          <div className="admin-stat-value">{usuarios.filter(u => u.rol === 'admin').length}</div>
+          <div className="admin-stat-label">Administradores</div>
         </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon user">
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
             <User size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{usuarios.filter(u => u.rol === 'usuario').length}</h3>
-            <p>Usuarios Normales</p>
-          </div>
+          <div className="admin-stat-value">{usuarios.filter(u => u.rol === 'usuario').length}</div>
+          <div className="admin-stat-label">Usuarios Normales</div>
         </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon active">
-            <div className="status-dot active"></div>
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <CheckCircle size={24} />
           </div>
-          <div className="stat-content">
-            <h3>{usuarios.filter(u => u.estado === 'activo').length}</h3>
-            <p>Activos</p>
-          </div>
+          <div className="admin-stat-value">{usuarios.filter(u => u.estado === 'activo').length}</div>
+          <div className="admin-stat-label">Activos</div>
         </div>
       </div>
 
@@ -182,8 +180,18 @@ const AdminUsuarios = () => {
               <tr key={usuario.id}>
                 <td>{usuario.id}</td>
                 <td>
-                  <div className="user-info">
-                    <div className="user-avatar">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      background: 'var(--admin-primary)',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: 'bold'
+                    }}>
                       {usuario.username.charAt(0).toUpperCase()}
                     </div>
                     <span>{usuario.username}</span>
@@ -191,45 +199,52 @@ const AdminUsuarios = () => {
                 </td>
                 <td>{usuario.email}</td>
                 <td>
-                  <span className={`rol-badge ${usuario.rol}`}>
-                    {usuario.rol === 'admin' ? (
-                      <>
-                        <Shield size={14} />
-                        Administrador
-                      </>
-                    ) : (
-                      <>
-                        <User size={14} />
-                        Usuario
-                      </>
-                    )}
+                  <span style={{
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    background: usuario.rol === 'admin' ? 'var(--admin-primary)' : 'var(--admin-secondary)',
+                    color: 'white'
+                  }}>
+                    {usuario.rol === 'admin' ? 'Administrador' : 'Usuario'}
                   </span>
                 </td>
                 <td>
                   <button
                     onClick={() => handleToggleEstado(usuario.id)}
-                    className={`status-toggle ${usuario.estado}`}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      background: usuario.estado === 'activo' ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
+                      color: 'white',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
                   >
-                    <span className="status-dot"></span>
                     {usuario.estado}
                   </button>
                 </td>
                 <td>{new Date(usuario.fecha_creacion).toLocaleDateString('es-ES')}</td>
                 <td>
-                  <div className="action-buttons">
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       onClick={() => handleEditUser(usuario)}
-                      className="btn-edit"
+                      className="admin-btn"
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
                       title="Editar usuario"
                     >
-                      <Edit size={16} />
+                      <Edit size={14} />
                     </button>
                     <button
                       onClick={() => handleDeleteUser(usuario.id)}
-                      className="btn-delete"
+                      className="admin-btn admin-btn-primary"
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'var(--admin-secondary)' }}
                       title="Eliminar usuario"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </td>

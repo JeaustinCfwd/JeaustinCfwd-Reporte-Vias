@@ -79,12 +79,24 @@ export const usePFFormulario = (usuarioActual) => {
             const userId = localStorage.getItem('id_usuario');
             if (!userId) return;
 
-            // Intentamos usar updateUser (el mismo del formulario) y enviar 'imagen_perfil: null'
-            // Enviamos también el resto de la data por si es un PUT que requiere todo
-            await updateUser(userId, {
+            // Preparar datos para actualización
+            const updateData = {
                 ...formData,
                 imagen_perfil: null
-            });
+            };
+
+            // Validar formato de fecha (YYYY-MM-DD) o enviar null si está vacía
+            if (updateData.birth_date) {
+                const dateObj = new Date(updateData.birth_date);
+                if (!isNaN(dateObj.getTime())) {
+                    updateData.birth_date = dateObj.toISOString().split('T')[0];
+                }
+            } else if (updateData.birth_date === '') {
+                updateData.birth_date = null;
+            }
+
+            // Intentamos usar updateUser (el mismo del formulario) y enviar 'imagen_perfil: null'
+            await updateUser(userId, updateData);
 
             // Luego limpiamos el estado local
             setPhotoPreview('');
@@ -118,6 +130,16 @@ export const usePFFormulario = (usuarioActual) => {
             ...formData,
             imagen_perfil: photoPreview
         };
+
+        // Validar formato de fecha (YYYY-MM-DD) o enviar null si está vacía
+        if (updateData.birth_date) {
+            const dateObj = new Date(updateData.birth_date);
+            if (!isNaN(dateObj.getTime())) {
+                updateData.birth_date = dateObj.toISOString().split('T')[0];
+            }
+        } else if (updateData.birth_date === '') {
+            updateData.birth_date = null;
+        }
 
         try {
             // 3. Usa el ID correcto para la llamada a la API.

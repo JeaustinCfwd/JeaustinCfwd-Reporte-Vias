@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../services/fetch';
 
 export const useReportes = () => {
     const [reports, setReports] = useState([]);
@@ -14,20 +15,14 @@ export const useReportes = () => {
     const fetchReports = useCallback(async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch('http://localhost:8000/api/crear-reporte/', {
+            const res = await fetchWithAuth('http://localhost:8000/api/crear-reporte/', {
                 method: 'GET',
+                cache: 'no-store',
                 headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                },
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-cache'
+                }
             });
-
-            if (res.status === 401) {
-                setError('No autorizado. Por favor inicia sesión.');
-                navigate('/login');
-                return;
-            }
 
             if (!res.ok) throw new Error(`Error fetching reports: ${res.status}`);
 

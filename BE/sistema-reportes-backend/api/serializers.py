@@ -79,7 +79,7 @@ class ReporteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reporte
         fields = '__all__'
-        read_only_fields = ['fecha_creacion', 'fecha_actualizacion', 'estado']  # ✅ estado es read_only
+        read_only_fields = ['fecha_creacion', 'fecha_actualizacion']
         extra_kwargs = {
             'estado': {'required': False}  # ✅ estado NO es requerido
         }

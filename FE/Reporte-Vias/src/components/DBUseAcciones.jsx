@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { useToast } from './ToastContext';
+import { fetchWithAuth } from '../services/fetch';
 
 export const useAcciones = (reports, setReports, filteredReports, refreshReports) => {
     const { success, error: showError } = useToast();
@@ -11,10 +12,8 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
         if (!window.confirm('¿Estás seguro de que quieres eliminar este reporte?')) return;
 
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`http://localhost:8000/api/eliminar-reporte/${id}/`, {
+            const res = await fetchWithAuth(`http://localhost:8000/api/eliminar-reporte/${id}/`, {
                 method: 'DELETE',
-                headers: token ? { 'Authorization': `Bearer ${token}` } : {},
             });
 
             if (!res.ok) throw new Error(`Error deleting report: ${res.status}`);
@@ -30,13 +29,8 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
     // Actualizar estado del reporte
     const handleUpdateState = useCallback(async (id, newEstadoId) => {
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`http://localhost:8000/api/editar-reporte/${id}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                },
+            const res = await fetchWithAuth(`http://localhost:8000/api/editar-reporte/${id}/`, {
+                method: 'PATCH',
                 body: JSON.stringify({ estado: newEstadoId })
             });
 
@@ -61,13 +55,8 @@ export const useAcciones = (reports, setReports, filteredReports, refreshReports
     // Actualizar reporte completo
     const handleUpdateReport = useCallback(async (id, updates) => {
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`http://localhost:8000/api/editar-reporte/${id}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                },
+            const res = await fetchWithAuth(`http://localhost:8000/api/editar-reporte/${id}/`, {
+                method: 'PATCH',
                 body: JSON.stringify(updates)
             });
 

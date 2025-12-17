@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fetchWithAuth } from '../services/fetch';
+import { BarChart3, Search } from 'lucide-react';
+import { fetchWithAuth, patchData } from '../services/fetch';
 
 export const AdminReportes = () => {
   const [reportes, setReportes] = useState([]);
@@ -12,36 +13,39 @@ export const AdminReportes = () => {
 
   const cargarReportes = async () => {
     try {
-      const response = await fetchWithAuth('http://127.0.0.1:8000/api/crear-reporte/');
-      const data = await response.json();
-      setReportes(data.results || []);
+        const res = await fetchWithAuth('http://localhost:8000/api/crear-reporte/', {
+            method: 'GET',
+        });
+        const data = await res.json();
+        const reportsData = Array.isArray(data) ? data : (data.results || []);
+        setReportes(reportsData);
+        setCargando(false);
     } catch (error) {
       console.error('Error al cargar reportes:', error);
-    } finally {
       setCargando(false);
     }
   };
 
   const cambiarEstadoReporte = async (idReporte, nuevoEstado) => {
     try {
-      await fetchWithAuth(`http://127.0.0.1:8000/api/reporte/${idReporte}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ estado: nuevoEstado })
-      });
-      
-      // Actualizar lista local
-      setReportes(prev => 
-        prev.map(reporte => 
-          reporte.id === idReporte 
+      // 1. Actualización optimista en la UI
+      setReportes(prev =>
+        prev.map(reporte =>
+          reporte.id === idReporte
             ? { ...reporte, estado: nuevoEstado }
             : reporte
         )
       );
+
+      // 2. Llamada a la API real
+      await patchData(`editar-reporte/${idReporte}/`, { estado: nuevoEstado });
+      
+      // Opcional: Recargar para asegurar consistencia
+      // await cargarReportes();
     } catch (error) {
       console.error('Error al actualizar estado:', error);
+      // Revertir cambio si falla
+      cargarReportes();
     }
   };
 
@@ -54,17 +58,18 @@ export const AdminReportes = () => {
   }
 
   return (
-    <div className="overview-content">
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">Gestión de Reportes</h1>
-        <p className="dashboard-subtitle">Administrar y moderar todos los reportes del sistema</p>
+    <div className="admin-card">
+      <div className="admin-card-header">
+        <h2 className="admin-card-title">Gestión de Reportes</h2>
+        <p className="admin-card-subtitle">Administrar y moderar todos los reportes del sistema</p>
       </div>
-      
-      <div className="filtros">
-        <select 
-          value={filtroEstado} 
+
+      <div className="admin-form-group">
+        <label className="admin-form-label">Filtrar por Estado</label>
+        <select
+          value={filtroEstado}
           onChange={(e) => setFiltroEstado(e.target.value)}
-          className="filtro-select"
+          className="admin-form-select"
         >
           <option value="todos">Todos los estados</option>
           <option value="1">Nuevos</option>
@@ -73,54 +78,56 @@ export const AdminReportes = () => {
         </select>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-detail-card">
-          <h3>Reportes Totales</h3>
-          <div className="metric-row">
-            <span>Total:</span>
-            <strong>{reportes.length}</strong>
+      <div className="admin-stats-grid">
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <BarChart3 size={24} />
           </div>
-          <div className="metric-row">
-            <span>Filtrados:</span>
-            <strong>{reportesFiltrados.length}</strong>
+          <div className="admin-stat-value">{reportes.length}</div>
+          <div className="admin-stat-label">Reportes Totales</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <Search size={24} />
           </div>
-          <div className="reportes-lista-vertical">
-            <h4>Lista de Reportes</h4>
+          <div className="admin-stat-value">{reportesFiltrados.length}</div>
+          <div className="admin-stat-label">Reportes Filtrados</div>
+        </div>
+      </div>
+
+      <div className="admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Usuario</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
             {reportesFiltrados.map(reporte => (
-              <div key={reporte.id} className="reporte-item">
-                <div className="metric-row">
-                  <span>ID:</span>
-                  <strong>{reporte.id}</strong>
-                </div>
-                <div className="metric-row">
-                  <span>Título:</span>
-                  <strong>{reporte.titulo || 'Sin título'}</strong>
-                </div>
-                <div className="metric-row">
-                  <span>Usuario:</span>
-                  <strong>{reporte.usuario_nombre || 'Desconocido'}</strong>
-                </div>
-                <div className="metric-row">
-                  <span>Estado:</span>
-                  <select 
+              <tr key={reporte.id}>
+                <td>{reporte.id}</td>
+                <td>{reporte.titulo || 'Sin título'}</td>
+                <td>{reporte.usuario_nombre || 'Desconocido'}</td>
+                <td>
+                  <select
                     value={reporte.estado}
                     onChange={(e) => cambiarEstadoReporte(reporte.id, parseInt(e.target.value))}
-                    className="estado-select"
+                    className="admin-form-select"
                   >
                     <option value={1}>Nuevo</option>
                     <option value={2}>En Revisión</option>
                     <option value={3}>Resuelto</option>
                   </select>
-                </div>
-                <div className="metric-row">
-                  <span>Fecha:</span>
-                  <strong>{new Date(reporte.fecha_creacion).toLocaleDateString()}</strong>
-                </div>
-                <hr className="reporte-separador" />
-              </div>
+                </td>
+                <td>{new Date(reporte.fecha_creacion).toLocaleDateString()}</td>
+              </tr>
             ))}
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
     </div>
   );

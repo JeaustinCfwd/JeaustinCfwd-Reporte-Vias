@@ -39,19 +39,24 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="dashboard-page-wrapper">
-      <AdminSidebar 
+    <div className="admin-dashboard-wrapper">
+      <AdminSidebar
         activeView={activeView}
         setActiveView={setActiveView}
         onLogout={handleLogout}
       />
-      <main className="dashboard-main">
-        <div className="dashboard-wrapper">
-          <div className="overview-content">
-            <h1 className="dashboard-title">Panel de Administración</h1>
-            <p className="dashboard-subtitle">
-              Gestiona reportes, usuarios y comentarios del sistema
-            </p>
+      <main className="admin-main-content">
+        <div className="admin-dashboard-container">
+          <div className="admin-header">
+            <div className="admin-header-top">
+              <div className="admin-title-section">
+                <h1>Panel de Administración</h1>
+                <p>
+                  Gestiona reportes, usuarios y comentarios del sistema
+                  <span className="admin-status-badge">Activo</span>
+                </p>
+              </div>
+            </div>
           </div>
           {renderContent()}
         </div>

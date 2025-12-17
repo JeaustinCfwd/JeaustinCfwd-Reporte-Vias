@@ -53,6 +53,20 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite/Vue
 ]
 
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'cache-control',  # Agregado para permitir no-cache
+    'pragma',         # Agregado para permitir no-cache
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Django REST Framework - CONFIGURACIÓN PRINCIPAL
