@@ -1,56 +1,44 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Search, Filter, Trash2, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { fetchWithAuth, deleteReview } from '../services/fetch';
 
 const AdminComentarios = () => {
   const [comentarios, setComentarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('todos');
-  const [selectedComentario, setSelectedComentario] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulación de carga de datos
-    setTimeout(() => {
-      setComentarios([
-        {
-          id: 1,
-          reporte_id: 101,
-          usuario: 'usuario1',
-          contenido: 'Este reporte necesita atención urgente, hay un bache muy grande',
-          fecha_creacion: '2023-12-10 14:30',
-          estado: 'pendiente',
-          reporte_titulo: 'Bache en avenida central'
-        },
-        {
-          id: 2,
-          reporte_id: 102,
-          usuario: 'usuario2',
-          contenido: 'Ya fue reparado, gracias por la atención',
-          fecha_creacion: '2023-12-11 09:15',
-          estado: 'aprobado',
-          reporte_titulo: 'Semáforo dañado'
-        },
-        {
-          id: 3,
-          reporte_id: 103,
-          usuario: 'usuario3',
-          contenido: 'Contenido inapropiado en este comentario',
-          fecha_creacion: '2023-12-12 16:45',
-          estado: 'rechazado',
-          reporte_titulo: 'Señalización deficiente'
-        },
-        {
-          id: 4,
-          reporte_id: 104,
-          usuario: 'Jeaustin',
-          contenido: 'Excelente trabajo del equipo municipal',
-          fecha_creacion: '2023-12-13 11:20',
-          estado: 'pendiente',
-          reporte_titulo: 'Alcantarilla dañada'
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    const cargarComentarios = async () => {
+      try {
+        const res = await fetchWithAuth('http://127.0.0.1:8000/api/crear-comentario/', {
+          method: 'GET',
+        });
+
+        const data = await res.json();
+        const comentariosArray = Array.isArray(data) ? data : (data.results || []);
+
+        const normalizados = comentariosArray.map((c) => ({
+          id: c.id,
+          usuario: c.usuario_nombre || `Usuario #${c.usuario}`,
+          contenido: c.contenido,
+          fecha_creacion: c.fecha_creacion,
+          estado: c.estado || 'aprobado',
+          reporte_id: c.reporte_id || null,
+          reporte_titulo: c.reporte_titulo || 'Comentario de reporte',
+        }));
+
+        setComentarios(normalizados);
+      } catch (error) {
+        console.error('Error cargando comentarios:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarComentarios();
   }, []);
 
   const filteredComentarios = comentarios.filter(comentario => {
@@ -73,10 +61,22 @@ const AdminComentarios = () => {
     ));
   };
 
-  const handleEliminarComentario = (comentarioId) => {
-    if (window.confirm('¿Estás seguro de eliminar este comentario?')) {
-      setComentarios(prev => prev.filter(c => c.id !== comentarioId));
+  const handleEliminarComentario = async (comentarioId) => {
+    if (!window.confirm('¿Estás seguro de eliminar este comentario?')) {
+      return;
     }
+
+    try {
+      await deleteReview(comentarioId);
+      setComentarios(prev => prev.filter(c => c.id !== comentarioId));
+    } catch (error) {
+      console.error('Error eliminando comentario:', error);
+      alert(error.message || 'Error al eliminar el comentario');
+    }
+  };
+
+  const handleVerComentario = () => {
+    navigate('/home');
   };
 
   const getEstadoIcon = (estado) => {
@@ -113,8 +113,8 @@ const AdminComentarios = () => {
 
       {/* Filtros y búsqueda */}
       <div className="admin-form-group">
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ flex: 1 }}>
+        <div className="admin-filters-row">
+          <div className="admin-filters-col">
             <label className="admin-form-label">Buscar comentarios</label>
             <div style={{ position: 'relative' }}>
               <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
@@ -129,7 +129,7 @@ const AdminComentarios = () => {
             </div>
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div className="admin-filters-col">
             <label className="admin-form-label">Filtrar por estado</label>
             <select
               value={filterEstado}
@@ -180,171 +180,103 @@ const AdminComentarios = () => {
         </div>
       </div>
 
-      {/* Lista de comentarios */}
-      <div className="comentarios-list">
-        {filteredComentarios.map(comentario => (
-          <div key={comentario.id} className="comentario-card">
-            <div className="comentario-header">
-              <div className="comentario-info">
-                <div className="usuario-info">
-                  <div className="user-avatar small">
-                    {comentario.usuario.charAt(0).toUpperCase()}
+      <div className="admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Reporte</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Comentario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredComentarios.map((comentario) => (
+              <tr key={comentario.id}>
+                <td>{comentario.id}</td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        background: 'var(--admin-primary)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {comentario.usuario.charAt(0).toUpperCase()}
+                    </div>
+                    <span>{comentario.usuario}</span>
                   </div>
-                  <div>
-                    <h4>{comentario.usuario}</h4>
-                    <p className="comentario-meta">
-                      Reporte #{comentario.reporte_id} • {comentario.reporte_titulo}
-                    </p>
-                  </div>
-                </div>
-                <div className="comentario-estado">
-                  {getEstadoIcon(comentario.estado)}
-                  <span className={`estado-badge ${comentario.estado}`}>
-                    {comentario.estado}
+                </td>
+                <td>
+                  <span>
+                    Reporte #{comentario.reporte_id} • {comentario.reporte_titulo}
                   </span>
-                </div>
-              </div>
-              <div className="comentario-fecha">
-                {new Date(comentario.fecha_creacion).toLocaleString('es-ES')}
-              </div>
-            </div>
-            
-            <div className="comentario-contenido">
-              <p>{comentario.contenido}</p>
-            </div>
-            
-            <div className="comentario-actions">
-              {comentario.estado === 'pendiente' && (
-                <>
-                  <button
-                    onClick={() => handleAprobarComentario(comentario.id)}
-                    className="btn-approve"
-                    title="Aprobar comentario"
-                  >
-                    <CheckCircle size={16} />
-                    Aprobar
-                  </button>
-                  <button
-                    onClick={() => handleRechazarComentario(comentario.id)}
-                    className="btn-reject"
-                    title="Rechazar comentario"
-                  >
-                    <AlertCircle size={16} />
-                    Rechazar
-                  </button>
-                </>
-              )}
-              <button
-                onClick={() => setSelectedComentario(comentario)}
-                className="btn-view"
-                title="Ver detalles"
-              >
-                <MessageSquare size={16} />
-                Ver
-              </button>
-              <button
-                onClick={() => handleEliminarComentario(comentario.id)}
-                className="btn-delete"
-                title="Eliminar comentario"
-              >
-                <Trash2 size={16} />
-                Eliminar
-              </button>
-            </div>
-          </div>
-        ))}
+                </td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {getEstadoIcon(comentario.estado)}
+                    <span className={`estado-badge ${comentario.estado}`}>{comentario.estado}</span>
+                  </div>
+                </td>
+                <td>{new Date(comentario.fecha_creacion).toLocaleString('es-ES')}</td>
+                <td>
+                  <span>{comentario.contenido}</span>
+                </td>
+                <td>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {comentario.estado === 'pendiente' && (
+                      <>
+                        <button
+                          onClick={() => handleAprobarComentario(comentario.id)}
+                          className="admin-btn"
+                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                          title="Aprobar comentario"
+                        >
+                          <CheckCircle size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleRechazarComentario(comentario.id)}
+                          className="admin-btn"
+                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                          title="Rechazar comentario"
+                        >
+                          <AlertCircle size={14} />
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={handleVerComentario}
+                      className="admin-btn"
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                      title="Ver"
+                    >
+                      <MessageSquare size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleEliminarComentario(comentario.id)}
+                      className="admin-btn admin-btn-primary"
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'var(--admin-secondary)' }}
+                      title="Eliminar comentario"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-
-      {/* Modal de detalles */}
-      {selectedComentario && (
-        <div className="modal-overlay">
-          <div className="modal-content comentario-modal">
-            <div className="modal-header">
-              <h3>Detalles del Comentario</h3>
-              <button
-                onClick={() => setSelectedComentario(null)}
-                className="modal-close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="detalle-info">
-                <div className="info-row">
-                  <label>Usuario:</label>
-                  <span>{selectedComentario.usuario}</span>
-                </div>
-                <div className="info-row">
-                  <label>Reporte:</label>
-                  <span>#{selectedComentario.reporte_id} - {selectedComentario.reporte_titulo}</span>
-                </div>
-                <div className="info-row">
-                  <label>Fecha:</label>
-                  <span>{new Date(selectedComentario.fecha_creacion).toLocaleString('es-ES')}</span>
-                </div>
-                <div className="info-row">
-                  <label>Estado:</label>
-                  <span className={`estado-badge ${selectedComentario.estado}`}>
-                    {getEstadoIcon(selectedComentario.estado)}
-                    {selectedComentario.estado}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="detalle-contenido">
-                <label>Comentario:</label>
-                <div className="comentario-text">
-                  {selectedComentario.contenido}
-                </div>
-              </div>
-            </div>
-            
-            <div className="modal-actions">
-              {selectedComentario.estado === 'pendiente' && (
-                <>
-                  <button
-                    onClick={() => {
-                      handleAprobarComentario(selectedComentario.id);
-                      setSelectedComentario(null);
-                    }}
-                    className="btn-approve"
-                  >
-                    <CheckCircle size={16} />
-                    Aprobar
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleRechazarComentario(selectedComentario.id);
-                      setSelectedComentario(null);
-                    }}
-                    className="btn-reject"
-                  >
-                    <AlertCircle size={16} />
-                    Rechazar
-                  </button>
-                </>
-              )}
-              <button
-                onClick={() => {
-                  handleEliminarComentario(selectedComentario.id);
-                  setSelectedComentario(null);
-                }}
-                className="btn-delete"
-              >
-                <Trash2 size={16} />
-                Eliminar
-              </button>
-              <button
-                onClick={() => setSelectedComentario(null)}
-                className="btn-secondary"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

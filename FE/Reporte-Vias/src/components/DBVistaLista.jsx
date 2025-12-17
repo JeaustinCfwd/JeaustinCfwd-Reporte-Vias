@@ -28,6 +28,7 @@ const DBVistaLista = ({
 }) => {
  const navigate = useNavigate();
  const { esAdmin } = useAuth();
+ const currentUserId = parseInt(localStorage.getItem('id_usuario') || '0', 10);
  console.log('DBVistaLista - esAdmin:', esAdmin);
  const [editando, setEditando] = useState({ id: null, campo: null });
  const [valorEditado, setValorEditado] = useState('');
@@ -231,8 +232,8 @@ const DBVistaLista = ({
           }
          </td>
 
-         {/* Acciones */}
-         <td>
+        <td>
+         {(esAdmin || String(report.usuario) === String(currentUserId)) && (
           <button
            onClick={() => handleDeleteReport(report.id)}
            className="delete-btn-small"
@@ -240,7 +241,8 @@ const DBVistaLista = ({
           >
            <RiDeleteBin5Line />
           </button>
-         </td>
+         )}
+        </td>
         </tr>
         {/* Fila expandible con imágenes */}
         {reportesExpandidos.has(report.id) && (

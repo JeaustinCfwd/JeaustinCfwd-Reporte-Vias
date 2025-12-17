@@ -187,10 +187,6 @@ export async function postReview(reviewData) {
     }
 }
 
-// ❌ ESTA ERA LA FUNCIÓN ANTERIOR — YA NO EXISTE
-// export async function deleteReview(reviewId) { ... }
-
-// ✅ ESTA ES LA NUEVA FUNCIÓN (como pediste EXACTAMENTE)
 export async function deleteReview(comentarioId) {
     try {
         const usuarioId = localStorage.getItem('id_usuario');
@@ -199,15 +195,11 @@ export async function deleteReview(comentarioId) {
             throw new Error('Debes estar autenticado para eliminar comentarios');
         }
 
-        const res = await fetch(`http://127.0.0.1:8000/api/eliminar-comentario/${comentarioId}/`, {
+        const res = await fetchWithAuth(`http://127.0.0.1:8000/api/eliminar-comentario/${comentarioId}/`, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 usuario_id: usuarioId
-            }),
-            credentials: 'include',
+            })
         });
 
         if (!res.ok) {

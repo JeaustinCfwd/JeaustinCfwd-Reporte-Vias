@@ -227,7 +227,7 @@ class RolCreateView(ListCreateAPIView):
 class ListUsersCreateView(ListCreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAdminUser]  # Solo admin
+    permission_classes = [IsAdminRole]  # Solo admin
 
 
 class UsuarioPorIdView(APIView):

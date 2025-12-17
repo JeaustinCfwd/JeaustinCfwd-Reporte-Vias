@@ -35,7 +35,7 @@ class IsAdminRole(permissions.BasePermission):
             request.user.is_authenticated and
             hasattr(request.user, 'rol') and
             request.user.rol and
-            request.user.rol.lower() == 'administrador'
+            request.user.rol.lower() == 'admin'
         )
 
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Search, Filter, Edit, Trash2, Shield, User, Users2, CheckCircle } from 'lucide-react';
+import { fetchWithAuth, updateUser, deleteUser } from '../services/fetch';
 
 const AdminUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -8,37 +9,32 @@ const AdminUsuarios = () => {
   const [filterRol, setFilterRol] = useState('todos');
   const [editingUser, setEditingUser] = useState(null);
 
-  useEffect(() => {
-    // Simulación de carga de datos
-    setTimeout(() => {
-      setUsuarios([
-        {
-          id: 1,
-          username: 'Jeaustin',
-          email: 'jeaustincalu873@gmail.com',
-          rol: 'admin',
-          fecha_creacion: '2023-01-15',
-          estado: 'activo'
-        },
-        {
-          id: 2,
-          username: 'usuario1',
-          email: 'usuario1@example.com',
-          rol: 'usuario',
-          fecha_creacion: '2023-02-20',
-          estado: 'activo'
-        },
-        {
-          id: 3,
-          username: 'usuario2',
-          email: 'usuario2@example.com',
-          rol: 'usuario',
-          fecha_creacion: '2023-03-10',
-          estado: 'inactivo'
-        }
-      ]);
+  const cargarUsuarios = async () => {
+    setLoading(true);
+    try {
+      const res = await fetchWithAuth('http://localhost:8000/api/crear-lista/', {
+        method: 'GET',
+      });
+      const data = await res.json();
+      const usuariosArray = Array.isArray(data) ? data : (data.results || []);
+      const usuariosFormateados = usuariosArray.map((u) => ({
+        id: u.id,
+        username: u.username,
+        email: u.email,
+        rol: u.rol,
+        estado: u.is_active ? 'activo' : 'inactivo',
+        fecha_creacion: u.date_joined,
+      }));
+      setUsuarios(usuariosFormateados);
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
+  };
+
+  useEffect(() => {
+    cargarUsuarios();
   }, []);
 
   const filteredUsuarios = usuarios.filter(usuario => {
@@ -52,24 +48,69 @@ const AdminUsuarios = () => {
     setEditingUser({ ...user });
   };
 
-  const handleSaveUser = () => {
-    // Lógica para guardar cambios
-    setUsuarios(prev => prev.map(u => 
-      u.id === editingUser.id ? editingUser : u
-    ));
-    setEditingUser(null);
-  };
-
-  const handleDeleteUser = (userId) => {
-    if (window.confirm('¿Estás seguro de eliminar este usuario?')) {
-      setUsuarios(prev => prev.filter(u => u.id !== userId));
+  const handleSaveUser = async () => {
+    if (!editingUser) return;
+    try {
+      const payload = {
+        username: editingUser.username,
+        email: editingUser.email,
+        rol: editingUser.rol,
+        is_active: editingUser.estado === 'activo',
+      };
+      const updatedUser = await updateUser(editingUser.id, payload);
+      setUsuarios((prev) =>
+        prev.map((u) =>
+          u.id === editingUser.id
+            ? {
+                ...u,
+                username: updatedUser.username,
+                email: updatedUser.email,
+                rol: updatedUser.rol,
+                estado: updatedUser.is_active ? 'activo' : 'inactivo',
+                fecha_creacion: updatedUser.date_joined || u.fecha_creacion,
+              }
+            : u
+        )
+      );
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Error al guardar usuario:', error);
     }
   };
 
-  const handleToggleEstado = (userId) => {
-    setUsuarios(prev => prev.map(u => 
-      u.id === userId ? { ...u, estado: u.estado === 'activo' ? 'inactivo' : 'activo' } : u
-    ));
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('¿Estás seguro de eliminar este usuario?')) {
+      return;
+    }
+    try {
+      await deleteUser(userId);
+      setUsuarios((prev) => prev.filter((u) => u.id !== userId));
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+    }
+  };
+
+  const handleToggleEstado = async (userId) => {
+    const usuario = usuarios.find((u) => u.id === userId);
+    if (!usuario) return;
+    const nuevoEstado = usuario.estado === 'activo' ? 'inactivo' : 'activo';
+    try {
+      const updatedUser = await updateUser(userId, {
+        is_active: nuevoEstado === 'activo',
+      });
+      setUsuarios((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? {
+                ...u,
+                estado: updatedUser.is_active ? 'activo' : 'inactivo',
+              }
+            : u
+        )
+      );
+    } catch (error) {
+      console.error('Error al cambiar estado del usuario:', error);
+    }
   };
 
   if (loading) {
@@ -95,8 +136,8 @@ const AdminUsuarios = () => {
 
       {/* Filtros y búsqueda */}
       <div className="admin-form-group">
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ flex: 1 }}>
+        <div className="admin-filters-row">
+          <div className="admin-filters-col">
             <label className="admin-form-label">Buscar usuarios</label>
             <div style={{ position: 'relative' }}>
               <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
@@ -111,7 +152,7 @@ const AdminUsuarios = () => {
             </div>
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div className="admin-filters-col">
             <label className="admin-form-label">Filtrar por rol</label>
             <select
               value={filterRol}

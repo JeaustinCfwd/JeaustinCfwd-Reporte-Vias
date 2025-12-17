@@ -79,7 +79,7 @@ function Home() {
           setLoading(false);
           return;
         }
-        console.log('Token encontrado:', token ? 'Sí' : 'No');
+
         const res = await fetch('http://localhost:8000/api/crear-reporte/', {
           method: 'GET',
           headers: {
@@ -87,11 +87,30 @@ function Home() {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
           },
         });
+
         if (res.ok) {
           const data = await res.json();
-          const reportes = data.results || data;
-          const atendidos = reportes.filter(r => r.state === 'atendido').length;
-          setReportesResueltos(atendidos);
+          const reportes = Array.isArray(data) ? data : (data.results || []);
+
+          const resueltos = reportes.filter((reporte) => {
+            const nombreEstado =
+              (reporte.estado_nombre ||
+                reporte.state ||
+                reporte.estado ||
+                '').toString().toLowerCase();
+
+            const esEstadoResueltoPorNombre =
+              nombreEstado.includes('resuelto') ||
+              nombreEstado.includes('atendid') ||
+              nombreEstado.includes('closed');
+
+            const esEstadoResueltoPorId =
+              String(reporte.estado) === '3';
+
+            return esEstadoResueltoPorNombre || esEstadoResueltoPorId;
+          }).length;
+
+          setReportesResueltos(resueltos);
           setTotalReportes(reportes.length);
         }
       } catch (error) {
