@@ -6,6 +6,7 @@ import GlareHover from '../components/GlareHover';
 import RatingBox from '../components/RatingBox';
 import CountUp from '../components/CountUp';
 import Hyperspeed from '../components/Hyperspeed-HS';
+import { fetchWithAuth } from '../services/fetch';
 import '../styles/Home.css';
 
 const carouselItems = [
@@ -80,39 +81,33 @@ function Home() {
           return;
         }
 
-        const res = await fetch('http://localhost:8000/api/crear-reporte/', {
+        const res = await fetchWithAuth('http://localhost:8000/api/crear-reporte/', {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-          },
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          const reportes = Array.isArray(data) ? data : (data.results || []);
+        const data = await res.json();
+        const reportes = Array.isArray(data) ? data : (data.results || []);
 
-          const resueltos = reportes.filter((reporte) => {
-            const nombreEstado =
-              (reporte.estado_nombre ||
-                reporte.state ||
-                reporte.estado ||
-                '').toString().toLowerCase();
+        const resueltos = reportes.filter((reporte) => {
+          const nombreEstado =
+            (reporte.estado_nombre ||
+              reporte.state ||
+              reporte.estado ||
+              '').toString().toLowerCase();
 
-            const esEstadoResueltoPorNombre =
-              nombreEstado.includes('resuelto') ||
-              nombreEstado.includes('atendid') ||
-              nombreEstado.includes('closed');
+          const esEstadoResueltoPorNombre =
+            nombreEstado.includes('resuelto') ||
+            nombreEstado.includes('atendid') ||
+            nombreEstado.includes('closed');
 
-            const esEstadoResueltoPorId =
-              String(reporte.estado) === '3';
+          const esEstadoResueltoPorId =
+            String(reporte.estado) === '3';
 
-            return esEstadoResueltoPorNombre || esEstadoResueltoPorId;
-          }).length;
+          return esEstadoResueltoPorNombre || esEstadoResueltoPorId;
+        }).length;
 
-          setReportesResueltos(resueltos);
-          setTotalReportes(reportes.length);
-        }
+        setReportesResueltos(resueltos);
+        setTotalReportes(reportes.length);
       } catch (error) {
         console.error('Error cargando estadísticas:', error);
         setReportesResueltos(0);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarSelector from './StarSelector';
 import RatingSummary from './RatingSummary';
-import { deleteReview, postData } from '../services/fetch.js';
+import { deleteReview, postData, fetchWithAuth } from '../services/fetch.js';
 import '../styles/RatingBox.css';
 import AnimatedComment from './AnimatedComment';
 
@@ -28,27 +28,20 @@ const RatingBox = () => {
      setLoading(false);
      return;
     }
-    const response = await fetch('http://127.0.0.1:8000/api/crear-comentario/', {
+    const response = await fetchWithAuth('http://127.0.0.1:8000/api/crear-comentario/', {
      method: 'GET',
-     headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-     },
-     credentials: 'include',
     });
-    if (response.ok) {
-     const comentarios = await response.json();
-     const comentariosArray = Array.isArray(comentarios) ? comentarios : (comentarios.results || []);
-     const reviewsFormateados = comentariosArray.map(comentario => ({
-      id: comentario.id,
-      rating: comentario.calificacion,
-      comment: comentario.contenido,
-      userName: comentario.usuario_nombre,
-      userId: comentario.usuario,
-      timestamp: comentario.fecha_creacion
-     }));
-     setReviews(reviewsFormateados);
-    }
+    const comentarios = await response.json();
+    const comentariosArray = Array.isArray(comentarios) ? comentarios : (comentarios.results || []);
+    const reviewsFormateados = comentariosArray.map(comentario => ({
+     id: comentario.id,
+     rating: comentario.calificacion,
+     comment: comentario.contenido,
+     userName: comentario.usuario_nombre,
+     userId: comentario.usuario,
+     timestamp: comentario.fecha_creacion
+    }));
+    setReviews(reviewsFormateados);
    } catch (error) {
     console.error('Error fetching reviews:', error);
    } finally {
